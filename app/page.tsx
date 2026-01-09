@@ -8,8 +8,17 @@ import Subscription from "@/components/Subscription";
 import { prisma } from "@/lib/prisma";
 import Footer from "@/components/Footer";
 
+// Force dynamic rendering to ensure DB access happens at runtime, not build time
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
-  const products = await prisma.product.findMany();
+  let products = [];
+  try {
+    products = await prisma.product.findMany();
+  } catch (error) {
+    console.error("Failed to fetch products:", error);
+    // Fallback to empty array if DB fails (e.g. during build or connection error)
+  }
   return (
     <main className="min-h-screen bg-white">
       <Navbar />
