@@ -44,17 +44,17 @@ export default function Navbar() {
 
                 {/* Desktop Menu */}
                 <div className={`hidden lg:flex items-center space-x-8 text-sm font-semibold uppercase tracking-widest ${scrolled ? 'text-stone-600' : 'text-white/90'}`}>
-                    <Link href="/" className="hover:text-[#8B4513] transition-colors">Home</Link>
-                    <button onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#8B4513] transition-colors">Menu</button>
-                    <Link href="/gallery" className="hover:text-[#8B4513] transition-colors">Gallery</Link>
+                    <Link href="/" className="hover:text-[#8B4513] transition-colors">בית</Link>
+                    <button onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#8B4513] transition-colors">תפריט</button>
+                    <Link href="/gallery" className="hover:text-[#8B4513] transition-colors">גלריה</Link>
                     <Link href="/ai-barista" className="hover:text-[#8B4513] transition-colors font-bold text-[#8B4513] flex items-center">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        AI Barista
+                        AI בריסטה
                     </Link>
                     {session && (
                         <>
-                            <Link href="/orders" className="hover:text-[#8B4513] transition-colors">My Orders</Link>
-                            <Link href="/dashboard" className="hover:text-[#8B4513] transition-colors">Dashboard</Link>
+                            <Link href="/orders" className="hover:text-[#8B4513] transition-colors">ההזמנות שלי</Link>
+                            <Link href="/dashboard" className="hover:text-[#8B4513] transition-colors">דאשבורד</Link>
                         </>
                     )}
                 </div>
@@ -65,18 +65,18 @@ export default function Navbar() {
                     {session ? (
                         <div className="hidden md:flex items-center space-x-3">
                             <span className={`text-[10px] font-black uppercase tracking-widest ${scrolled ? 'text-stone-400' : 'text-white/50'}`}>
-                                {session.user?.name?.split(' ')[0]}
+                                שלום, {session.user?.name?.split(' ')[0]}
                             </span>
                             <button
                                 onClick={() => signOut()}
                                 className={`text-xs font-bold uppercase tracking-widest hover:text-red-500 transition-colors ${scrolled ? 'text-stone-600' : 'text-white/80'}`}
                             >
-                                Sign Out
+                                התנתק
                             </button>
                         </div>
                     ) : (
                         <Link href="/auth" className={`hidden md:block text-xs font-bold uppercase tracking-widest hover:text-[#8B4513] transition-colors ${scrolled ? 'text-stone-600' : 'text-white/80'}`}>
-                            Account
+                            חשבון
                         </Link>
                     )}
 
@@ -115,40 +115,41 @@ export default function Navbar() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         className="lg:hidden bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-lg"
+                        dir="rtl"
                     >
                         <div className="max-w-7xl mx-auto px-6 py-6 space-y-4">
-                            <Link href="/" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                Home
+                            <Link href="/" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
+                                בית
                             </Link>
-                            <button onClick={() => { document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }} className="block w-full text-left text-stone-700 font-semibold hover:text-[#8B4513] transition-colors">
-                                Menu
+                            <button onClick={() => { document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }} className="block w-full text-right text-stone-700 font-semibold hover:text-[#8B4513] transition-colors">
+                                תפריט
                             </button>
-                            <Link href="/gallery" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                Gallery
+                            <Link href="/gallery" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
+                                גלריה
                             </Link>
-                            <Link href="/ai-barista" className="block text-[#8B4513] font-bold flex items-center" onClick={() => setMobileMenuOpen(false)}>
-                                <Sparkles className="w-4 h-4 mr-2" />
-                                AI Barista
+                            <Link href="/ai-barista" className="block text-[#8B4513] font-bold flex items-center justify-end" onClick={() => setMobileMenuOpen(false)}>
+                                AI בריסטה
+                                <Sparkles className="w-4 h-4 ml-2" />
                             </Link>
                             {session && (
                                 <>
-                                    <Link href="/orders" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                        My Orders
+                                    <Link href="/orders" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
+                                        ההזמנות שלי
                                     </Link>
-                                    <Link href="/dashboard" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                        Dashboard
+                                    <Link href="/dashboard" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
+                                        דאשבורד
                                     </Link>
                                     <button
                                         onClick={() => { signOut(); setMobileMenuOpen(false); }}
-                                        className="block w-full text-left text-red-500 font-bold"
+                                        className="block w-full text-right text-red-500 font-bold"
                                     >
-                                        Sign Out
+                                        התנתק
                                     </button>
                                 </>
                             )}
                             {!session && (
-                                <Link href="/auth" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors" onClick={() => setMobileMenuOpen(false)}>
-                                    Account
+                                <Link href="/auth" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
+                                    חשבון
                                 </Link>
                             )}
                         </div>

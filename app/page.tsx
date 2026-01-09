@@ -25,10 +25,10 @@ export default async function Home() {
       <BeanBanner />
 
       <section id="menu" className="py-24 bg-[#FDFCF0]">
-        <div className="max-w-7xl mx-auto px-6 space-y-16">
+        <div className="max-w-7xl mx-auto px-6 space-y-16" dir="rtl">
           <div className="text-center space-y-4">
-            <h2 className="text-5xl font-serif font-bold text-[#2D1B14]">Discover Our Menu</h2>
-            <p className="text-stone-500 max-w-2xl mx-auto">Explore our curated selection of artisanal coffee and fresh pastries.</p>
+            <h2 className="text-5xl md:text-6xl font-serif font-bold text-[#2D1B14]">גלו את התפריט שלנו</h2>
+            <p className="text-stone-500 text-xl max-w-2xl mx-auto">מבחר נאצר של קפה ארטיזנלי ומאפים טריים שנאפים במקום.</p>
           </div>
           <CoffeeShop initialProducts={products} />
         </div>

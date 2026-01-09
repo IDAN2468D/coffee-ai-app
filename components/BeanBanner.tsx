@@ -15,16 +15,17 @@ export default function BeanBanner() {
                 <div className="absolute inset-0 bg-black/60" />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 text-center text-white space-y-6">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 text-center text-white space-y-6" dir="rtl">
                 <motion.h2
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
                     className="text-5xl md:text-7xl font-serif font-bold"
                 >
-                    Check Out Our Best Coffee Beans
+                    גלו את פולי הקפה הטובים ביותר שלנו
                 </motion.h2>
-                <p className="max-w-2xl mx-auto text-white/70 text-lg font-light">
-                    Ethically sourced, masterfully roasted, and delivered fresh to your cup. Experience the depth of flavor only premium beans can provide.
+                <p className="max-w-2xl mx-auto text-white/70 text-xl font-light">
+                    מקורות אתיים, קלייה מומחית, ומשלוח טרי עד הכוס שלכם. תחוו את עומק הטעמים שרק פולי פרימיום יכולים להעניק.
                 </p>
             </div>
         </section>
