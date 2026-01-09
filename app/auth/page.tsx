@@ -13,17 +13,17 @@ import { useEffect } from 'react';
 
 
 const loginSchema = z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    email: z.string().email('כתובת אימייל לא תקינה'),
+    password: z.string().min(6, 'הסיסמה חייבת להכיל לפחות 6 תווים'),
 });
 
 const registerSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
+    name: z.string().min(2, 'השם חייב להכיל לפחות 2 תווים'),
+    email: z.string().email('כתובת אימייל לא תקינה'),
+    password: z.string().min(6, 'הסיסמה חייבת להכיל לפחות 6 תווים'),
     confirmPassword: z.string()
 }).refine((data) => data.confirmPassword === undefined || data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "הסיסמאות לא תואמות",
     path: ["confirmPassword"],
 });
 
@@ -42,7 +42,7 @@ export default function AuthPage() {
 
 
     const { register, handleSubmit, formState: { errors } } = useForm<any>({
-        resolver: zodResolver(isReset ? z.object({ email: z.string().email() }) : (isLogin ? loginSchema : registerSchema)),
+        resolver: zodResolver(isReset ? z.object({ email: z.string().email('כתובת אימייל לא תקינה') }) : (isLogin ? loginSchema : registerSchema)),
     });
 
     const onSubmit = async (data: any) => {
@@ -63,7 +63,7 @@ export default function AuthPage() {
                     password: data.password,
                     redirect: false
                 });
-                if (res?.error) alert(res.error);
+                if (res?.error) alert("שגיאה בהתחברות: " + res.error);
                 else router.push('/');
             } else {
                 const res = await fetch('/api/auth/register', {
@@ -74,19 +74,19 @@ export default function AuthPage() {
                 const result = await res.json();
                 if (result.error) alert(result.error);
                 else {
-                    alert("Account created! Please sign in.");
+                    alert("החשבון נוצר בהצלחה! כעת ניתן להתחבר.");
                     setIsLogin(true);
                 }
             }
         } catch (err) {
-            alert("Something went wrong");
+            alert("משהו השתבש. אנא נסה שוב.");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <main className="min-h-screen bg-[#FDFCF0] flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/coffee-beans.png')]">
+        <main className="min-h-screen bg-[#FDFCF0] flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/coffee-beans.png')]" dir="rtl">
             <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-white rounded-[3rem] shadow-[0_40px_100px_rgba(45,27,20,0.1)] overflow-hidden border border-stone-100">
 
                 {/* Decorative Side */}
@@ -96,45 +96,45 @@ export default function AuthPage() {
                     </div>
                     <div className="relative z-10 h-full flex flex-col justify-between">
                         <div>
-                            <Link href="/" className="flex items-center space-x-3 text-white mb-12">
+                            <Link href="/" className="flex items-center space-x-3 space-x-reverse text-white mb-12">
                                 <div className="bg-white/20 backdrop-blur-md p-2 rounded-xl">
                                     <Coffee className="w-8 h-8" />
                                 </div>
-                                <span className="text-3xl font-serif font-bold tracking-tight">Coffee</span>
+                                <span className="text-3xl font-serif font-bold tracking-tight">The Digital Roast</span>
                             </Link>
                             <h2 className="text-5xl font-serif font-bold leading-tight mb-6">
-                                {isReset ? 'Regain Access' : isLogin ? 'Welcome Back to Our Roastery' : 'Join the Digital Roast Culture'}
+                                {isReset ? 'שחזור גישה' : isLogin ? 'ברוכים השבים לבית הקלייה שלנו' : 'הצטרפו לתרבות ה-Digital Roast'}
                             </h2>
                             <p className="text-white/60 text-lg font-light leading-relaxed">
                                 {isReset
-                                    ? "Don't worry, even the best baristas forget things sometimes. We'll help you get back in."
+                                    ? "אל דאגה, גם הבריסטות הטובים ביותר שוכחים דברים לפעמים. אנחנו כאן כדי לעזור לכם לחזור."
                                     : isLogin
-                                        ? 'We missed your morning ritual. Sign in to access your favorite blends and orders.'
-                                        : 'Become a member and enjoy 15% off your first order plus exclusive coffee insights.'}
+                                        ? 'התגעגענו לטקס הבוקר שלכם. התחברו כדי לגשת לתערובות ולהזמנות האהובות עליכם.'
+                                        : 'הפכו לחברים ותיהנו מ-15% הנחה על ההזמנה הראשונה פלוס תובנות קפה בלעדיות.'}
                             </p>
                         </div>
                         <div className="pt-12 border-t border-white/10">
-                            <p className="text-sm font-bold uppercase tracking-widest opacity-40">Est. 2026 - Digital Roast</p>
+                            <p className="text-sm font-bold uppercase tracking-widest opacity-40">נוסד ב-2026 - Digital Roast</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Form Side */}
-                <div className="p-10 lg:p-20 flex flex-col justify-center">
-                    <div className="mb-10 text-center lg:text-left">
+                <div className="p-10 lg:p-20 flex flex-col justify-center text-right">
+                    <div className="mb-10">
                         <h1 className="text-4xl font-serif font-bold text-[#2D1B14] mb-2">
-                            {isReset ? 'Reset Password' : isLogin ? 'Sign In' : 'Create Account'}
+                            {isReset ? 'איפוס סיסמה' : isLogin ? 'התחברות' : 'יצירת חשבון'}
                         </h1>
-                        <p className="text-stone-400 font-light underline decoration-[#8B4513]/20">
-                            {isReset ? "Remembered it?" : isLogin ? "Don't have an account?" : "Already have an account?"}
+                        <p className="text-stone-400 font-light">
+                            {isReset ? "נזכרתם?" : isLogin ? "אין לכם חשבון?" : "כבר יש לכם חשבון?"}
                             <button
                                 onClick={() => {
                                     if (isReset) setIsReset(false);
                                     else setIsLogin(!isLogin);
                                 }}
-                                className="ml-2 font-bold text-[#8B4513] hover:text-black transition-colors"
+                                className="mr-2 font-bold text-[#8B4513] hover:text-black transition-colors underline decoration-[#8B4513]/20"
                             >
-                                {isReset ? 'Back to Login' : isLogin ? 'Sign Up' : 'Sign In'}
+                                {isReset ? 'חזרה להתחברות' : isLogin ? 'הרשמו עכשיו' : 'התחברו'}
                             </button>
                         </p>
                     </div>
@@ -148,59 +148,59 @@ export default function AuthPage() {
                                     exit={{ opacity: 0, height: 0 }}
                                     className="space-y-2 overflow-hidden"
                                 >
-                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest ml-1">Full Name</label>
+                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-1">שם מלא</label>
                                     <div className="relative group">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
+                                        <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
                                         <input
                                             {...register('name')}
                                             type="text"
-                                            className={`w-full bg-stone-50 border-2 ${errors.name ? 'border-red-200' : 'border-stone-50 focus:border-[#8B4513]/20'} focus:bg-white rounded-2xl p-4 pl-12 text-sm transition-all outline-none`}
-                                            placeholder="Enter your name"
+                                            className="w-full bg-stone-50 border-2 border-stone-50 focus:border-[#8B4513]/20 focus:bg-white rounded-2xl p-4 pr-12 text-sm transition-all outline-none font-bold"
+                                            placeholder="ישראל ישראלי"
                                         />
                                     </div>
-                                    {errors.name && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider ml-1">{(errors.name as any).message}</p>}
+                                    {errors.name && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider mr-1">{(errors.name as any).message}</p>}
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest ml-1">Email Address</label>
+                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-1">כתובת אימייל</label>
                             <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
+                                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
                                 <input
                                     {...register('email')}
                                     type="email"
-                                    className={`w-full bg-stone-50 border-2 ${errors.email ? 'border-red-200' : 'border-stone-50 focus:border-[#8B4513]/20'} focus:bg-white rounded-2xl p-4 pl-12 text-sm transition-all outline-none`}
+                                    className="w-full bg-stone-50 border-2 border-stone-50 focus:border-[#8B4513]/20 focus:bg-white rounded-2xl p-4 pr-12 text-sm transition-all outline-none font-bold"
                                     placeholder="you@example.com"
                                 />
                             </div>
-                            {errors.email && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider ml-1">{(errors.email as any).message}</p>}
+                            {errors.email && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider mr-1">{(errors.email as any).message}</p>}
                         </div>
 
                         {!isReset && (
                             <div className="space-y-2">
-                                <div className="flex justify-between items-center pr-1">
-                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest ml-1">Password</label>
+                                <div className="flex justify-between items-center pl-1">
+                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-1">סיסמה</label>
                                     {isLogin && (
                                         <button
                                             type="button"
                                             onClick={() => setIsReset(true)}
                                             className="text-[10px] font-bold text-[#8B4513] hover:underline"
                                         >
-                                            Forgot?
+                                            שכחתם?
                                         </button>
                                     )}
                                 </div>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
+                                    <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
                                     <input
                                         {...register('password')}
                                         type="password"
-                                        className={`w-full bg-stone-50 border-2 ${errors.password ? 'border-red-200' : 'border-stone-50 focus:border-[#8B4513]/20'} focus:bg-white rounded-2xl p-4 pl-12 text-sm transition-all outline-none`}
+                                        className="w-full bg-stone-50 border-2 border-stone-50 focus:border-[#8B4513]/20 focus:bg-white rounded-2xl p-4 pr-12 text-sm transition-all outline-none font-bold"
                                         placeholder="••••••••"
                                     />
                                 </div>
-                                {errors.password && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider ml-1">{(errors.password as any).message}</p>}
+                                {errors.password && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider mr-1">{(errors.password as any).message}</p>}
                             </div>
                         )}
 
@@ -211,17 +211,17 @@ export default function AuthPage() {
                                     animate={{ opacity: 1, height: 'auto' }}
                                     className="space-y-2 overflow-hidden"
                                 >
-                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest ml-1">Confirm Password</label>
+                                    <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-1">אימות סיסמה</label>
                                     <div className="relative group">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
+                                        <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#8B4513] transition-colors" />
                                         <input
                                             {...register('confirmPassword')}
                                             type="password"
-                                            className={`w-full bg-stone-50 border-2 ${errors.confirmPassword ? 'border-red-200' : 'border-stone-50 focus:border-[#8B4513]/20'} focus:bg-white rounded-2xl p-4 pl-12 text-sm transition-all outline-none`}
+                                            className="w-full bg-stone-50 border-2 border-stone-50 focus:border-[#8B4513]/20 focus:bg-white rounded-2xl p-4 pr-12 text-sm transition-all outline-none font-bold"
                                             placeholder="••••••••"
                                         />
                                     </div>
-                                    {errors.confirmPassword && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider ml-1">{(errors.confirmPassword as any).message}</p>}
+                                    {errors.confirmPassword && <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider mr-1">{(errors.confirmPassword as any).message}</p>}
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -229,12 +229,12 @@ export default function AuthPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full bg-[#2D1B14] text-white py-5 rounded-2xl font-black shadow-xl hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-3 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                            className={`w-full bg-[#2D1B14] text-white py-5 rounded-2xl font-black shadow-xl hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-3 space-x-reverse ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            <span>
-                                {isLoading ? 'Processing...' : isReset ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'}
+                            <span className="text-lg">
+                                {isLoading ? 'מעבד...' : isReset ? 'שלח קישור לשחזור' : isLogin ? 'התחברות' : 'צור חשבון'}
                             </span>
-                            {!isLoading && <ArrowRight className="w-5 h-5" />}
+                            {!isLoading && <ArrowRight className="w-5 h-5 rotate-180" />}
                         </button>
                     </form>
                 </div>

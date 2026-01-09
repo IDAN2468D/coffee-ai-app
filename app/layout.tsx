@@ -3,8 +3,8 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "The Digital Roast",
-  description: "Premium Coffee House & Roastery",
+  title: "The Digital Roast | בית קלייה וקפה פרימיום",
+  description: "חווית קפה דיגיטלית מתקדמת עם בריסטה AI ומשלוחים עד הבית",
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="he" dir="rtl">
+      <body className="antialiased font-sans">
         <Providers>
           {children}
         </Providers>

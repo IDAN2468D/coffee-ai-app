@@ -6,14 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 
 const SUGGESTIONS = [
-    "A galaxy-themed latte with swirling purple and blue nebula art",
-    "A steaming cup of espresso on a misty mountain top at sunrise",
-    "Cyberpunk style neon green matcha in a holographic glass",
-    "An ancient stone mug of dark coffee surrounded by mystical runes",
-    "A cozy autumn cappuccino with a tiny maple leaf made of cinnamon",
-    "A glass of cold brew coffee with ice cubes that look like diamonds",
-    "A magical potion-style coffee in a glowing ember mug",
-    "A minimalist white cup on a marble counter with perfect latte art"
+    "לאטה בסגנון גלקסיה עם ערפילית סגולה וכחולה",
+    "ספל אספרסו מהביל על פסגת הר מושלג בזריחה",
+    "מאצ'ה ירוק ניאון בסגנון סייברפאנק בכוס הולוגרפית",
+    "מאג אבן עתיק של קפה שחור מוקף בכתב סתרים מיסטי",
+    "קפוצ'ינו סתווי נעים עם עלה מייפל קטן מקינמון",
+    "כוס קפה קלד-ברו עם קוביות קרח שנראות כמו יהלומים",
+    "קפה בסגנון שיקוי קסמים במאג זוהר",
+    "ספל לבן מינימליסטי על דלפק שיש עם לאטה ארט מושלם"
 ];
 
 export default function AIBaristaPage() {
@@ -76,7 +76,7 @@ export default function AIBaristaPage() {
 
     const handleSendToEmail = async (imageUrl: string) => {
         if (!session?.user?.email) {
-            alert('נא להתחבר כדי לשלוח למייל');
+            alert('אנא התחבר כדי לשלוח למייל');
             return;
         }
 
@@ -94,11 +94,11 @@ export default function AIBaristaPage() {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-[#FDFCF0] via-[#F5F1E8] to-[#FDFCF0]">
+        <main className="min-h-screen bg-gradient-to-br from-[#FDFCF0] via-[#F5F1E8] to-[#FDFCF0]" dir="rtl">
             <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
                 {/* Header */}
                 <div className="text-center space-y-6">
-                    <div className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-[#8B4513] to-[#6B3410] text-white rounded-full shadow-lg">
+                    <div className="inline-flex items-center space-x-2 space-x-reverse px-6 py-3 bg-gradient-to-r from-[#8B4513] to-[#6B3410] text-white rounded-full shadow-lg">
                         <Sparkles className="w-5 h-5" />
                         <span className="font-black uppercase tracking-widest text-sm">AI Powered Barista</span>
                     </div>
@@ -106,24 +106,23 @@ export default function AIBaristaPage() {
                         יצירת <span className="text-[#8B4513]">אמנות קפה</span> בעזרת AI
                     </h1>
                     <p className="text-stone-500 text-xl max-w-3xl mx-auto">
-                        הבריסטה הדיגיטלי שלנו משתמש ב-AI מתקדם כדי ליצור עבורך תמונות קפה ייחודיות
+                        הבריסטה הדיגיטלי שלנו משתמש ב-AI מתקדם כדי ליצור עבורכם תמונות קפה ייחודיות ומרהיבות
                     </p>
                 </div>
 
                 {/* Control Panel */}
-                <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 space-y-8">
-                    <div className="space-y-6">
-                        <div className="relative">
+                <div className="bg-white rounded-[3rem] shadow-2xl p-8 md:p-14 space-y-10 border border-stone-100">
+                    <div className="space-y-8">
+                        <div className="relative group">
                             <textarea
                                 value={prompt}
                                 onChange={(e) => setPrompt(e.target.value)}
-                                placeholder="תאר את חלום הקפה שלך... (לדוגמה: לאטה זהוב בכוס קריסטל מרחפת)"
-                                className="w-full bg-stone-50 border-2 border-stone-100 rounded-3xl p-8 text-lg focus:border-[#8B4513]/30 focus:ring-0 transition-all outline-none min-h-[160px] resize-none"
-                                dir="rtl"
+                                placeholder="תארו את חלום הקפה שלכם... (לדוגמה: לאטה זהוב בכוס קריסטל מרחפת)"
+                                className="w-full bg-stone-50/50 border-2 border-stone-100 rounded-[2.5rem] p-8 text-xl focus:border-[#8B4513]/30 focus:bg-white focus:ring-0 transition-all outline-none min-h-[200px] resize-none font-medium"
                             />
                             <button
                                 onClick={handleMagic}
-                                className="absolute left-6 bottom-6 p-4 bg-gradient-to-br from-[#8B4513] to-[#6B3410] text-white rounded-2xl hover:scale-105 transition-transform shadow-lg flex items-center space-x-2"
+                                className="absolute left-8 bottom-8 p-4 bg-[#2D1B14] text-white rounded-2xl hover:bg-[#8B4513] hover:scale-110 transition-all shadow-xl flex items-center space-x-2 space-x-reverse group-hover:shadow-[#8B4513]/20"
                                 title="הצעה קסומה"
                             >
                                 <Wand2 className="w-5 h-5" />
@@ -132,49 +131,51 @@ export default function AIBaristaPage() {
                         </div>
 
                         {/* AI Enhancement */}
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex flex-col lg:flex-row gap-6">
                             <button
                                 onClick={handleAISuggestion}
                                 disabled={loadingAI || !prompt.trim()}
-                                className="flex-1 bg-purple-50 text-purple-700 border-2 border-purple-200 py-4 rounded-2xl font-bold flex items-center justify-center space-x-2 hover:bg-purple-100 transition-all disabled:opacity-50"
+                                className="flex-1 bg-[#8B4513]/5 text-[#8B4513] border-2 border-[#8B4513]/10 py-5 rounded-2xl font-black flex items-center justify-center space-x-3 space-x-reverse hover:bg-[#8B4513]/10 transition-all disabled:opacity-50 text-sm tracking-widest uppercase"
                             >
                                 {loadingAI ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5" />}
-                                <span>שפר את התיאור עם AI</span>
+                                <span>שפרו את התיאור עם AI</span>
                             </button>
 
-                            <div className="flex items-center space-x-4 bg-stone-50 px-6 py-4 rounded-2xl">
-                                <span className="text-sm font-bold text-stone-600">מספר תמונות:</span>
-                                {[1, 2, 3, 4].map(num => (
-                                    <button
-                                        key={num}
-                                        onClick={() => setNumImages(num)}
-                                        className={`px-4 py-2 rounded-xl font-bold transition-all ${numImages === num
-                                                ? 'bg-[#8B4513] text-white'
-                                                : 'bg-white text-stone-600 hover:bg-stone-100'
-                                            }`}
-                                    >
-                                        {num}
-                                    </button>
-                                ))}
+                            <div className="flex items-center space-x-6 space-x-reverse bg-stone-50 px-8 py-5 rounded-2xl border border-stone-100">
+                                <span className="text-xs font-black text-stone-400 uppercase tracking-widest">מספר תמונות:</span>
+                                <div className="flex items-center space-x-3 space-x-reverse">
+                                    {[1, 2, 3, 4].map(num => (
+                                        <button
+                                            key={num}
+                                            onClick={() => setNumImages(num)}
+                                            className={`w-10 h-10 rounded-xl font-black transition-all text-sm ${numImages === num
+                                                ? 'bg-[#2D1B14] text-white shadow-lg scale-110'
+                                                : 'bg-white text-stone-400 hover:bg-stone-100'
+                                                }`}
+                                        >
+                                            {num}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
                         {aiSuggestion && (
                             <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-purple-50 border-2 border-purple-200 rounded-2xl p-6 space-y-3"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-[#8B4513]/5 border border-[#8B4513]/10 rounded-[2rem] p-8 space-y-4"
                             >
-                                <div className="flex items-center space-x-2 text-purple-700">
+                                <div className="flex items-center space-x-2 space-x-reverse text-[#8B4513]">
                                     <Sparkles className="w-5 h-5" />
-                                    <span className="font-bold">הצעת AI:</span>
+                                    <span className="font-black text-xs uppercase tracking-widest">הצעת השדרוג של הבריסטה:</span>
                                 </div>
-                                <p className="text-stone-700" dir="rtl">{aiSuggestion}</p>
+                                <p className="text-stone-700 text-lg italic leading-relaxed">"{aiSuggestion}"</p>
                                 <button
                                     onClick={() => setPrompt(aiSuggestion)}
-                                    className="text-purple-700 font-bold text-sm hover:underline"
+                                    className="text-[#8B4513] font-black text-xs uppercase tracking-widest hover:underline pt-2"
                                 >
-                                    השתמש בהצעה זו
+                                    השתמשו בהצעה זו
                                 </button>
                             </motion.div>
                         )}
@@ -182,17 +183,17 @@ export default function AIBaristaPage() {
                         <button
                             onClick={handleGenerate}
                             disabled={isGenerating || !prompt.trim()}
-                            className="w-full bg-gradient-to-r from-[#2D1B14] to-[#8B4513] text-white py-6 rounded-2xl font-black text-xl shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-[#2D1B14] text-white py-8 rounded-[2rem] font-black text-2xl shadow-[0_25px_50px_rgba(45,27,20,0.3)] hover:bg-black hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-4 space-x-reverse disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isGenerating ? (
                                 <>
-                                    <Loader2 className="w-6 h-6 animate-spin" />
-                                    <span>מכין את הקפה שלך...</span>
+                                    <Loader2 className="w-8 h-8 animate-spin" />
+                                    <span>מכין את הפלאות שלכם...</span>
                                 </>
                             ) : (
                                 <>
-                                    <span>צור יצירות אמנות</span>
-                                    <ArrowRight className="w-6 h-6" />
+                                    <span>צורו את יצירת המופת שלי</span>
+                                    <ArrowRight className="w-6 h-6 rotate-180" />
                                 </>
                             )}
                         </button>
@@ -201,11 +202,15 @@ export default function AIBaristaPage() {
 
                 {/* Results Gallery */}
                 {(results.length > 0 || isGenerating) && (
-                    <div className="space-y-6">
-                        <h2 className="text-3xl font-serif font-bold text-[#2D1B14] text-center">
-                            הקפה שלך מוכן! ☕
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="space-y-10 pt-10">
+                        <div className="text-center space-y-2">
+                            <h2 className="text-4xl font-serif font-bold text-[#2D1B14]">
+                                הקפה שלכם מוכן! ☕
+                            </h2>
+                            <p className="text-stone-400 font-medium">יצירות ה-AI הייחודיות שלכם הגיעו לשולחן</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                             {isGenerating ? (
                                 Array.from({ length: numImages }).map((_, idx) => (
                                     <motion.div
@@ -213,37 +218,36 @@ export default function AIBaristaPage() {
                                         initial={{ opacity: 0, scale: 0.9 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: idx * 0.1 }}
-                                        className="aspect-square rounded-3xl bg-stone-100 flex items-center justify-center"
+                                        className="aspect-square rounded-[3rem] bg-stone-100 flex items-center justify-center border-4 border-white shadow-xl"
                                     >
-                                        <Loader2 className="w-12 h-12 text-[#8B4513] animate-spin" />
+                                        <Loader2 className="w-12 h-12 text-[#8B4513] animate-spin opacity-20" />
                                     </motion.div>
                                 ))
                             ) : (
                                 results.map((url, idx) => (
                                     <motion.div
                                         key={idx}
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: idx * 0.1 }}
-                                        className="group relative aspect-square rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow"
+                                        className="group relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl hover:shadow-[0_30px_60px_rgba(45,27,20,0.2)] transition-all border-4 border-white"
                                     >
-                                        <img src={url} className="w-full h-full object-cover" alt={`AI Coffee ${idx + 1}`} />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <div className="absolute bottom-6 left-6 right-6 flex space-x-3">
+                                        <img src={url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={`AI Coffee ${idx + 1}`} />
+                                        <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                            <div className="flex gap-4">
                                                 <button
                                                     onClick={() => handleSendToEmail(url)}
-                                                    className="flex-1 bg-white text-[#2D1B14] py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-stone-100 transition-colors"
+                                                    className="flex-1 bg-white text-[#2D1B14] py-4 rounded-2xl font-black flex items-center justify-center space-x-2 space-x-reverse hover:bg-[#8B4513] hover:text-white transition-all text-sm"
                                                 >
                                                     <Mail className="w-4 h-4" />
-                                                    <span className="text-sm">שלח למייל</span>
+                                                    <span>שלחו למייל</span>
                                                 </button>
                                                 <a
                                                     href={url}
                                                     download
-                                                    className="flex-1 bg-white/20 backdrop-blur-md text-white border border-white/30 py-3 rounded-xl font-bold flex items-center justify-center space-x-2 hover:bg-white/30 transition-colors"
+                                                    className="w-16 bg-white/10 backdrop-blur-md text-white border border-white/30 rounded-2xl flex items-center justify-center hover:bg-white/20 transition-all"
                                                 >
-                                                    <Download className="w-4 h-4" />
-                                                    <span className="text-sm">הורד</span>
+                                                    <Download className="w-5 h-5" />
                                                 </a>
                                             </div>
                                         </div>
