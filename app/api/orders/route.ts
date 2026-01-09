@@ -11,7 +11,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "You must be signed in to place an order" }, { status: 401 });
         }
 
-        const { items, total } = await req.json();
+        const { items, total, shippingDetails } = await req.json();
 
         if (!items || items.length === 0) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
                 userId: (session.user as any).id,
                 total: total,
                 status: 'pending',
+                shippingAddress: shippingDetails || {},
                 items: {
                     create: items.map((item: any) => ({
                         productId: item.id,

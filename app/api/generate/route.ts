@@ -86,33 +86,15 @@ Enhanced prompt:`;
 
         console.log("☕ Coffee search query:", searchQuery);
 
-        // Use curated high-quality coffee images from Unsplash
-        const coffeeImages = [
-            'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1509785307050-d4066910ec1e?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1426260193283-c4daed7c2024?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1544787210-2827448b36ea?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1545665225-b23b99e4d45e?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1525193612189-dc88ec0fa8ce?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1508424002438-42fdfae09031?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=1024&h=1024&fit=crop',
-            'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=1024&h=1024&fit=crop'
-        ];
+        // Use Pollinations.ai for real AI image generation (Free, no key required)
+        // We use the enhanced prompt to get better results
+        const encodedPrompt = encodeURIComponent(enhancedPrompt.slice(0, 1000)); // Limit length just in case
+        const seed = Math.floor(Math.random() * 1000000);
 
-        // Select different image for each variant
-        const baseIndex = Math.floor(Math.random() * (coffeeImages.length - 5));
-        const imageUrl = coffeeImages[(baseIndex + variant) % coffeeImages.length];
+        // Construct visual URL with high quality parameters
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${seed}&nologo=true&model=flux`;
+
+        console.log("🎨 Generated Pollinations URL:", imageUrl);
 
         // Save to DB if user is logged in
         if (session?.user) {

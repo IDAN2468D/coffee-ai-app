@@ -56,6 +56,7 @@ export default function CheckoutPage() {
                 body: JSON.stringify({
                     items: items,
                     total: total,
+                    shippingDetails: data
                 })
             });
 
