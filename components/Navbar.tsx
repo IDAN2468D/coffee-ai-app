@@ -27,6 +27,7 @@ export default function Navbar() {
         { name: 'About', href: '#about' },
         { name: 'Menu', href: '#menu' },
         { name: 'Shop Now', href: '/shop' },
+        { name: 'Expert AI', href: '/expert' },
     ];
 
     return (
