@@ -9,14 +9,16 @@ module.exports = {
         extend: {
             colors: {
                 coffee: {
-                    100: "#FDFBF7", // Background
-                    200: "#F5F5DC", // Beige
-                    800: "#2D1B14", // Espresso
+                    dark: "#2D1B14", // Background/Text - Deep Espresso
+                    light: "#F5F5DC", // Beige - Cream/Foam
+                    accent: "#C37D46", // Orange/Brown - Caramel/Brand Color
+                    card: "#FFFFFF", // White - Card Backgrounds
+                    secondary: "#E6DCCA", // Light Mocha
                 },
             },
             fontFamily: {
-                serif: ['var(--font-serif)', 'serif'],
-                sans: ['var(--font-sans)', 'sans-serif'],
+                serif: ['"Crimson Pro"', 'serif'],
+                sans: ['"Inter"', 'sans-serif'],
             }
         },
     },

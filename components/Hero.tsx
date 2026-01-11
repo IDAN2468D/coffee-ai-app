@@ -2,110 +2,79 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Coffee, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Hero() {
     return (
-        <section className="relative h-screen w-full flex items-center overflow-hidden bg-[#2D1B14]">
-            {/* Background with dynamic overlay */}
-            <motion.div
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-                className="absolute inset-0 z-0"
-            >
+        <section className="relative h-screen min-h-[700px] w-full flex items-center overflow-hidden bg-[#2D1B14]">
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0">
                 <img
-                    src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&q=80&w=2000"
-                    alt="Coffee Hero"
+                    src="/images/premium_hero_bg.png"
+                    alt="Premium Coffee Shop Ambience"
                     className="w-full h-full object-cover opacity-60"
                 />
-                <div className="absolute inset-0 bg-gradient-to-l from-[#2D1B14] via-transparent to-[#2D1B14]/80" />
-            </motion.div>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#2D1B14] via-[#2D1B14]/60 to-transparent" />
+            </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 w-full" dir="rtl">
+            <div className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-20">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="space-y-8"
+                        className="space-y-6 text-left" // Left align as per standard web design, or specific to image? Image shows typical hero.
+                    // Image shows centered or left. Let's go with Left aligned for clear typography.
                     >
-                        <div className="space-y-4">
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.5 }}
-                                className="inline-flex items-center space-x-2 space-x-reverse bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full text-white/90 text-sm font-bold tracking-wide"
-                            >
-                                <Sparkles className="w-4 h-4 text-yellow-400" />
-                                <span>חווית קפה מבוססת AI הראשונה בישראל</span>
-                            </motion.div>
+                        <h1 className="text-5xl md:text-7xl font-serif text-white font-bold leading-tight">
+                            Brewed to <br />
+                            Perfection, Sipped <br />
+                            with <span className="text-[#C37D46]">Passion</span>.
+                        </h1>
 
-                            <h1 className="text-6xl md:text-8xl font-serif text-white font-bold leading-[1.1]">
-                                מגדירים מחדש את <span className="text-[#CAB3A3]">הקפה</span> שלך
-                            </h1>
-                        </div>
-
-                        <p className="text-xl text-white/70 font-light leading-relaxed max-w-xl">
-                            מהפוליים המשובחים ביותר ועד ליצירות אמנות דיגיטליות - אנחנו משלבים מסורת של קפה משובח עם טכנולוגיית AI מתקדמת.
+                        <p className="text-lg text-white/80 font-light leading-relaxed max-w-lg">
+                            We curate the world's finest coffee beans, roasted to perfection to bring you the ultimate coffee experience. Start your morning right with Latte Lane.
                         </p>
 
                         <div className="flex flex-wrap gap-4 pt-4">
                             <button
                                 onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="bg-[#CAB3A3] text-[#2D1B14] px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-white hover:scale-105 transition-all shadow-2xl flex items-center group"
+                                className="bg-[#C37D46] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-all shadow-lg hover:shadow-[#C37D46]/20"
                             >
-                                לתפריט המשקאות
-                                <ArrowRight className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
+                                Shop Now
                             </button>
-                            <button className="bg-white/5 backdrop-blur-md border-2 border-white/20 text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-sm hover:bg-white/10 transition-all">
-                                הסיפור שלנו
+                            <button className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all">
+                                Explore
                             </button>
                         </div>
                     </motion.div>
 
-                    {/* Floating Premium Card */}
+                    {/* Hero Image / Composition - Optional, depending on if we have a cut-out image. 
+                        For now, the background does the heavy lifting, but we can add a floating cup if we have one.
+                        The example image has a top-down view cup.
+                    */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                        className="hidden lg:block relative"
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="hidden lg:flex justify-end relative"
                     >
-                        <div className="absolute inset-0 bg-[#8B4513] blur-[100px] opacity-20 rounded-full" />
-                        <motion.div
-                            animate={{ y: [0, -20, 0] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                            className="relative bg-white/5 backdrop-blur-2xl border border-white/20 p-8 rounded-[3rem] shadow-2xl space-y-6"
-                        >
+                        {/* Placeholder for a nice floating cup image if available, else just empty to let background shine */}
+                        <div className="relative w-96 h-96">
+                            <div className="absolute inset-0 bg-[#C37D46] blur-[120px] opacity-20 rounded-full" />
                             <img
                                 src="https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&q=80&w=800"
-                                className="w-full h-64 object-cover rounded-[2rem] shadow-lg"
-                                alt="Signature Coffee"
+                                className="relative z-10 w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/10"
+                                alt="Signature Latte"
                             />
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-white text-2xl font-serif font-bold">לאטה וניל בעבודת יד</h3>
-                                    <p className="text-white/60">המומלץ שלנו להיום</p>
-                                </div>
-                                <div className="bg-[#CAB3A3] p-4 rounded-2xl text-[#2D1B14] font-black">
-                                    ₪24
-                                </div>
-                            </div>
-                        </motion.div>
+                        </div>
                     </motion.div>
                 </div>
             </div>
 
-            {/* Scroll Indicator */}
-            <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/30 flex flex-col items-center space-y-2 cursor-pointer"
-                onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-            >
-                <span className="text-[10px] uppercase font-bold tracking-[0.3em]">גלול מטה</span>
-                <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent" />
-            </motion.div>
+            {/* Decor elements */}
+            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#2D1B14] to-transparent z-20" />
         </section>
     );
 }

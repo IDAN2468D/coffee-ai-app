@@ -25,9 +25,15 @@ export default function OrdersPage() {
         try {
             const res = await fetch('/api/orders');
             const data = await res.json();
-            setOrders(data);
+            if (Array.isArray(data)) {
+                setOrders(data);
+            } else {
+                console.error("Orders API returned invalid format:", data);
+                setOrders([]);
+            }
         } catch (error) {
             console.error("Failed to fetch orders:", error);
+            setOrders([]);
         } finally {
             setIsLoading(false);
         }

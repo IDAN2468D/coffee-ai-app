@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Coffee, ShoppingBag, Sparkles, Menu, X } from 'lucide-react';
+import { ShoppingBag, Menu, X, User } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
-
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -23,73 +22,77 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const navLinks = [
+        { name: 'Home', href: '/' },
+        { name: 'About', href: '#about' },
+        { name: 'Menu', href: '#menu' },
+        { name: 'Shop Now', href: '/shop' },
+    ];
+
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#2D1B14]/95 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-6'
             }`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
                 {/* Logo */}
-                <Link href="/" className="flex items-center space-x-3 group">
-                    <div className={`p-2.5 rounded-xl transition-all shadow-lg ${scrolled ? 'bg-gradient-to-br from-[#8B4513] to-[#6B3410] text-white' : 'bg-white/20 backdrop-blur-md text-white border border-white/30'}`}>
-                        <Coffee className="w-6 h-6" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className={`text-xl sm:text-2xl font-serif font-bold tracking-tight ${scrolled ? 'text-[#2D1B14]' : 'text-white'}`}>
-                            The Digital Roast
-                        </span>
-                        <span className={`text-[10px] uppercase tracking-widest font-bold ${scrolled ? 'text-[#8B4513]' : 'text-white/70'}`}>
-                            AI Coffee Experience
-                        </span>
-                    </div>
+                <Link href="/" className="flex items-center space-x-2 space-x-reverse group">
+                    <span className="text-2xl sm:text-3xl font-serif font-bold tracking-wide text-white">
+                        Latte Lane
+                    </span>
                 </Link>
 
                 {/* Desktop Menu */}
-                <div className={`hidden lg:flex items-center space-x-8 text-sm font-semibold uppercase tracking-widest ${scrolled ? 'text-stone-600' : 'text-white/90'}`}>
-                    <Link href="/" className="hover:text-[#8B4513] transition-colors">בית</Link>
-                    <button onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-[#8B4513] transition-colors">תפריט</button>
-                    <Link href="/gallery" className="hover:text-[#8B4513] transition-colors">גלריה</Link>
-                    <Link href="/ai-barista" className="hover:text-[#8B4513] transition-colors font-bold text-[#8B4513] flex items-center">
-                        <Sparkles className="w-3 h-3 mr-1" />
-                        AI בריסטה
-                    </Link>
-                    {session && (
-                        <>
-                            <Link href="/orders" className="hover:text-[#8B4513] transition-colors">ההזמנות שלי</Link>
-                            <Link href="/dashboard" className="hover:text-[#8B4513] transition-colors">דאשבורד</Link>
-                        </>
-                    )}
+                <div className="hidden lg:flex items-center space-x-12 space-x-reverse">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={(e) => {
+                                if (link.href.startsWith('#')) {
+                                    e.preventDefault();
+                                    const element = document.getElementById(link.href.substring(1));
+                                    element?.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }}
+                            className="text-white/90 text-sm font-semibold uppercase tracking-wider hover:text-[#C37D46] transition-colors"
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
                 </div>
 
                 {/* Right Side Actions */}
-                <div className="flex items-center space-x-3 sm:space-x-4">
-                    {/* User Info */}
-                    {session ? (
-                        <div className="hidden md:flex items-center space-x-3">
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${scrolled ? 'text-stone-400' : 'text-white/50'}`}>
-                                שלום, {session.user?.name?.split(' ')[0]}
-                            </span>
-                            <button
-                                onClick={() => signOut()}
-                                className={`text-xs font-bold uppercase tracking-widest hover:text-red-500 transition-colors ${scrolled ? 'text-stone-600' : 'text-white/80'}`}
-                            >
-                                התנתק
-                            </button>
-                        </div>
-                    ) : (
-                        <Link href="/auth" className={`hidden md:block text-xs font-bold uppercase tracking-widest hover:text-[#8B4513] transition-colors ${scrolled ? 'text-stone-600' : 'text-white/80'}`}>
-                            חשבון
-                        </Link>
-                    )}
+                <div className="flex items-center space-x-4 space-x-reverse">
+                    <div className="hidden md:flex items-center space-x-4 space-x-reverse">
+                        {session ? (
+                            <div className="flex items-center space-x-6 space-x-reverse">
+                                <span className="text-white/70 text-xs font-bold uppercase">{session.user?.name?.split(' ')[0]}</span>
+                                <Link href="/orders" className="text-white/70 hover:text-white text-xs font-bold uppercase transition-colors">
+                                    Orders
+                                </Link>
+                                <button onClick={() => signOut()} className="text-white/70 hover:text-white text-xs font-bold uppercase transition-colors">Logout</button>
+                            </div>
+                        ) : (
+                            <>
+                                <Link href="/auth?mode=signup" className="text-white font-bold text-sm hover:text-[#C37D46] transition-colors">
+                                    Sign Up
+                                </Link>
+                                <Link href="/auth?mode=login" className="bg-white/10 border border-white/30 px-6 py-2 rounded-full text-white text-sm font-bold hover:bg-white hover:text-[#2D1B14] transition-all">
+                                    Login
+                                </Link>
+                            </>
+                        )}
+                    </div>
 
                     {/* Cart */}
                     <Link href="/checkout" className="relative p-2 group">
-                        <ShoppingBag className={`w-6 h-6 transition-colors ${scrolled ? 'text-[#8B4513]' : 'text-white'}`} />
+                        <ShoppingBag className="w-6 h-6 text-white hover:text-[#C37D46] transition-colors" />
                         <AnimatePresence>
                             {cartCount > 0 && (
                                 <motion.span
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0 }}
-                                    className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white"
+                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full"
                                 >
                                     {cartCount}
                                 </motion.span>
@@ -100,7 +103,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className={`lg:hidden p-2 ${scrolled ? 'text-[#8B4513]' : 'text-white'}`}
+                        className="lg:hidden p-2 text-white"
                     >
                         {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -114,43 +117,30 @@ export default function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="lg:hidden bg-white/95 backdrop-blur-md border-t border-stone-200 shadow-lg"
-                        dir="rtl"
+                        className="lg:hidden bg-[#2D1B14] border-t border-white/10"
                     >
-                        <div className="max-w-7xl mx-auto px-6 py-6 space-y-4">
-                            <Link href="/" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
-                                בית
-                            </Link>
-                            <button onClick={() => { document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' }); setMobileMenuOpen(false); }} className="block w-full text-right text-stone-700 font-semibold hover:text-[#8B4513] transition-colors">
-                                תפריט
-                            </button>
-                            <Link href="/gallery" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
-                                גלריה
-                            </Link>
-                            <Link href="/ai-barista" className="block text-[#8B4513] font-bold flex items-center justify-end" onClick={() => setMobileMenuOpen(false)}>
-                                AI בריסטה
-                                <Sparkles className="w-4 h-4 ml-2" />
-                            </Link>
-                            {session && (
-                                <>
-                                    <Link href="/orders" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
-                                        ההזמנות שלי
-                                    </Link>
-                                    <Link href="/dashboard" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
-                                        דאשבורד
-                                    </Link>
-                                    <button
-                                        onClick={() => { signOut(); setMobileMenuOpen(false); }}
-                                        className="block w-full text-right text-red-500 font-bold"
-                                    >
-                                        התנתק
-                                    </button>
-                                </>
-                            )}
-                            {!session && (
-                                <Link href="/auth" className="block text-stone-700 font-semibold hover:text-[#8B4513] transition-colors text-right" onClick={() => setMobileMenuOpen(false)}>
-                                    חשבון
+                        <div className="flex flex-col p-6 space-y-4 text-center">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="text-white/80 font-semibold uppercase tracking-wider hover:text-[#C37D46] transition-colors"
+                                >
+                                    {link.name}
                                 </Link>
+                            ))}
+                            <div className="h-px bg-white/10 my-4" />
+                            {!session ? (
+                                <div className="flex flex-col space-y-4">
+                                    <Link href="/auth?mode=signup" className="text-white font-bold" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                                    <Link href="/auth?mode=login" className="text-white/60 font-bold" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col space-y-4">
+                                    <Link href="/orders" className="text-white/80 font-bold" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>
+                                    <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="text-red-400 font-bold">Logout</button>
+                                </div>
                             )}
                         </div>
                     </motion.div>

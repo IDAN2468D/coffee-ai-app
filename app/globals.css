@@ -5,9 +5,10 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 45, 27, 20;
-  --background-start-rgb: 253, 252, 240;
+  --foreground-rgb: 45, 27, 20; /* #2D1B14 */
+  --background-start-rgb: 245, 245, 220; /* #F5F5DC */
   --background-end-rgb: 255, 255, 255;
+  --accent-rgb: 195, 125, 70; /* #C37D46 */
 }
 
 body {
