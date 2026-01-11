@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import CoffeeAnimation from './CoffeeAnimation';
 
 export default function Hero() {
     return (
@@ -58,16 +59,11 @@ export default function Hero() {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="hidden lg:flex justify-end relative"
+                        className="hidden lg:flex justify-end relative items-center justify-center p-12"
                     >
-                        {/* Placeholder for a nice floating cup image if available, else just empty to let background shine */}
-                        <div className="relative w-96 h-96">
-                            <div className="absolute inset-0 bg-[#C37D46] blur-[120px] opacity-20 rounded-full" />
-                            <img
-                                src="https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&q=80&w=800"
-                                className="relative z-10 w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/10"
-                                alt="Signature Latte"
-                            />
+                        {/* Animated Coffee Cup */}
+                        <div className="relative w-[500px] h-[500px]">
+                            <CoffeeAnimation />
                         </div>
                     </motion.div>
                 </div>
