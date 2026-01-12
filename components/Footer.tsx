@@ -26,20 +26,20 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h4 className="text-lg font-bold text-white uppercase tracking-widest pt-2">שירותים</h4>
                         <ul className="space-y-4 text-sm font-light">
-                            <li><a href="#" className="hover:text-white transition-colors">חנות</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">הזמנות</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">תפריט</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">בלוג</a></li>
+                            <li><a href="/shop" className="hover:text-white transition-colors">חנות</a></li>
+                            <li><a href="/dashboard" className="hover:text-white transition-colors">ההזמנות שלי</a></li>
+                            <li><a href="/gallery" className="hover:text-white transition-colors">גלריה</a></li>
+                            <li><a href="/ai-barista" className="hover:text-white transition-colors">בריסטה AI</a></li>
                         </ul>
                     </div>
 
                     <div className="space-y-6">
                         <h4 className="text-lg font-bold text-white uppercase tracking-widest pt-2">אודות</h4>
                         <ul className="space-y-4 text-sm font-light">
-                            <li><a href="#" className="hover:text-white transition-colors">בית</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">הצוות שלנו</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">צור קשר</a></li>
-                            <li><a href="#" className="hover:text-white transition-colors">פרטיות</a></li>
+                            <li><a href="/" className="hover:text-white transition-colors">בית</a></li>
+                            <li><a href="/team" className="hover:text-white transition-colors">הצוות שלנו</a></li>
+                            <li><a href="/contact" className="hover:text-white transition-colors">צור קשר</a></li>
+                            <li><a href="/privacy" className="hover:text-white transition-colors">פרטיות</a></li>
                         </ul>
                     </div>
 
