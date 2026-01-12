@@ -42,7 +42,7 @@ export default function ContactClient() {
         {
             icon: MapPin,
             title: 'כתובת',
-            details: ['רחוב הקפה 123', 'תל אביב-יפו, 6812345'],
+            details: ['רחוב הברזל 1', 'תל אביב, ישראל'],
             color: 'from-red-500 to-rose-600'
         },
         {
