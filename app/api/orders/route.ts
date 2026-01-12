@@ -28,6 +28,7 @@ export async function POST(req: Request) {
                     create: items.map((item: any) => ({
                         productId: item.id,
                         quantity: item.quantity,
+                        size: item.size || 'M', // Save selected size, default to M
                     }))
                 }
             },

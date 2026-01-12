@@ -3,19 +3,19 @@ import { Resend } from 'resend';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendWelcomeEmail = async (userEmail: string, userName: string) => {
-    if (!process.env.RESEND_API_KEY) {
-        console.warn("RESEND_API_KEY is missing in your .env file.");
-        return null;
-    }
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY is missing in your .env file.");
+    return null;
+  }
 
-    try {
-        console.log(`Sending premium welcome email to: ${userEmail}`);
+  try {
+    console.log(`Sending premium welcome email to: ${userEmail}`);
 
-        const { data, error } = await resend.emails.send({
-            from: 'The Digital Roast <onboarding@resend.dev>',
-            to: [userEmail],
-            subject: 'ברוכים הבאים ל-The Digital Roast! ☕',
-            html: `
+    const { data, error } = await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: 'ברוכים הבאים ל-The Digital Roast! ☕',
+      html: `
       <div dir="rtl" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 20px; overflow: hidden; border: 1px solid #E5E7EB;">
         <div style="background-color: #2D1B14; padding: 40px; text-align: center;">
           <h1 style="color: #FFFFFF; margin: 0; font-size: 28px;">ברוכים הבאים, ${userName}!</h1>
@@ -35,30 +35,30 @@ export const sendWelcomeEmail = async (userEmail: string, userName: string) => {
         </div>
       </div>
     `,
-        });
+    });
 
-        if (error) {
-            console.error("Resend API error:", error);
-            return null;
-        }
-
-        console.log("Welcome email sent successfully via Resend!");
-        return data;
-    } catch (error) {
-        console.error("Fatal error in mailer system:", error);
-        return null;
+    if (error) {
+      console.error("Resend API error:", error);
+      return null;
     }
+
+    console.log("Welcome email sent successfully via Resend!");
+    return data;
+  } catch (error) {
+    console.error("Fatal error in mailer system:", error);
+    return null;
+  }
 };
 
 export const sendLoginEmail = async (userEmail: string, userName: string) => {
-    if (!process.env.RESEND_API_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
-    try {
-        await resend.emails.send({
-            from: 'The Digital Roast <onboarding@resend.dev>',
-            to: [userEmail],
-            subject: 'התחברת בהצלחה! ☕ | The Digital Roast',
-            html: `
+  try {
+    await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: 'התחברת בהצלחה! ☕ | The Digital Roast',
+      html: `
         <div dir="rtl" style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 24px; overflow: hidden; border: 1px solid #E5E7EB; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
           <!-- Header with Gradient -->
           <div style="background: linear-gradient(135deg, #2D1B14 0%, #4A2C21 100%); padding: 50px 40px; text-align: center;">
@@ -96,29 +96,37 @@ export const sendLoginEmail = async (userEmail: string, userName: string) => {
           </div>
         </div>
       `,
-        });
-        console.log(`Premium login email sent to ${userEmail}`);
-    } catch (error) {
-        console.error("Error sending premium login email:", error);
-    }
+    });
+    console.log(`Premium login email sent to ${userEmail}`);
+  } catch (error) {
+    console.error("Error sending premium login email:", error);
+  }
 };
 
 export const sendOrderConfirmationEmail = async (userEmail: string, userName: string, orderData: any) => {
-    if (!process.env.RESEND_API_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
-    try {
-        const itemsHtml = orderData.items.map((item: any) => `
+  try {
+    const itemsHtml = orderData.items.map((item: any) => {
+      const sizeBadge = item.size
+        ? `<span style="display: inline-block; background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-right: 6px;">${item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}</span>`
+        : '';
+
+      return `
             <tr>
-                <td style="padding: 10px 0; border-bottom: 1px solid #E5E7EB; color: #4B5563;">${item.product?.name || 'מוצר'} x ${item.quantity}</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #E5E7EB; color: #4B5563;">
+                    ${item.product?.name || 'מוצר'} ${sizeBadge} x ${item.quantity}
+                </td>
                 <td style="padding: 10px 0; border-bottom: 1px solid #E5E7EB; text-align: left; font-weight: bold; color: #2D1B14;">₪${(item.product?.price * item.quantity).toFixed(2)}</td>
             </tr>
-        `).join('');
+        `;
+    }).join('');
 
-        await resend.emails.send({
-            from: 'The Digital Roast <onboarding@resend.dev>',
-            to: [userEmail],
-            subject: `אישור הזמנה #${orderData.id.slice(-6)} ☕ | The Digital Roast`,
-            html: `
+    await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: `אישור הזמנה #${orderData.id.slice(-6)} ☕ | The Digital Roast`,
+      html: `
         <div dir="rtl" style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 24px; overflow: hidden; border: 1px solid #E5E7EB; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
           <!-- Header -->
           <div style="background: #2D1B14; padding: 30px; text-align: center;">
@@ -153,22 +161,22 @@ export const sendOrderConfirmationEmail = async (userEmail: string, userName: st
           </div>
         </div>
       `,
-        });
-        console.log(`Order confirmation email sent to ${userEmail} for order ${orderData.id}`);
-    } catch (error) {
-        console.error("Error sending order email:", error);
-    }
+    });
+    console.log(`Order confirmation email sent to ${userEmail} for order ${orderData.id}`);
+  } catch (error) {
+    console.error("Error sending order email:", error);
+  }
 };
 
 export const sendNewsletterEmail = async (userEmail: string) => {
-    if (!process.env.RESEND_API_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
-    try {
-        await resend.emails.send({
-            from: 'The Digital Roast <onboarding@resend.dev>',
-            to: [userEmail],
-            subject: '☕ ברוכים הבאים למועדון הקפה הדיגיטלי!',
-            html: `
+  try {
+    await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: '☕ ברוכים הבאים למועדון הקפה הדיגיטלי!',
+      html: `
         <div dir="rtl" style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 24px; overflow: hidden; border: 1px solid #E5E7EB; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #2D1B14 0%, #4A2C21 100%); padding: 50px 40px; text-align: center;">
@@ -211,22 +219,22 @@ export const sendNewsletterEmail = async (userEmail: string) => {
           </div>
         </div>
       `,
-        });
-        console.log(`Newsletter welcome email sent to ${userEmail}`);
-    } catch (error) {
-        console.error("Error sending newsletter email:", error);
-    }
+    });
+    console.log(`Newsletter welcome email sent to ${userEmail}`);
+  } catch (error) {
+    console.error("Error sending newsletter email:", error);
+  }
 };
 
 export const sendAIImageEmail = async (userEmail: string, imageUrl: string, prompt: string) => {
-    if (!process.env.RESEND_API_KEY) return;
+  if (!process.env.RESEND_API_KEY) return;
 
-    try {
-        await resend.emails.send({
-            from: 'The Digital Roast <onboarding@resend.dev>',
-            to: [userEmail],
-            subject: '🎨 התמונה שיצרת עם AI Barista',
-            html: `
+  try {
+    await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: '🎨 התמונה שיצרת עם AI Barista',
+      html: `
         <div dir="rtl" style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 24px; overflow: hidden; border: 1px solid #E5E7EB;">
           <div style="background: linear-gradient(135deg, #2D1B14 0%, #8B4513 100%); padding: 40px; text-align: center;">
             <h1 style="color: #FFFFFF; margin: 0; font-size: 24px;">היצירה שלך מוכנה! ☕✨</h1>
@@ -252,9 +260,9 @@ export const sendAIImageEmail = async (userEmail: string, imageUrl: string, prom
           </div>
         </div>
       `,
-        });
-        console.log(`AI image email sent to ${userEmail}`);
-    } catch (error) {
-        console.error("Error sending AI image email:", error);
-    }
+    });
+    console.log(`AI image email sent to ${userEmail}`);
+  } catch (error) {
+    console.error("Error sending AI image email:", error);
+  }
 };

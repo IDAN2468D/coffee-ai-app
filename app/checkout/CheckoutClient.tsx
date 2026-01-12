@@ -137,7 +137,14 @@ export default function CheckoutPage() {
                                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="flex-grow">
-                                                <h4 className="font-bold text-[#2D1B14] text-lg">{item.name}</h4>
+                                                <div className="flex items-center gap-2 flex-row-reverse">
+                                                    <h4 className="font-bold text-[#2D1B14] text-lg">{item.name}</h4>
+                                                    {item.size && (
+                                                        <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md text-[9px] font-black uppercase">
+                                                            {item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-stone-500 mt-1 font-bold">{typeof item.category === 'string' ? item.category : item.category?.name || ''}</p>
                                             </div>
                                             <div className="text-left pl-4">
@@ -524,7 +531,14 @@ export default function CheckoutPage() {
                                                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold text-lg mb-0.5 leading-tight">{item.name}</p>
+                                                <div className="flex items-center gap-2 flex-row-reverse mb-1">
+                                                    <p className="font-bold text-lg leading-tight">{item.name}</p>
+                                                    {item.size && (
+                                                        <span className="px-2 py-0.5 bg-amber-400/20 text-amber-200 rounded-md text-[9px] font-black uppercase">
+                                                            {item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-[#CAB3A3] text-[10px] uppercase font-black tracking-[0.2em]">{item.quantity} × ₪{item.price.toFixed(0)}</p>
                                             </div>
                                         </div>

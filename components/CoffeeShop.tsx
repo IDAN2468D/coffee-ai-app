@@ -117,7 +117,8 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                             ...product,
                                             category: typeof product.category === 'string' ? product.category : product.category?.name || 'Other'
                                         };
-                                        addItem(normalizedProduct);
+                                        const size = (selectedSizes[product.id] || 'M') as 'S' | 'M' | 'L';
+                                        addItem(normalizedProduct, size);
                                     }}
                                     className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group"
                                 >

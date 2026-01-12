@@ -29,6 +29,8 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
     const [stats, setStats] = useState<any>(null);
     const [myImages, setMyImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showAllOrders, setShowAllOrders] = useState(false);
+    const [showAllActivity, setShowAllActivity] = useState(false);
 
     useEffect(() => {
         if (status === 'unauthenticated') {
@@ -161,7 +163,7 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                 </div>
                             ) : (
                                 <div className="bg-white rounded-[2.5rem] shadow-sm border border-stone-100 overflow-hidden">
-                                    {initialOrders.slice(0, 3).map((order) => (
+                                    {(showAllOrders ? initialOrders : initialOrders.slice(0, 3)).map((order) => (
                                         <div key={order.id} className="p-6 border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-colors">
                                             <div className="flex justify-between items-start mb-4 flex-row-reverse">
                                                 <div className="text-right">
@@ -186,7 +188,14 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                                             {item.product?.image && <img src={item.product.image} className="w-full h-full object-cover" />}
                                                         </div>
                                                         <div className="text-right">
-                                                            <p className="text-xs font-bold text-[#2D1B14]">{item.product?.name || 'מוצר'}</p>
+                                                            <div className="flex items-center gap-2 flex-row-reverse mb-1">
+                                                                <p className="text-xs font-bold text-[#2D1B14]">{item.product?.name || 'מוצר'}</p>
+                                                                {item.size && (
+                                                                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md text-[9px] font-black uppercase">
+                                                                        {item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             <p className="text-[10px] text-stone-400">x{item.quantity}</p>
                                                         </div>
                                                     </div>
@@ -196,7 +205,12 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                     ))}
                                     {initialOrders.length > 3 && (
                                         <div className="p-4 text-center border-t border-stone-50">
-                                            <button className="text-xs font-bold text-stone-400 hover:text-[#2D1B14] transition-colors">צפה בכל ההזמנות</button>
+                                            <button
+                                                onClick={() => setShowAllOrders(!showAllOrders)}
+                                                className="text-xs font-bold text-stone-400 hover:text-[#2D1B14] transition-colors"
+                                            >
+                                                {showAllOrders ? 'הצג פחות' : `צפה בכל ההזמנות (${initialOrders.length})`}
+                                            </button>
                                         </div>
                                     )}
                                 </div>
@@ -315,9 +329,7 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                     </div>
                                 </div>
                             ))}
-                            <button className="w-full py-4 border-2 border-stone-50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-stone-400 hover:bg-stone-50 transition-all">
-                                צפה בכל הפעילות
-                            </button>
+                            <button onClick={() => setShowAllActivity(!showAllActivity)} className="w-full py-4 border-2 border-stone-50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-stone-400 hover:bg-stone-50 transition-all">{showAllActivity ? 'הצג פחות' : 'צפה בכל הפעילות'}</button>
                         </div>
                     </div>
                 </div>
@@ -325,3 +337,5 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
         </main>
     );
 }
+
+

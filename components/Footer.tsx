@@ -46,7 +46,8 @@ export default function Footer() {
                     <div className="space-y-6">
                         <h4 className="text-lg font-bold text-white uppercase tracking-widest pt-2">צור קשר</h4>
                         <ul className="space-y-4 text-sm font-light">
-                            <li>+972 00 123 4567</li>
+                            <li>054-123-4567</li>
+                            <li>03-123-4567</li>
                             <li>hello@digitalroast.co.il</li>
                             <li>רחוב הברזל 1, תל אביב, ישראל</li>
                         </ul>

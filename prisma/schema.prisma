@@ -85,4 +85,5 @@ model OrderItem {
   productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
+  size      String? // S, M, L for coffee sizes
 }

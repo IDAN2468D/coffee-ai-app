@@ -60,35 +60,131 @@ export default function FortuneClient() {
     };
 
     return (
-        <main className="min-h-screen bg-[#0F0A08] font-sans flex flex-col text-white relative overflow-hidden" dir="rtl">
+        <main className="min-h-screen bg-gradient-to-br from-[#0a0506] via-[#1a0f0d] to-[#0f0808] font-sans flex flex-col text-white relative overflow-hidden" dir="rtl">
             <Navbar />
 
-            {/* Mystic Background */}
+            {/* Enhanced Mystic Background */}
             <div className="absolute inset-0 z-0">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/20 rounded-full blur-[100px]" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[100px]" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10" />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.2, 1],
+                        opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{ duration: 8, repeat: Infinity }}
+                    className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-900/30 rounded-full blur-[120px]"
+                />
+                <motion.div
+                    animate={{
+                        scale: [1, 1.3, 1],
+                        opacity: [0.2, 0.4, 0.2],
+                    }}
+                    transition={{ duration: 10, repeat: Infinity }}
+                    className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-amber-900/20 rounded-full blur-[120px]"
+                />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-5" />
             </div>
 
-            <div className="flex-grow flex flex-col items-center justify-center relative z-10 px-4 pt-20">
+            <div className="flex-grow flex flex-col items-center justify-center relative z-10 px-4 pt-24 pb-12">
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: -30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-12"
+                    transition={{ duration: 0.8 }}
+                    className="text-center mb-16"
                 >
-                    <div className="inline-flex items-center justify-center p-3 bg-white/5 border border-white/10 rounded-full mb-4 backdrop-blur-md">
-                        <Sparkles className="w-5 h-5 text-[#C37D46] animate-pulse" />
+                    <motion.div
+                        animate={{
+                            rotate: [0, 360],
+                            scale: [1, 1.1, 1]
+                        }}
+                        transition={{
+                            rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                            scale: { duration: 2, repeat: Infinity }
+                        }}
+                        className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-500/30 rounded-full mb-6 backdrop-blur-xl shadow-[0_0_30px_rgba(245,158,11,0.3)]"
+                    >
+                        <Sparkles className="w-7 h-7 text-amber-400" />
+                    </motion.div>
+
+                    <motion.h1
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        className="text-4xl md:text-6xl lg:text-7xl font-serif font-black mb-6"
+                        style={{
+                            textShadow: "0 0 40px rgba(245,158,11,0.6), 0 0 80px rgba(245,158,11,0.4), 0 8px 16px rgba(0,0,0,0.5)"
+                        }}
+                    >
+                        <span
+                            className="inline-block animate-shimmer"
+                            style={{
+                                background: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 25%, #fcd34d 50%, #fbbf24 75%, #f59e0b 100%)",
+                                backgroundSize: "300% auto",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text"
+                            }}
+                        >
+                            האורקל המיסטי
+                        </span>
+                        <motion.span
+                            animate={{
+                                scale: [1, 1.2, 1],
+                                rotate: [0, 15, -15, 0]
+                            }}
+                            transition={{ duration: 3, repeat: Infinity }}
+                            className="inline-block mx-3"
+                            style={{
+                                filter: "drop-shadow(0 0 25px rgba(245,158,11,1))"
+                            }}
+                        >
+                            ☕
+                        </motion.span>
+                    </motion.h1>
+
+                    <style jsx global>{`
+                        @keyframes shimmer {
+                            0% { background-position: 0% 50%; }
+                            100% { background-position: 300% 50%; }
+                        }
+                        .animate-shimmer {
+                            animation: shimmer 4s linear infinite;
+                        }
+                    `}</style>
+
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.8 }}
+                        className="text-amber-100/90 text-lg font-light max-w-3xl mx-auto leading-relaxed"
+                        style={{
+                            textShadow: "0 2px 15px rgba(0,0,0,0.6)"
+                        }}
+                    >
+                        ✨ גלה את סודות העתיד החבויים במשקעי הקפה הקסומים ✨
+                    </motion.p>
+
+                    <div className="flex items-center justify-center gap-6 mt-6">
+                        {[Star, Moon, Cloud].map((Icon, i) => (
+                            <motion.div
+                                key={i}
+                                animate={{
+                                    y: [0, -10, 0],
+                                    opacity: [0.3, 1, 0.3]
+                                }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    delay: i * 0.3
+                                }}
+                            >
+                                <Icon className="w-5 h-5 text-amber-500/50" />
+                            </motion.div>
+                        ))}
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-serif font-bold bg-gradient-to-r from-[#C37D46] via-[#E8CBAD] to-[#C37D46] bg-clip-text text-transparent mb-4">
-                        האורקל בקפה
-                    </h1>
-                    <p className="text-white/50 text-lg font-light max-w-xl mx-auto">
-                        גלה מה צופן לך העתיד. לגום מהקפה הווירטואלי, ומשקעים יגלו את האמת.
-                    </p>
                 </motion.div>
 
-                <div className="relative w-80 h-80 md:w-96 md:h-96 mb-12 flex items-center justify-center">
+                <div className="relative w-full max-w-md mb-12">
                     {/* Coffee Cup Area */}
                     <AnimatePresence mode="wait">
                         {state === 'ready' && (
@@ -100,27 +196,57 @@ export default function FortuneClient() {
                                 className="relative cursor-pointer group"
                                 onClick={startRitual}
                             >
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#2D1B14] rounded-full shadow-[0_0_50px_rgba(45,27,20,0.5)] border-4 border-[#5A382A] flex items-center justify-center overflow-hidden">
-                                    {/* Coffee Surface */}
-                                    <div className="absolute inset-2 bg-[#3E2723] rounded-full overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/10" />
-                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#4E342E] rounded-full blur-2xl opacity-60" />
-
-                                        {/* Steam */}
-                                        <motion.div
-                                            animate={{ y: [-10, -20, -10], opacity: [0, 0.5, 0] }}
-                                            transition={{ repeat: Infinity, duration: 3 }}
-                                            className="absolute top-10 left-10 w-20 h-20 bg-white/5 blur-xl rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-12 h-24 border-4 border-[#2D1B14] rounded-r-3xl" />
-
+                                {/* Glow effect */}
                                 <motion.div
-                                    className="absolute -bottom-16 left-1/2 -translate-x-1/2 bg-[#C37D46] text-black font-bold px-8 py-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all hover:scale-105"
-                                >
-                                    שתה וגלה את העתיד
-                                </motion.div>
+                                    animate={{
+                                        opacity: [0.3, 0.6, 0.3],
+                                        scale: [1, 1.05, 1]
+                                    }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="absolute inset-0 bg-gradient-to-br from-amber-500/30 to-purple-600/30 rounded-full blur-3xl"
+                                />
+
+                                <div className="relative w-80 h-80 mx-auto">
+                                    <motion.div
+                                        whileHover={{ scale: 1.05 }}
+                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#2D1B14] to-[#1a0f0a] rounded-full shadow-[0_0_80px_rgba(195,125,70,0.4)] border-4 border-[#5A382A] flex items-center justify-center overflow-hidden"
+                                    >
+                                        {/* Coffee Surface */}
+                                        <div className="absolute inset-4 bg-gradient-to-br from-[#3E2723] via-[#4E342E] to-[#3E2723] rounded-full overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#4E342E] rounded-full blur-2xl opacity-60" />
+
+                                            {/* Steam */}
+                                            {[...Array(3)].map((_, i) => (
+                                                <motion.div
+                                                    key={i}
+                                                    animate={{
+                                                        y: [0, -40],
+                                                        opacity: [0, 0.6, 0]
+                                                    }}
+                                                    transition={{
+                                                        duration: 3,
+                                                        repeat: Infinity,
+                                                        delay: i * 0.8
+                                                    }}
+                                                    className="absolute top-10 w-10 h-10 bg-white/10 blur-xl rounded-full"
+                                                    style={{ left: `${30 + i * 20}%` }}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        {/* Button inside cup */}
+                                        <motion.div
+                                            whileHover={{ scale: 1.1 }}
+                                            className="relative z-10 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black px-8 py-4 rounded-full shadow-xl border-2 border-amber-400"
+                                        >
+                                            שתה וגלה את העתיד
+                                        </motion.div>
+                                    </motion.div>
+
+                                    {/* Cup handle */}
+                                    <div className="absolute -right-10 top-1/2 -translate-y-1/2 w-16 h-32 border-4 border-[#2D1B14] rounded-r-3xl" />
+                                </div>
                             </motion.div>
                         )}
 

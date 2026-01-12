@@ -1,18 +1,28 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Coffee, User, Calendar, Share2, Download, Heart } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { Product } from '@/lib/products';
+import { useSession } from 'next-auth/react';
+import Navbar from '@/components/Navbar';
 
 export default function GalleryPage() {
+    const { data: session } = useSession();
     const { addItem } = useCart();
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [prompt, setPrompt] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
+        fetchGallery();
+    }, []);
+
+    const fetchGallery = () => {
         fetch('/api/gallery')
             .then(res => res.json())
             .then(data => {
@@ -23,7 +33,40 @@ export default function GalleryPage() {
                 console.error(err);
                 setIsLoading(false);
             });
-    }, []);
+    };
+
+    const handleCreateImage = async () => {
+        if (!prompt.trim() || !session) {
+            alert('אנא התחבר והכנס תיאור לתמונה');
+            return;
+        }
+
+        setIsGenerating(true);
+        try {
+            const response = await fetch('/api/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Refresh gallery to show new image
+                fetchGallery();
+                setShowCreateModal(false);
+                setPrompt('');
+                alert('התמונה נוצרה בהצלחה! 🎨');
+            } else {
+                alert(data.error || 'שגיאה ביצירת התמונה');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('משהו השתבש');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     const handleDownload = (url: string, name: string) => {
         const link = document.createElement('a');
@@ -44,6 +87,7 @@ export default function GalleryPage() {
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] pb-24" dir="rtl">
+            <Navbar />
             <header className="bg-[#2D1B14] py-32 px-6 text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <img src="https://www.transparenttextures.com/patterns/coffee-beans.png" alt="Pattern" />
@@ -81,9 +125,19 @@ export default function GalleryPage() {
                         <p className="text-white/80 text-lg max-w-2xl mx-auto">
                             השבוע אנחנו מזמינים אתכם ליצור תמונות של בתי קפה, כוסות אספרסו, ופולים מרחפים ברחבי הגלקסיה. היצירה המקורית ביותר תזכה ב-500 נקודות!
                         </p>
-                        <Link href="/expert" className="inline-block bg-white text-[#C37D46] px-8 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform mt-4">
+                        <button
+                            onClick={() => {
+                                if (!session) {
+                                    alert('אנא התחבר כדי ליצור תמונות');
+                                    return;
+                                }
+                                setShowCreateModal(true);
+                                setPrompt('קפה בחלל החיצון'); // Pre-fill with challenge theme
+                            }}
+                            className="inline-block bg-white text-[#C37D46] px-8 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform mt-4"
+                        >
                             התחל ליצור עכשיו
-                        </Link>
+                        </button>
                     </div>
                 </motion.div>
             </div>
@@ -169,6 +223,82 @@ export default function GalleryPage() {
                     ))}
                 </div>
             </div>
+
+            {/* Creation Modal */}
+            <AnimatePresence>
+                {showCreateModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-6"
+                        onClick={() => !isGenerating && setShowCreateModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white rounded-[3rem] p-10 max-w-2xl w-full shadow-2xl"
+                            dir="rtl"
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-[#C37D46] rounded-2xl flex items-center justify-center">
+                                        <Sparkles className="w-6 h-6 text-white" />
+                                    </div>
+                                    <h3 className="text-3xl font-serif font-bold text-[#2D1B14]">צור תמונת AI</h3>
+                                </div>
+                                {!isGenerating && (
+                                    <button
+                                        onClick={() => setShowCreateModal(false)}
+                                        className="w-10 h-10 rounded-xl hover:bg-stone-100 flex items-center justify-center transition-colors"
+                                    >
+                                        <X className="w-5 h-5 text-stone-400" />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-[#2D1B14] mb-3">
+                                        תאר את התמונה שתרצה ליצור
+                                    </label>
+                                    <textarea
+                                        value={prompt}
+                                        onChange={(e) => setPrompt(e.target.value)}
+                                        disabled={isGenerating}
+                                        placeholder="לדוגמה: קפה אספרסו מרחף בחלל החיצון עם כוכבים ברקע..."
+                                        className="w-full h-32 bg-stone-50 border-2 border-stone-200 focus:border-[#C37D46] rounded-2xl p-4 text-sm resize-none outline-none transition-colors disabled:opacity-50"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleCreateImage}
+                                    disabled={isGenerating || !prompt.trim()}
+                                    className="w-full bg-[#C37D46] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#A66330] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader className="w-5 h-5 animate-spin" />
+                                            יוצר תמונה...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Sparkles className="w-5 h-5" />
+                                            צור תמונה
+                                        </>
+                                    )}
+                                </button>
+
+                                <p className="text-xs text-stone-400 text-center">
+                                    התמונה תיווצר ותתווסף לגלריה הציבורית
+                                </p>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </main>
     );
 }
