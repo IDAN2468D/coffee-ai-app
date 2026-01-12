@@ -82,13 +82,37 @@ async function main() {
         }
     ];
 
-    console.log('Clearing existing order items and products...');
+    console.log('Clearing existing data...');
+    // Delete in order to avoid foreign key constraints
     await prisma.orderItem.deleteMany({});
     await prisma.product.deleteMany({});
+    await prisma.category.deleteMany({});
+
+    console.log('Seeding categories...');
+    const categoriesMap = {};
+    const categoryNames = ['Hot', 'Cold', 'Pastry', 'Beans', 'Equipment'];
+
+    for (const name of categoryNames) {
+        const cat = await prisma.category.create({ data: { name } });
+        categoriesMap[name] = cat.id;
+    }
 
     console.log('Seeding products...');
     for (const p of products) {
-        await prisma.product.create({ data: p });
+        const categoryId = categoriesMap[p.category];
+        // Remove the string 'category' field and use 'categoryId'
+        const { category, ...productData } = p;
+        if (categoryId) {
+            await prisma.product.create({
+                data: {
+                    ...productData,
+                    categoryId: categoryId
+                }
+            });
+        } else {
+            console.warn(`Category ${p.category} not found for product ${p.name}`);
+            await prisma.product.create({ data: productData });
+        }
     }
 
     console.log('Database seeded successfully!');

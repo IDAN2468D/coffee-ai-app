@@ -2,8 +2,12 @@ import React from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CoffeeShop from "@/components/CoffeeShop";
+import ShopHeader from "@/components/ShopHeader";
 import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
 
@@ -19,18 +23,24 @@ export default async function ShopPage() {
         console.error("Failed to fetch products:", error);
     }
 
+    let favoriteIds: string[] = [];
+    const session = await getServerSession(authOptions);
+
+    if (session?.user?.email) {
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            select: { favoriteIds: true }
+        });
+        if (user) favoriteIds = user.favoriteIds;
+    }
+
     return (
         <main className="min-h-screen bg-white font-sans">
             <Navbar />
 
-            <div className="pt-32 pb-10 bg-[#2D1B14] text-center">
-                <h1 className="text-4xl md:text-5xl font-serif text-white font-bold">Our Collection</h1>
-                <p className="text-white/70 mt-4 max-w-2xl mx-auto px-6">
-                    Discover your perfect brew from our carefully curated selection.
-                </p>
-            </div>
+            <ShopHeader />
 
-            <CoffeeShop initialProducts={products} />
+            <CoffeeShop initialProducts={products} initialFavoriteIds={favoriteIds} />
 
             <Footer />
         </main>

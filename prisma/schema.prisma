@@ -17,6 +17,8 @@ model User {
   orders        Order[]
   coffeeImages  CoffeeImage[]
   favoriteIds   String[]  @db.ObjectId
+  isAdmin       Boolean   @default(false)
+  points        Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -27,7 +29,7 @@ model Product {
   description String
   price       Float
   isArchived  Boolean  @default(false)
-  slug        String?   @unique
+  slug        String?
   images      Image[] 
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?   @db.ObjectId

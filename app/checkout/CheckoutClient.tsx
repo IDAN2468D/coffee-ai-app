@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '@/lib/store';
-import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2 } from 'lucide-react';
+import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -27,6 +27,8 @@ export default function CheckoutPage() {
     const [isOrdered, setIsOrdered] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // State to hold order details for the success screen
+    const [orderSuccessData, setOrderSuccessData] = useState<any>(null);
 
     const { register, handleSubmit, trigger, formState: { errors } } = useForm({
         resolver: zodResolver(checkoutSchema),
@@ -62,43 +64,175 @@ export default function CheckoutPage() {
 
             const result = await res.json();
             if (result.success) {
+                setOrderSuccessData({
+                    id: result.orderId,
+                    pointsEarned: result.pointsEarned,
+                    items: [...items],
+                    total: total,
+                    shippingDetails: data,
+                    date: new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+                });
+
                 setIsOrdered(true);
                 clearCart();
             } else {
                 alert(result.error || "שגיאה בביצוע ההזמנה");
             }
         } catch (error) {
+            console.error(error);
             alert("משהו השתבש");
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    if (isOrdered) {
+    if (isOrdered && orderSuccessData) {
         return (
-            <div className="min-h-screen bg-[#FDFCF0] flex flex-col items-center justify-center p-8 text-center space-y-8" dir="rtl">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="bg-green-100 p-10 rounded-full"
-                >
-                    <div className="bg-green-500 p-6 rounded-full text-white shadow-xl">
-                        <ShieldCheck className="w-20 h-20" />
+            <main className="min-h-screen bg-[#FDFCF0] py-12 px-4" dir="rtl">
+                <div className="max-w-4xl mx-auto space-y-8">
+                    {/* Success Header */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white p-10 rounded-[3rem] shadow-xl border border-stone-100 text-center relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 via-emerald-500 to-green-600" />
+
+                        <div className="inline-flex items-center justify-center p-4 bg-green-50 rounded-full mb-6 relative">
+                            <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-25"></div>
+                            <CheckCircle className="w-12 h-12 text-green-600 relative z-10" />
+                        </div>
+
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#2D1B14] mb-4">
+                            ההזמנה התקבלה בהצלחה!
+                        </h1>
+                        <p className="text-lg text-stone-500 max-w-lg mx-auto leading-relaxed">
+                            תודה על ההזמנה, {session?.user?.name?.split(' ')[0]}. הקפה שלך כבר בתהליך הכנה.
+                        </p>
+
+                        <div className="mt-8 inline-flex items-center gap-3 bg-stone-50 px-6 py-3 rounded-xl border border-stone-100">
+                            <span className="text-stone-400 font-bold text-xs uppercase tracking-widest">מספר הזמנה:</span>
+                            <span className="font-mono font-bold text-[#2D1B14]">{orderSuccessData.id.slice(-8).toUpperCase()}</span>
+                        </div>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Order Details Column */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="md:col-span-2 space-y-6"
+                        >
+                            {/* Items List */}
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-lg border border-stone-100">
+                                <h3 className="text-xl font-black text-[#2D1B14] mb-6 flex items-center gap-3">
+                                    <Package className="w-5 h-5 text-[#8B4513]" />
+                                    <span>פרטי ההזמנה</span>
+                                </h3>
+                                <div className="space-y-6">
+                                    {orderSuccessData.items.map((item: any) => (
+                                        <div key={item.id} className="flex items-center gap-4 bg-stone-50/50 p-4 rounded-2xl">
+                                            <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shadow-sm border border-stone-100 flex-shrink-0">
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-grow">
+                                                <h4 className="font-bold text-[#2D1B14] text-lg">{item.name}</h4>
+                                                <p className="text-xs text-stone-500 mt-1 font-bold">{typeof item.category === 'string' ? item.category : item.category?.name || ''}</p>
+                                            </div>
+                                            <div className="text-left pl-4">
+                                                <p className="font-black text-[#2D1B14] text-lg">₪{(item.price * item.quantity).toFixed(0)}</p>
+                                                <p className="text-xs text-stone-400 font-bold mt-1">x{item.quantity}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-8 pt-8 border-t border-stone-100 flex justify-between items-center px-2">
+                                    <span className="font-black text-stone-400 uppercase tracking-widest text-xs">סה״כ שולם</span>
+                                    <span className="font-black text-3xl text-[#2D1B14]">₪{orderSuccessData.total.toFixed(0)}</span>
+                                </div>
+                            </div>
+
+                            {/* Shipping Details */}
+                            <div className="bg-white p-8 rounded-[2.5rem] shadow-lg border border-stone-100">
+                                <h3 className="text-xl font-black text-[#2D1B14] mb-6 flex items-center gap-3">
+                                    <Truck className="w-5 h-5 text-[#8B4513]" />
+                                    <span>פרטי משלוח</span>
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
+                                    <div className="space-y-2">
+                                        <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">נשלח אל</p>
+                                        <div>
+                                            <p className="font-bold text-[#2D1B14] text-lg">{orderSuccessData.shippingDetails.fullName}</p>
+                                            <p className="text-stone-500 font-medium">{orderSuccessData.shippingDetails.email}</p>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">כתובת</p>
+                                        <div>
+                                            <p className="font-bold text-[#2D1B14] text-lg">{orderSuccessData.shippingDetails.street}, {orderSuccessData.shippingDetails.city}</p>
+                                            {orderSuccessData.shippingDetails.apartment && (
+                                                <p className="text-stone-500 font-medium">כניסה: {orderSuccessData.shippingDetails.apartment}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Sidebar */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="space-y-6"
+                        >
+                            {/* Points Earned Card */}
+                            <div className="bg-[#2D1B14] text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden text-center group hover:scale-[1.02] transition-transform duration-500">
+                                <div className="absolute top-0 right-0 p-32 bg-[#CAB3A3]/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none group-hover:bg-[#CAB3A3]/30 transition-colors" />
+                                <div className="relative z-10 flex flex-col items-center space-y-4">
+                                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner border border-white/10">
+                                        <Star className="w-10 h-10 text-yellow-400 fill-current" />
+                                    </div>
+                                    <div>
+                                        <p className="text-4xl font-black text-yellow-400 mb-2">+{orderSuccessData.pointsEarned}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 text-white">נקודות Roast שנצברו</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Delivery Status */}
+                            <div className="bg-white p-8 rounded-[2rem] shadow-lg border border-stone-100 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase text-stone-400 tracking-widest">סטטוס משלוח</span>
+                                    <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold uppercase tracking-widest">בטיפול</span>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                                        <div className="h-full w-1/4 bg-blue-500 rounded-full animate-pulse" />
+                                    </div>
+                                    <p className="text-xs text-stone-500 text-center font-bold">המשלוח יצא לדרך בקרוב</p>
+                                </div>
+                            </div>
+
+                            <Link
+                                href="/dashboard"
+                                className="block w-full bg-[#E8E6D9] hover:bg-[#DCD8C0] text-[#2D1B14] py-5 rounded-2xl font-black text-center shadow-sm hover:shadow-md transition-all text-lg"
+                            >
+                                לאזור האישי
+                            </Link>
+
+                            <Link
+                                href="/"
+                                className="block w-full bg-white border-2 border-[#2D1B14] text-[#2D1B14] py-5 rounded-2xl font-black text-center hover:bg-[#2D1B14] hover:text-white transition-all shadow-sm hover:shadow-lg text-lg"
+                            >
+                                חזרה לחנות
+                            </Link>
+
+                        </motion.div>
                     </div>
-                </motion.div>
-                <div className="space-y-4">
-                    <h2 className="text-5xl md:text-6xl font-serif font-bold text-[#2D1B14]">ההזמנה התקבלה!</h2>
-                    <p className="text-xl text-stone-500 font-light max-w-md mx-auto leading-relaxed">
-                        הקפה שלך כבר בתהליך הכנה ויהיה אצלך תוך כ-15 דקות.
-                    </p>
                 </div>
-                <Link
-                    href="/"
-                    className="bg-[#2D1B14] text-white px-12 py-5 rounded-2xl font-black shadow-2xl hover:scale-105 transition-all text-xl"
-                >
-                    חזרה לחנות הקפה
-                </Link>
-            </div>
+            </main>
         );
     }
 
@@ -123,8 +257,14 @@ export default function CheckoutPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#FDFCF0] p-6 lg:p-12" dir="rtl">
-            <div className="max-w-6xl mx-auto">
+        <main className="min-h-screen bg-[#FDFCF0] p-6 lg:p-12 relative overflow-hidden" dir="rtl">
+            {/* Background Atmosphere */}
+            <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#2D1B14] rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#CAB3A3] rounded-full blur-[100px] translate-y-1/2 -translate-x-1/3" />
+            </div>
+
+            <div className="max-w-6xl mx-auto relative z-10">
                 <header className="mb-16 flex items-center justify-between flex-row-reverse">
                     <Link href="/" className="flex items-center space-x-3 space-x-reverse text-stone-500 hover:text-[#2D1B14] transition-colors group">
                         <div className="bg-white p-3 rounded-2xl border border-stone-100 group-hover:bg-stone-50 shadow-sm transition-all">
@@ -140,56 +280,76 @@ export default function CheckoutPage() {
 
                 <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7 space-y-10">
-                        <div className="flex justify-between items-center bg-white p-8 rounded-[2.5rem] shadow-sm border border-stone-50">
-                            {[1, 2, 3].map((s) => (
-                                <div key={s} className="flex items-center space-x-4 space-x-reverse">
-                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black transition-all text-lg shadow-inner ${step >= s ? 'bg-[#2D1B14] text-white shadow-xl scale-110' : 'bg-stone-100 text-stone-300'}`}>
-                                        {s}
+                        {/* Progress Steps */}
+                        <div className="relative">
+                            <div className="absolute top-1/2 left-0 right-0 h-1 bg-stone-100 -translate-y-1/2 rounded-full z-0" />
+                            <div
+                                className="absolute top-1/2 right-0 h-1 bg-[#2D1B14] -translate-y-1/2 rounded-full z-0 transition-all duration-500 ease-out"
+                                style={{ width: `${((step - 1) / 2) * 100}%` }}
+                            />
+
+                            <div className="flex justify-between relative z-10">
+                                {[1, 2, 3].map((s) => (
+                                    <div key={s} className="flex flex-col items-center gap-3">
+                                        <div
+                                            className={`w-12 h-12 rounded-full flex items-center justify-center font-black transition-all duration-500 border-4 ${step >= s
+                                                ? 'bg-[#2D1B14] text-white border-[#2D1B14] shadow-lg scale-110'
+                                                : 'bg-white text-stone-300 border-white shadow-sm'
+                                                }`}
+                                        >
+                                            {s}
+                                        </div>
+                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${step >= s ? 'text-[#2D1B14]' : 'text-stone-300'}`}>
+                                            {s === 1 ? 'פרטים' : s === 2 ? 'משלוח' : 'תשלום'}
+                                        </span>
                                     </div>
-                                    <span className={`text-xs font-black uppercase tracking-widest hidden sm:block ${step >= s ? 'text-[#2D1B14]' : 'text-stone-300'}`}>
-                                        {s === 1 ? 'פרטים' : s === 2 ? 'משלוח' : 'תשלום'}
-                                    </span>
-                                    {s < 3 && <ChevronRight className="w-5 h-5 text-stone-100 rotate-180" />}
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
                         <motion.div
                             key={step}
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-white p-12 rounded-[3rem] shadow-2xl shadow-stone-200/40 border border-stone-50 space-y-12"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ ease: "easeOut", duration: 0.3 }}
+                            className="bg-white/80 backdrop-blur-md p-10 rounded-[3rem] shadow-2xl shadow-stone-200/40 border border-white space-y-12"
                         >
                             {step === 1 && (
                                 <div className="space-y-8">
-                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14]">
-                                        <div className="bg-[#2D1B14]/5 p-3 rounded-2xl">
+                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14] border-b border-stone-100 pb-6">
+                                        <div className="bg-[#2D1B14] text-white p-3 rounded-2xl shadow-lg">
                                             <User className="w-6 h-6" />
                                         </div>
-                                        <h3 className="text-2xl font-serif font-bold">פרטים אישיים</h3>
+                                        <div>
+                                            <h3 className="text-2xl font-serif font-bold">פרטים אישיים</h3>
+                                            <p className="text-stone-400 text-xs mt-1">אנו צריכים לדעת למי לשלוח את הקפה</p>
+                                        </div>
                                     </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">שם מלא</label>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="space-y-4">
+                                            <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">שם מלא</label>
                                             <div className="relative group">
-                                                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#CAB3A3] transition-colors" />
                                                 <input
                                                     {...register('fullName')}
                                                     type="text" placeholder="ישראל ישראלי"
-                                                    className={`w-full bg-stone-50/50 border-2 ${errors.fullName ? 'border-red-100' : 'border-stone-50 focus:border-[#CAB3A3]/50'} focus:bg-white rounded-[1.5rem] p-5 pr-12 text-sm transition-all outline-none font-bold`}
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
                                                 />
+                                                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                             </div>
                                             {errors.fullName && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.fullName as any).message}</p>}
                                         </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">כתובת אימייל</label>
+
+                                        <div className="space-y-4">
+                                            <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">כתובת אימייל</label>
                                             <div className="relative group">
-                                                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#CAB3A3] transition-colors" />
                                                 <input
                                                     {...register('email')}
                                                     type="email" placeholder="example@gmail.com"
-                                                    className={`w-full bg-stone-50/50 border-2 ${errors.email ? 'border-red-100' : 'border-stone-50 focus:border-[#CAB3A3]/50'} focus:bg-white rounded-[1.5rem] p-5 pr-12 text-sm transition-all outline-none font-bold`}
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
                                                 />
+                                                <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                             </div>
                                             {errors.email && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.email as any).message}</p>}
                                         </div>
@@ -199,44 +359,50 @@ export default function CheckoutPage() {
 
                             {step === 2 && (
                                 <div className="space-y-8">
-                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14]">
-                                        <div className="bg-[#2D1B14]/5 p-3 rounded-2xl">
+                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14] border-b border-stone-100 pb-6">
+                                        <div className="bg-[#2D1B14] text-white p-3 rounded-2xl shadow-lg">
                                             <MapPin className="w-6 h-6" />
                                         </div>
-                                        <h3 className="text-2xl font-serif font-bold">כתובת למשלוח</h3>
+                                        <div>
+                                            <h3 className="text-2xl font-serif font-bold">כתובת למשלוח</h3>
+                                            <p className="text-stone-400 text-xs mt-1">הקפה יגיע עד לפתח הדלת</p>
+                                        </div>
                                     </div>
+
                                     <div className="space-y-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">כתובת רחוב ומספר</label>
+                                        <div className="space-y-4">
+                                            <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">רחוב ומספר</label>
                                             <div className="relative group">
-                                                <Home className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#CAB3A3] transition-colors" />
                                                 <input
                                                     {...register('street')}
-                                                    type="text" placeholder="רחוב הברזל 1"
-                                                    className={`w-full bg-stone-50/50 border-2 ${errors.street ? 'border-red-100' : 'border-stone-50 focus:border-[#CAB3A3]/50'} focus:bg-white rounded-[1.5rem] p-5 pr-12 text-sm transition-all outline-none font-bold`}
+                                                    type="text" placeholder="הברזל 1"
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
                                                 />
+                                                <Home className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                             </div>
                                             {errors.street && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.street as any).message}</p>}
                                         </div>
+
                                         <div className="grid grid-cols-2 gap-8">
-                                            <div className="space-y-3">
-                                                <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">עיר</label>
+                                            <div className="space-y-4">
+                                                <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">עיר</label>
                                                 <input
                                                     {...register('city')}
                                                     type="text" placeholder="תל אביב"
-                                                    className={`w-full bg-stone-50/50 border-2 ${errors.city ? 'border-red-100' : 'border-stone-50 focus:border-[#CAB3A3]/50'} focus:bg-white rounded-[1.5rem] p-5 text-sm transition-all outline-none font-bold`}
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
                                                 />
                                                 {errors.city && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.city as any).message}</p>}
                                             </div>
-                                            <div className="space-y-3">
-                                                <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">קומה / דירה</label>
+
+                                            <div className="space-y-4">
+                                                <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">דירה / קומה</label>
                                                 <div className="relative group">
-                                                    <Building2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-300 group-focus-within:text-[#CAB3A3] transition-colors" />
                                                     <input
                                                         {...register('apartment')}
-                                                        type="text" placeholder="דירה 4, קומה 2"
-                                                        className="w-full bg-stone-50/50 border-2 border-stone-50 focus:border-[#CAB3A3]/50 focus:bg-white rounded-[1.5rem] p-5 pr-12 text-sm transition-all outline-none font-bold"
+                                                        type="text" placeholder="דירה 2"
+                                                        className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
                                                     />
+                                                    <Building2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                                 </div>
                                             </div>
                                         </div>
@@ -246,65 +412,93 @@ export default function CheckoutPage() {
 
                             {step === 3 && (
                                 <div className="space-y-8">
-                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14]">
-                                        <div className="bg-[#2D1B14]/5 p-3 rounded-2xl">
+                                    <div className="flex items-center space-x-4 space-x-reverse text-[#2D1B14] border-b border-stone-100 pb-6">
+                                        <div className="bg-[#2D1B14] text-white p-3 rounded-2xl shadow-lg">
                                             <CreditCard className="w-6 h-6" />
                                         </div>
-                                        <h3 className="text-2xl font-serif font-bold">אמצעי תשלום</h3>
+                                        <div>
+                                            <h3 className="text-2xl font-serif font-bold">אמצעי תשלום</h3>
+                                            <p className="text-stone-400 text-xs mt-1">חיוב מאובטח ומוצפן</p>
+                                        </div>
                                     </div>
+
                                     <div className="space-y-8">
-                                        <div className="bg-stone-50/50 border-2 border-[#2D1B14] rounded-3xl p-8 flex justify-between items-center group shadow-inner">
-                                            <div className="flex items-center space-x-5 space-x-reverse">
-                                                <div className="bg-white p-4 rounded-2xl shadow-md border border-stone-100">
-                                                    <CreditCard className="w-8 h-8 text-[#2D1B14]" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-xl text-[#2D1B14]">כרטיס אשראי</p>
-                                                    <p className="text-sm text-stone-400 font-bold">Visa, Mastercard, AMEX</p>
+                                        {/* Card Visual */}
+                                        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#000] p-8 rounded-3xl shadow-xl border border-stone-800 relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10" />
+                                            <div className="relative z-10 flex justify-between items-start flex-row-reverse mb-12">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-10 opacity-80" alt="Mastercard" />
+                                                <div className="w-12 h-8 bg-[#E6C68F] rounded-md flex items-center justify-center opacity-80">
+                                                    <div className="w-8 h-5 border border-black/20 rounded-sm" />
                                                 </div>
                                             </div>
-                                            <div className="w-7 h-7 rounded-full border-8 border-[#2D1B14] bg-white shadow-xl" />
+                                            <div className="relative z-10 space-y-2">
+                                                <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">מספר כרטיס</p>
+                                                <div className="text-white text-2xl font-mono tracking-wider flex justify-between items-center dir-ltr">
+                                                    <span>****</span>
+                                                    <span>****</span>
+                                                    <span>****</span>
+                                                    <span>3921</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black uppercase text-stone-400 tracking-widest mr-2">מספר כרטיס</label>
-                                            <input
-                                                {...register('cardNumber')}
-                                                type="text" placeholder="#### #### #### ####"
-                                                onChange={(e) => {
-                                                    let val = e.target.value.replace(/\D/g, '').substring(0, 16);
-                                                    val = val.match(/.{1,4}/g)?.join(' ') ?? val;
-                                                    e.target.value = val;
-                                                }}
-                                                className={`w-full bg-stone-50/50 border-2 ${errors.cardNumber ? 'border-red-100' : 'border-stone-50 focus:border-[#CAB3A3]/50'} focus:bg-white rounded-[1.5rem] p-5 text-sm transition-all outline-none font-serif font-black tracking-widest text-center`}
-                                            />
+
+                                        <div className="space-y-4">
+                                            <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">מספר כרטיס מלא</label>
+                                            <div className="relative group">
+                                                <input
+                                                    {...register('cardNumber')}
+                                                    type="text"
+                                                    placeholder="0000 0000 0000 0000"
+                                                    onChange={(e) => {
+                                                        let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+                                                        val = val.match(/.{1,4}/g)?.join(' ') ?? val;
+                                                        e.target.value = val;
+                                                    }}
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pl-12 text-sm transition-all outline-none font-mono font-bold text-center tracking-widest placeholder:text-stone-300"
+                                                />
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                                            </div>
                                             {errors.cardNumber && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.cardNumber as any).message}</p>}
                                         </div>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="pt-10 border-t border-stone-100 flex justify-between items-center flex-row-reverse">
+                            <div className="pt-8 border-t border-stone-100 flex justify-between items-center flex-row-reverse">
                                 {step < 3 ? (
                                     <button
                                         type="button"
                                         onClick={nextStep}
-                                        className="bg-[#2D1B14] text-white px-12 py-5 rounded-2xl font-black shadow-xl hover:bg-black hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center space-x-3 space-x-reverse text-lg"
+                                        className="bg-[#2D1B14] text-white px-10 py-5 rounded-2xl font-black shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center space-x-3 space-x-reverse text-lg"
                                     >
-                                        <span>המשך ל{step === 1 ? 'כתובת משלוח' : 'אמצעי תשלום'}</span>
-                                        <ChevronRight className="w-6 h-6 rotate-180" />
+                                        <span>המשך לשלב הבא</span>
+                                        <ChevronRight className="w-5 h-5 rotate-180" />
                                     </button>
                                 ) : (
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className={`bg-[#2D1B14] text-white px-14 py-5 rounded-2xl font-black shadow-[0_20px_40px_rgba(45,27,20,0.3)] hover:bg-black hover:scale-[1.03] active:scale-[0.97] transition-all flex items-center space-x-3 space-x-reverse text-xl ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`bg-[#2D1B14] text-white px-12 py-5 rounded-2xl font-black shadow-[0_20px_40px_rgba(45,27,20,0.3)] hover:shadow-[0_25px_50px_rgba(45,27,20,0.4)] hover:-translate-y-1 transition-all flex items-center space-x-3 space-x-reverse text-xl w-full sm:w-auto justify-center ${isSubmitting ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
                                     >
-                                        <span>{isSubmitting ? 'מעבד תשלום...' : `אשר ושלם ₪${total.toFixed(0)}`}</span>
+                                        {isSubmitting ? (
+                                            <span className="animate-pulse">מעבד תשלום...</span>
+                                        ) : (
+                                            <>
+                                                <span>בצע תשלום</span>
+                                                <span className="bg-white/20 px-2 py-0.5 rounded text-sm text-[#CAB3A3]">₪{total.toFixed(0)}</span>
+                                            </>
+                                        )}
                                     </button>
                                 )}
+
                                 {step > 1 && (
-                                    <button type="button" onClick={() => setStep(step - 1)} className="text-stone-400 hover:text-[#2D1B14] font-black text-sm uppercase tracking-widest transition-colors flex items-center">
-                                        שלב הקודם
+                                    <button
+                                        type="button"
+                                        onClick={() => setStep(step - 1)}
+                                        className="text-stone-400 hover:text-[#2D1B14] font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-2 group border border-transparent hover:border-stone-200 px-4 py-2 rounded-xl"
+                                    >
+                                        חזרה אחורה
                                     </button>
                                 )}
                             </div>
@@ -312,18 +506,25 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="lg:col-span-5 space-y-8">
-                        <div className="bg-[#2D1B14] text-white p-12 rounded-[3.5rem] shadow-2xl relative overflow-hidden flex flex-col min-h-[600px]">
-                            <div className="absolute -top-24 -right-24 w-80 h-80 bg-[#CAB3A3]/5 rounded-full blur-[100px]" />
-                            <h3 className="text-3xl font-serif font-bold mb-10 relative z-10 text-right">סיכום הזמנה</h3>
-                            <div className="space-y-8 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow">
+                        <div className="sticky top-12 bg-[#2D1B14] text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
+                            {/* Decorative Blobs */}
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-[#CAB3A3]/10 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-72 h-72 bg-black/30 rounded-full blur-[60px] -ml-10 -mb-10 pointer-events-none" />
+
+                            <h3 className="text-3xl font-serif font-bold mb-8 relative z-10 text-right flex items-center justify-between">
+                                <span>ההזמנה שלך</span>
+                                <span className="text-sm font-sans bg-white/10 px-3 py-1 rounded-full">{items.length} פריטים</span>
+                            </h3>
+
+                            <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[400px]">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex justify-between items-center group flex-row-reverse">
-                                        <div className="flex items-center space-x-5 space-x-reverse">
-                                            <div className="w-20 h-20 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <div key={item.id} className="flex justify-between items-center group flex-row-reverse bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-colors">
+                                        <div className="flex items-center space-x-4 space-x-reverse">
+                                            <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shadow-lg relative">
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold text-xl mb-1">{item.name}</p>
+                                                <p className="font-bold text-lg mb-0.5 leading-tight">{item.name}</p>
                                                 <p className="text-[#CAB3A3] text-[10px] uppercase font-black tracking-[0.2em]">{item.quantity} × ₪{item.price.toFixed(0)}</p>
                                             </div>
                                         </div>
@@ -332,24 +533,24 @@ export default function CheckoutPage() {
                                 ))}
                             </div>
 
-                            <div className="mt-10 pt-10 border-t border-white/10 space-y-6 relative z-10">
-                                <div className="flex justify-between text-white/50 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
-                                    <span>סיכום פריטים</span>
+                            <div className="mt-8 pt-8 border-t border-white/10 space-y-5 relative z-10">
+                                <div className="flex justify-between text-white/60 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
+                                    <span>סיכום ביניים</span>
                                     <span>₪{total.toFixed(0)}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-white/50 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
+                                <div className="flex justify-between items-center text-white/60 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
                                     <div className="flex items-center space-x-2 space-x-reverse">
                                         <Truck className="w-4 h-4" />
-                                        <span>דמי משלוח</span>
+                                        <span>משלוח</span>
                                     </div>
-                                    <span className="text-green-400 font-black">חינם</span>
+                                    <span className="text-emerald-400 font-black px-2 py-0.5 bg-emerald-400/10 rounded">חינם</span>
                                 </div>
-                                <div className="pt-8 flex justify-between items-end flex-row-reverse border-t border-white/5">
+                                <div className="pt-6 flex justify-between items-center flex-row-reverse border-t border-white/5 mt-2">
                                     <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase text-white/30 tracking-[0.3em] mb-2">סה״כ לתשלום</p>
-                                        <p className="text-5xl font-black text-[#CAB3A3]">₪{total.toFixed(0)}</p>
+                                        <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-1">סה״כ לתשלום</p>
+                                        <p className="text-4xl font-black text-[#CAB3A3]">₪{total.toFixed(0)}</p>
                                     </div>
-                                    <ShieldCheck className="w-10 h-10 opacity-30 text-green-400" />
+                                    <ShieldCheck className="w-12 h-12 opacity-20 text-[#CAB3A3]" />
                                 </div>
                             </div>
                         </div>

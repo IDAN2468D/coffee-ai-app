@@ -39,15 +39,19 @@ export default function Hero() {
                         </p>
 
                         <div className="flex flex-wrap gap-4 pt-4">
-                            <button
-                                onClick={() => document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="bg-[#C37D46] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-all shadow-lg hover:shadow-[#C37D46]/20"
+                            <Link
+                                href="/shop"
+                                className="bg-[#C37D46] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-all shadow-lg hover:shadow-[#C37D46]/20 border-2 border-transparent hover:scale-105 flex items-center gap-2"
                             >
                                 Shop Now
-                            </button>
-                            <button className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all">
-                                Explore
-                            </button>
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                            <Link
+                                href="/dashboard"
+                                className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center gap-2"
+                            >
+                                My Dashboard
+                            </Link>
                         </div>
                     </motion.div>
 

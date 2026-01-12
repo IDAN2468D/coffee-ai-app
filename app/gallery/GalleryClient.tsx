@@ -3,8 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { Coffee, User, Calendar, Share2, Download, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useCart } from '@/lib/store';
+import { Product } from '@/lib/products';
 
 export default function GalleryPage() {
+    const { addItem } = useCart();
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -58,7 +62,33 @@ export default function GalleryPage() {
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto px-6 -mt-16 relative z-20">
+            <div className="max-w-7xl mx-auto px-6 -mt-24 relative z-20 mb-20">
+                {/* Challenge Banner */}
+                <motion.div
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-[#C37D46] rounded-[3rem] p-10 md:p-16 text-white text-center relative overflow-hidden shadow-2xl"
+                >
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
+
+                    <div className="relative z-10 space-y-6">
+                        <div className="inline-block px-4 py-1 bg-black/20 rounded-full backdrop-blur-md text-xs font-black uppercase tracking-widest mb-4">
+                            אתגר השבוע
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-serif font-bold">☕ קפה בחלל החיצון</h2>
+                        <p className="text-white/80 text-lg max-w-2xl mx-auto">
+                            השבוע אנחנו מזמינים אתכם ליצור תמונות של בתי קפה, כוסות אספרסו, ופולים מרחפים ברחבי הגלקסיה. היצירה המקורית ביותר תזכה ב-500 נקודות!
+                        </p>
+                        <Link href="/expert" className="inline-block bg-white text-[#C37D46] px-8 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform mt-4">
+                            התחל ליצור עכשיו
+                        </Link>
+                    </div>
+                </motion.div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 relative z-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {images.map((img, idx) => (
                         <motion.div
@@ -116,6 +146,24 @@ export default function GalleryPage() {
                                         </span>
                                     </div>
                                 </div>
+                                <button
+                                    onClick={() => {
+                                        const customMug: Product = {
+                                            id: `custom-mug-${img.id}`,
+                                            name: 'ספל בעיצוב אישי',
+                                            description: `ספל קרמיקה איכותי עם הדפסה של "${img.prompt}"`,
+                                            price: 25,
+                                            image: img.url,
+                                            category: 'Equipment'
+                                        };
+                                        addItem(customMug);
+                                        // Optional: Add toast or feedback
+                                    }}
+                                    className="w-full mt-4 bg-[#2D1B14] text-white py-3 rounded-xl font-bold text-sm hover:bg-[#C37D46] transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <Coffee className="w-4 h-4" />
+                                    הדפס על ספל - ₪25
+                                </button>
                             </div>
                         </motion.div>
                     ))}

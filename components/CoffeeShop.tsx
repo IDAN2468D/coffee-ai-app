@@ -1,23 +1,49 @@
 'use client';
 
 import React, { useState } from 'react';
-import { PRODUCTS } from '@/lib/products';
 import { ShoppingBag, Star, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function CoffeeShop({ initialProducts = [] }: { initialProducts?: any[] }) {
+export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: any[], initialFavoriteIds?: string[] }) {
     const [activeCategory, setActiveCategory] = useState<string>('All');
     const { items, addItem, removeItem } = useCart();
+    const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
+    const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+
+    const toggleFavorite = async (productId: string) => {
+        // Optimistic update
+        const isFav = favoriteIds.includes(productId);
+        const newFavs = isFav ? favoriteIds.filter(id => id !== productId) : [...favoriteIds, productId];
+        setFavoriteIds(newFavs);
+
+        try {
+            await fetch('/api/favorites', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId })
+            });
+        } catch (error) {
+            console.error("Failed to toggle favorite", error);
+            // Revert on error
+            setFavoriteIds(favoriteIds);
+        }
+    };
+
+    const handleSizeSelect = (productId: string, size: string) => {
+        setSelectedSizes(prev => ({ ...prev, [productId]: size }));
+    };
+
 
     const categories = ['All', 'Hot', 'Cold', 'Bakery']; // Simplified categories
 
-    // Map Hebrew categories to English for display if needed, or just use English
-    const productsToDisplay = initialProducts.length > 0 ? initialProducts : PRODUCTS;
-
-    const filteredProducts = productsToDisplay.filter(p => {
+    const filteredProducts = initialProducts.filter(p => {
         if (activeCategory === 'All') return true;
         const categoryName = typeof p.category === 'string' ? p.category : p.category?.name;
+        // Simple mapping for demo consistency
+        if (activeCategory === 'Hot' && (categoryName === 'Hot' || categoryName === 'Coffee')) return true;
+        if (activeCategory === 'Cold' && categoryName === 'Cold') return true;
+        if (activeCategory === 'Bakery' && (categoryName === 'Pastry' || categoryName === 'Bakery')) return true;
         return categoryName === activeCategory;
     });
 
@@ -61,6 +87,15 @@ export default function CoffeeShop({ initialProducts = [] }: { initialProducts?:
                                     />
                                 </div>
 
+                                {/* Heart Button */}
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
+                                    className="absolute top-4 right-4 bg-white/80 p-2 rounded-full shadow-sm hover:scale-110 transition-transform"
+                                >
+                                    <Star className={`w-5 h-5 ${favoriteIds.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-stone-300'}`} />
+                                </button>
+
+
                                 {/* Content */}
                                 <h3 className="text-xl font-serif font-bold text-[#2D1B14] mb-2">{product.name}</h3>
                                 <div className="text-[#2D1B14] font-black text-lg mb-4">$ {product.price}</div>
@@ -70,13 +105,20 @@ export default function CoffeeShop({ initialProducts = [] }: { initialProducts?:
                                 </p>
 
                                 {/* Stars */}
-                                <div className="flex text-[#C37D46] gap-1 mb-8">
+                                <div className="flex text-[#C37D46] gap-1 mb-8 justify-center">
                                     {[1, 2, 3, 4, 5].map(s => <Star key={s} size={12} fill="#C37D46" />)}
                                 </div>
 
                                 {/* Add Button */}
                                 <button
-                                    onClick={() => addItem(product)}
+                                    onClick={() => {
+                                        // Normalize product data before adding to cart
+                                        const normalizedProduct = {
+                                            ...product,
+                                            category: typeof product.category === 'string' ? product.category : product.category?.name || 'Other'
+                                        };
+                                        addItem(normalizedProduct);
+                                    }}
                                     className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group"
                                 >
                                     add to cart
@@ -85,11 +127,20 @@ export default function CoffeeShop({ initialProducts = [] }: { initialProducts?:
                                     </span>
                                 </button>
 
-                                {/* Right Side Toggles (Visual Only for now) */}
+                                {/* Right Side Toggles (Interactive) */}
                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex flex-col gap-2 bg-white rounded-full p-1 shadow-lg border border-stone-100 hidden xl:flex">
-                                    <div className="w-8 h-8 rounded-full bg-[#C37D46] text-white flex items-center justify-center text-[10px] font-bold">L</div>
-                                    <div className="w-8 h-8 rounded-full bg-[#F5F5DC] text-[#2D1B14] flex items-center justify-center text-[10px] font-bold">M</div>
-                                    <div className="w-8 h-8 rounded-full bg-[#F5F5DC] text-[#2D1B14] flex items-center justify-center text-[10px] font-bold">S</div>
+                                    {['L', 'M', 'S'].map(size => (
+                                        <button
+                                            key={size}
+                                            onClick={() => handleSizeSelect(product.id, size)}
+                                            className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${(selectedSizes[product.id] || 'M') === size
+                                                ? 'bg-[#C37D46] text-white'
+                                                : 'bg-[#F5F5DC] text-[#2D1B14] hover:bg-[#E8E8C8]'
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
                                 </div>
 
                             </motion.div>

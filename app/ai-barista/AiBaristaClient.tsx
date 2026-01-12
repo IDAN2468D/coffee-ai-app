@@ -24,6 +24,7 @@ export default function AIBaristaPage() {
     const [aiSuggestion, setAiSuggestion] = useState('');
     const [loadingAI, setLoadingAI] = useState(false);
     const [numImages, setNumImages] = useState(3);
+    const [size, setSize] = useState('M');
 
     const handleGenerate = async () => {
         if (!prompt.trim()) return;
@@ -37,7 +38,7 @@ export default function AIBaristaPage() {
                     fetch('/api/generate', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ prompt, variant: i })
+                        body: JSON.stringify({ prompt: `${prompt} (${size} size cup)`, variant: i })
                     }).then(r => r.json())
                 );
             }
@@ -154,6 +155,24 @@ export default function AIBaristaPage() {
                                                 }`}
                                         >
                                             {num}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center space-x-6 space-x-reverse bg-stone-50 px-8 py-5 rounded-2xl border border-stone-100">
+                                <span className="text-xs font-black text-stone-400 uppercase tracking-widest">גודל:</span>
+                                <div className="flex items-center space-x-3 space-x-reverse">
+                                    {['S', 'M', 'L'].map((s) => (
+                                        <button
+                                            key={s}
+                                            onClick={() => setSize(s)}
+                                            className={`w-10 h-10 rounded-xl font-black transition-all text-sm ${size === s
+                                                ? 'bg-[#2D1B14] text-white shadow-lg scale-110'
+                                                : 'bg-white text-stone-400 hover:bg-stone-100'
+                                                }`}
+                                        >
+                                            {s}
                                         </button>
                                     ))}
                                 </div>
