@@ -207,45 +207,63 @@ export default function FortuneClient() {
                                 />
 
                                 <div className="relative w-80 h-80 mx-auto">
+                                    {/* Cup handle - Moved to background and styled for top-down view */}
+                                    <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-20 h-32 border-[12px] border-[#3E2723] rounded-r-[40px] shadow-2xl transform rotate-3" />
+
                                     <motion.div
                                         whileHover={{ scale: 1.05 }}
-                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#2D1B14] to-[#1a0f0a] rounded-full shadow-[0_0_80px_rgba(195,125,70,0.4)] border-4 border-[#5A382A] flex items-center justify-center overflow-hidden"
+                                        className="relative z-10 w-72 h-72 bg-gradient-to-br from-[#2D1B14] to-[#1a0f0a] rounded-full shadow-[0_0_80px_rgba(195,125,70,0.4)] border-4 border-[#5A382A] flex items-center justify-center overflow-hidden"
                                     >
                                         {/* Coffee Surface */}
                                         <div className="absolute inset-4 bg-gradient-to-br from-[#3E2723] via-[#4E342E] to-[#3E2723] rounded-full overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
+                                            {/* Liquid Ripple Effect */}
+                                            <motion.div
+                                                animate={{
+                                                    scale: [1, 1.1, 1],
+                                                    opacity: [0.5, 0.8, 0.5]
+                                                }}
+                                                transition={{
+                                                    duration: 4,
+                                                    repeat: Infinity,
+                                                    ease: "easeInOut"
+                                                }}
+                                                className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#5D4037]/30 to-transparent rounded-full"
+                                            />
+
                                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-[#4E342E] rounded-full blur-2xl opacity-60" />
 
-                                            {/* Steam */}
-                                            {[...Array(3)].map((_, i) => (
+                                            {/* Enhanced Steam */}
+                                            {[...Array(5)].map((_, i) => (
                                                 <motion.div
                                                     key={i}
+                                                    initial={{ opacity: 0, y: 0, scale: 0.5 }}
                                                     animate={{
-                                                        y: [0, -40],
-                                                        opacity: [0, 0.6, 0]
+                                                        y: -80,
+                                                        opacity: [0, 0.4, 0],
+                                                        scale: [0.5, 1.5, 2],
+                                                        x: Math.sin(i) * 20
                                                     }}
                                                     transition={{
-                                                        duration: 3,
+                                                        duration: 4,
                                                         repeat: Infinity,
-                                                        delay: i * 0.8
+                                                        delay: i * 0.6,
+                                                        ease: "easeInOut"
                                                     }}
-                                                    className="absolute top-10 w-10 h-10 bg-white/10 blur-xl rounded-full"
-                                                    style={{ left: `${30 + i * 20}%` }}
+                                                    className="absolute top-1/2 left-1/2 w-16 h-16 -ml-8 bg-white/5 blur-2xl rounded-full pointer-events-none"
                                                 />
                                             ))}
                                         </div>
 
                                         {/* Button inside cup */}
                                         <motion.div
-                                            whileHover={{ scale: 1.1 }}
-                                            className="relative z-10 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black px-8 py-4 rounded-full shadow-xl border-2 border-amber-400"
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="relative z-20 bg-gradient-to-r from-amber-600 to-amber-500 text-black font-black px-8 py-4 rounded-full shadow-lg border-2 border-amber-400 group-hover:shadow-amber-500/20 transition-all"
                                         >
+                                            <Sparkles className="inline-block w-5 h-5 ml-2 -mt-1 text-amber-900" />
                                             שתה וגלה את העתיד
                                         </motion.div>
                                     </motion.div>
-
-                                    {/* Cup handle */}
-                                    <div className="absolute -right-10 top-1/2 -translate-y-1/2 w-16 h-32 border-4 border-[#2D1B14] rounded-r-3xl" />
                                 </div>
                             </motion.div>
                         )}
@@ -295,7 +313,7 @@ export default function FortuneClient() {
                                 className="relative"
                             >
                                 {/* Cup Bottom with Symbol */}
-                                <div className="w-64 h-64 bg-[#1a0f0a] rounded-full border-4 border-[#3E2723] flex items-center justify-center shadow-[0_0_60px_rgba(195,125,70,0.2)] overflow-hidden relative">
+                                <div className="w-64 h-64 bg-[#1a0f0a] rounded-full border-4 border-[#3E2723] flex items-center justify-center shadow-[0_0_60px_rgba(195,125,70,0.2)] overflow-hidden relative mx-auto">
                                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-40 mix-blend-overlay" />
                                     <motion.div
                                         initial={{ scale: 0, rotate: -45 }}
@@ -343,6 +361,6 @@ export default function FortuneClient() {
                 </AnimatePresence>
 
             </div>
-        </main>
+        </main >
     );
 }
