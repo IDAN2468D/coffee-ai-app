@@ -54,7 +54,7 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="pt-10 text-center text-xs font-bold uppercase tracking-[0.3em] opacity-40">
+                <div className="pt-4 pb-12 text-center text-xs font-bold uppercase tracking-[0.3em] opacity-40">
                     כל הזכויות שמורות © 2026, The Digital Roast
                 </div>
             </div>

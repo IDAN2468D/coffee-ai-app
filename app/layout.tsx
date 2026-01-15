@@ -3,7 +3,8 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import AIPairingPopup from "@/components/AIPairingPopup";
 import VirtualCafe from "@/components/VirtualCafe";
-import WheelOfFortune from "@/components/WheelOfFortune";
+import DailyScratchCard from "@/components/DailyScratchCard";
+import AIChatWidget from "@/components/AIChatWidget";
 
 export const metadata: Metadata = {
   title: "The Digital Roast | בית קלייה וקפה פרימיום",
@@ -22,7 +23,8 @@ export default function RootLayout({
           {children}
           <AIPairingPopup />
           <VirtualCafe />
-          <WheelOfFortune />
+          <DailyScratchCard />
+          <AIChatWidget />
         </Providers>
       </body>
     </html>
