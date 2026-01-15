@@ -152,10 +152,13 @@ export default function DailyScratchCard() {
                 animate={{ scale: !isOpen ? 1 : 0 }}
                 whileHover={{ scale: 1.1, rotate: 10 }}
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-6 right-24 z-40 bg-[#C37D46] text-white p-4 rounded-xl shadow-xl border-2 border-white flex items-center justify-center transform hover:-translate-y-1 transition-transform"
+                className="fixed bottom-6 right-24 md:right-56 z-40 bg-[#C37D46] text-white p-4 rounded-full shadow-xl border-2 border-white flex items-center gap-2 group transform hover:-translate-y-1 transition-transform"
             >
-                <Gift className="w-8 h-8" />
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 rounded-full animate-pulse">1</span>
+                <div className="relative">
+                    <Gift className="w-6 h-6 group-hover:animate-bounce" />
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 rounded-full animate-pulse">1</span>
+                </div>
+                <span className="hidden md:inline font-bold">מתנה יומית</span>
             </motion.button>
 
             <AnimatePresence>
