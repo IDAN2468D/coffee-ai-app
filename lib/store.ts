@@ -17,6 +17,8 @@ interface CartStore {
     removeItem: (productId: string, size?: CoffeeSize) => void;
     clearCart: () => void;
     total: number;
+    recentlyAddedItem: CartItem | null;
+    clearRecentlyAdded: () => void;
 }
 
 export const useCart = create<CartStore>()(
@@ -24,6 +26,7 @@ export const useCart = create<CartStore>()(
         (set) => ({
             items: [],
             total: 0,
+            recentlyAddedItem: null,
             addItem: (product, size = 'M') => set((state) => {
                 // Find item with same product ID AND size
                 const existingItem = state.items.find(item =>
@@ -40,7 +43,7 @@ export const useCart = create<CartStore>()(
                     newItems = [...state.items, { ...product, quantity: 1, size }];
                 }
                 const newTotal = newItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-                return { items: newItems, total: newTotal };
+                return { items: newItems, total: newTotal, recentlyAddedItem: { ...product, quantity: 1, size } };
             }),
             removeItem: (productId, size) => set((state) => {
                 // If size is provided, remove only that specific size
@@ -64,9 +67,11 @@ export const useCart = create<CartStore>()(
                 return { items: newItems, total: newTotal };
             }),
             clearCart: () => set({ items: [], total: 0 }),
+            clearRecentlyAdded: () => set({ recentlyAddedItem: null }),
         }),
         {
             name: 'coffee-cart-storage-v3', // Updated version to include sizes
+            partialize: (state) => ({ items: state.items, total: state.total }),
         }
     )
 );

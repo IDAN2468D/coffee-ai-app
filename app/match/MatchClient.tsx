@@ -41,42 +41,36 @@ export default function MatchClient() {
     const { addItem } = useCart();
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
+    const [freeText, setFreeText] = useState('');
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [result, setResult] = useState<any>(null);
 
     const handleAnswer = (value: string) => {
         const newAnswers = { ...answers, [QUESTIONS[currentStep].id]: value };
         setAnswers(newAnswers);
-
-        if (currentStep < QUESTIONS.length - 1) {
-            setCurrentStep(currentStep + 1);
-        } else {
-            calculateResult(newAnswers);
-        }
+        setCurrentStep(currentStep + 1);
     };
 
-    const calculateResult = (finalAnswers: Record<string, string>) => {
-        // Simple logic engine
-        let matchedProductId = '1'; // Default: Espresso
-
-        if (finalAnswers.vibe === 'energy') matchedProductId = '1'; // Espresso
-        if (finalAnswers.vibe === 'treat') {
-            matchedProductId = Math.random() > 0.5 ? '15' : '14'; // Cloud Foam or Lavender
+    const calculateResult = async () => {
+        setIsAnalyzing(true);
+        try {
+            const response = await fetch('/api/sommelier', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answers, freeText })
+            });
+            const data = await response.json();
+            setResult(data);
+        } catch (error) {
+            console.error('Error fetching AI recommendation:', error);
+            // Fallback (optional)
+            setResult({
+                product: PRODUCTS[0],
+                explanation: "הייתה בעיה קטנה, אבל האספרסו הזה תמיד מומלץ!"
+            });
+        } finally {
+            setIsAnalyzing(false);
         }
-
-        if (finalAnswers.temperature === 'cold') {
-            matchedProductId = '4'; // Cold Brew
-            if (finalAnswers.vibe === 'treat') matchedProductId = '15'; // Cloud Foam
-        } else {
-            // Hot
-            if (finalAnswers.flavor === 'creamy') matchedProductId = '13'; // Cortado
-            if (finalAnswers.flavor === 'adventurous') matchedProductId = '14'; // Lavender
-        }
-
-        // Specific override
-        if (finalAnswers.vibe === 'chill' && finalAnswers.temperature === 'hot') matchedProductId = '13';
-
-        const product = PRODUCTS.find(p => p.id === matchedProductId) || PRODUCTS[0];
-        setResult(product);
     };
 
     const reset = () => {
@@ -105,31 +99,74 @@ export default function MatchClient() {
                                 exit={{ opacity: 0, x: -50 }}
                                 className="space-y-10 text-center"
                             >
-                                <div className="space-y-4">
-                                    <span className="text-xs font-black uppercase text-[#C37D46] tracking-[0.2em]">שאלה {currentStep + 1} מתוך {QUESTIONS.length}</span>
-                                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-[#2D1B14]">{QUESTIONS[currentStep].text}</h2>
-                                </div>
+                                {isAnalyzing ? (
+                                    <div className="flex flex-col items-center justify-center space-y-6 py-10">
+                                        <div className="relative">
+                                            <div className="absolute inset-0 bg-[#C37D46] rounded-full blur-xl opacity-20 animate-ping" />
+                                            <Coffee className="w-16 h-16 text-[#2D1B14] animate-bounce" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h3 className="text-2xl font-serif font-bold text-[#2D1B14]">הבריסטה החכם חושב...</h3>
+                                            <p className="text-stone-500">מחפש את ההתאמה המושלמת לטעמים שלך</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {currentStep < QUESTIONS.length ? (
+                                            <>
+                                                <div className="space-y-4">
+                                                    <span className="text-xs font-black uppercase text-[#C37D46] tracking-[0.2em]">שאלה {currentStep + 1} מתוך {QUESTIONS.length + 1}</span>
+                                                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-[#2D1B14]">{QUESTIONS[currentStep].text}</h2>
+                                                </div>
 
-                                <div className="grid gap-4">
-                                    {QUESTIONS[currentStep].options.map((opt) => (
-                                        <button
-                                            key={opt.id}
-                                            onClick={() => handleAnswer(opt.value)}
-                                            className="group relative overflow-hidden bg-stone-50 hover:bg-[#2D1B14] text-[#2D1B14] hover:text-white p-6 rounded-2xl transition-all duration-300 border-2 border-transparent hover:border-[#2D1B14] shadow-sm hover:shadow-xl text-right"
-                                        >
-                                            <span className="text-xl font-bold relative z-10">{opt.text}</span>
-                                        </button>
-                                    ))}
-                                </div>
+                                                <div className="grid gap-4">
+                                                    {QUESTIONS[currentStep].options.map((opt) => (
+                                                        <button
+                                                            key={opt.id}
+                                                            onClick={() => handleAnswer(opt.value)}
+                                                            className="group relative overflow-hidden bg-stone-50 hover:bg-[#2D1B14] text-[#2D1B14] hover:text-white p-6 rounded-2xl transition-all duration-300 border-2 border-transparent hover:border-[#2D1B14] shadow-sm hover:shadow-xl text-right"
+                                                        >
+                                                            <span className="text-xl font-bold relative z-10">{opt.text}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            /* Free Text Step */
+                                            <div className="space-y-8">
+                                                <div className="space-y-4">
+                                                    <span className="text-xs font-black uppercase text-[#C37D46] tracking-[0.2em]">צעד אחרון</span>
+                                                    <h2 className="text-3xl md:text-5xl font-serif font-bold text-[#2D1B14]">משהו נוסף?</h2>
+                                                    <p className="text-stone-500 text-lg">ספר לנו עוד קצת על מה שמתחשק לך (אופציונלי)</p>
+                                                </div>
 
-                                {currentStep > 0 && (
-                                    <button
-                                        onClick={() => setCurrentStep(currentStep - 1)}
-                                        className="text-stone-400 hover:text-[#2D1B14] text-sm font-bold flex items-center gap-2 mx-auto mt-8"
-                                    >
-                                        <ArrowLeft className="w-4 h-4" />
-                                        חזרה
-                                    </button>
+                                                <textarea
+                                                    value={freeText}
+                                                    onChange={(e) => setFreeText(e.target.value)}
+                                                    placeholder="בא לי משהו שמזכיר שוקולד ממש, או אולי משהו שיתאים לעוגה שאני אוכל..."
+                                                    className="w-full bg-stone-50 border-2 border-stone-200 rounded-2xl p-6 text-xl min-h-[150px] focus:border-[#2D1B14] focus:ring-0 transition-all outline-none resize-none"
+                                                />
+
+                                                <button
+                                                    onClick={() => calculateResult()}
+                                                    className="w-full bg-[#2D1B14] text-white py-6 rounded-2xl font-black text-xl shadow-xl hover:bg-black hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
+                                                >
+                                                    <Sparkles className="w-5 h-5" />
+                                                    <span>מצא את הקפה שלי</span>
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {currentStep > 0 && (
+                                            <button
+                                                onClick={() => setCurrentStep(currentStep - 1)}
+                                                className="text-stone-400 hover:text-[#2D1B14] text-sm font-bold flex items-center gap-2 mx-auto mt-8"
+                                            >
+                                                <ArrowLeft className="w-4 h-4" />
+                                                חזרה
+                                            </button>
+                                        )}
+                                    </>
                                 )}
                             </motion.div>
                         </AnimatePresence>
@@ -147,27 +184,34 @@ export default function MatchClient() {
                             <div className="relative w-48 h-48 mx-auto">
                                 <div className="absolute inset-0 bg-[#C37D46] rounded-full blur-2xl opacity-20 animate-pulse" />
                                 <img
-                                    src={result.image}
-                                    alt={result.name}
+                                    src={result.product.image}
+                                    alt={result.product.name}
                                     className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white relative z-10"
                                 />
                             </div>
 
-                            <div>
-                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#2D1B14] mb-4">{result.name}</h2>
-                                <p className="text-stone-500 text-lg max-w-md mx-auto leading-relaxed">{result.description}</p>
+                            <div className="space-y-4">
+                                <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#2D1B14]">{result.product.name}</h2>
+
+                                {/* AI Explanation Bubble */}
+                                <div className="bg-[#2D1B14]/5 p-6 rounded-2xl relative mt-6 mx-auto max-w-lg">
+                                    <div className="absolute -top-3 right-8 w-6 h-6 bg-[#F5F1E8] rotate-45 border-t border-l border-[#2D1B14]/10" />
+                                    <p className="text-[#2D1B14] text-lg font-medium leading-relaxed italic">
+                                        "{result.explanation}"
+                                    </p>
+                                </div>
                             </div>
 
-                            <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center">
                                 <button
                                     onClick={() => {
-                                        addItem(result);
+                                        addItem(result.product);
                                         // Optional: Toast or navigate
                                     }}
                                     className="bg-[#2D1B14] text-white px-8 py-4 rounded-xl font-bold hover:bg-[#1a0f0a] transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
                                 >
                                     <ShoppingBag className="w-5 h-5" />
-                                    <span>הוסף לסל - ₪{result.price.toFixed(2)}</span>
+                                    <span>הוסף לסל - ₪{result.product.price.toFixed(2)}</span>
                                 </button>
                                 <button
                                     onClick={reset}

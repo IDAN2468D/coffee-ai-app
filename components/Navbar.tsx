@@ -116,6 +116,8 @@ export default function Navbar() {
                                         {[
                                             { name: 'AI Barista', href: '/expert', desc: 'Chat & Order' },
                                             { name: 'Coffee Match', href: '/match', desc: 'Find your flavor' },
+                                            { name: 'Custom Blend', href: '/shop/custom-blend', desc: 'Create your own' },
+                                            { name: 'Brew Calc', href: '/expert/brew-calculator', desc: 'Pro Tools' },
                                             { name: 'Oracle', href: '/fortune', desc: 'Daily reading' },
                                             { name: 'Gallery', href: '/gallery', desc: 'Community Art' },
                                         ].map((item) => (

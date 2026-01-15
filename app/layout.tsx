@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import AIPairingPopup from "@/components/AIPairingPopup";
+import VirtualCafe from "@/components/VirtualCafe";
+import WheelOfFortune from "@/components/WheelOfFortune";
 
 export const metadata: Metadata = {
   title: "The Digital Roast | בית קלייה וקפה פרימיום",
@@ -17,6 +20,9 @@ export default function RootLayout({
       <body className="antialiased font-sans">
         <Providers>
           {children}
+          <AIPairingPopup />
+          <VirtualCafe />
+          <WheelOfFortune />
         </Providers>
       </body>
     </html>
