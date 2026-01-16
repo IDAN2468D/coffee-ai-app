@@ -17,6 +17,63 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
         }
 
+        // Pre-process items to ensure valid Product IDs
+        const finalItems = [];
+
+        for (const item of items) {
+            // Check if ID is a valid MongoDB ObjectID (24 hex characters)
+            const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(item.id);
+
+            if (isValidObjectId) {
+                // It's a real product, verify it exists (optional but good practice)
+                finalItems.push(item);
+            } else {
+                // It's a custom item (e.g. "custom-mug-..." or "blend-...")
+                // We need to map this to a real product in the DB to satisfy the foreign key constraint
+
+                let fallbackName = "מוצר מותאם אישית";
+                let fallbackCategory = "Equipment";
+
+                if (item.id.includes('mug') || item.name.includes('ספל')) {
+                    fallbackName = "ספל בעיצוב אישי";
+                    fallbackCategory = "Equipment";
+                } else if (item.id.includes('blend') || item.name.includes('בלנד')) {
+                    fallbackName = "בלנד אישי";
+                    fallbackCategory = "Beans";
+                }
+
+                // Try to find an existing generic product for this type
+                let realProduct = await prisma.product.findFirst({
+                    where: { name: fallbackName }
+                });
+
+                // If not found, create it on the fly
+                if (!realProduct) {
+                    console.log(`[ORDER] Creating generic product for: ${fallbackName}`);
+                    realProduct = await prisma.product.create({
+                        data: {
+                            name: fallbackName,
+                            description: "מוצר מותאם אישית שנוצר על ידי הלקוח",
+                            price: item.price, // Use changes from the item if needed, though usually fixed
+                            image: item.image,
+                            category: {
+                                connectOrCreate: {
+                                    where: { id: "65a000000000000000000000" }, // Use a dummy ID for lookup if needed, or better:
+                                    create: { name: fallbackCategory }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Push the item with the REAL database ID
+                finalItems.push({
+                    ...item,
+                    id: realProduct.id
+                });
+            }
+        }
+
         // Create the order in the database
         const order = await prisma.order.create({
             data: {
@@ -25,7 +82,7 @@ export async function POST(req: Request) {
                 status: 'pending',
                 shippingAddress: shippingDetails || {},
                 items: {
-                    create: items.map((item: any) => ({
+                    create: finalItems.map((item: any) => ({
                         productId: item.id,
                         quantity: item.quantity,
                         size: item.size || 'M', // Save selected size, default to M
