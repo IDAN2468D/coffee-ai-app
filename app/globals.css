@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force Rebuild */
+
 :root {
   --foreground-rgb: 45, 27, 20; /* #2D1B14 */
   --background-start-rgb: 245, 245, 220; /* #F5F5DC */

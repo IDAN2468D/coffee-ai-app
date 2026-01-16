@@ -26,21 +26,28 @@ export async function POST(req: Request) {
         Our Menu (JSON):
         ${JSON.stringify(PRODUCTS.map(p => ({ id: p.id, name: p.name, description: p.description, category: p.category })))}
 
-        User Preferences:
-        - Vibe/Energy: ${answers.vibe || 'Not specified'}
-        - Temperature: ${answers.temperature || 'Not specified'}
-        - Flavor Profile: ${answers.flavor || 'Not specified'}
+        User Preferences (Quiz Answers):
+        - Dessert Preference (Sweet/Sour): ${answers.dessert || 'Not specified'}
+        - Coffee Style (Black/Latte): ${answers.style || 'Not specified'}
+        - Vibe (Energy/Relax): ${answers.vibe || 'Not specified'}
+        - Flavor Notes (Fruity/Nutty): ${answers.notes || 'Not specified'}
         - Additional Notes: ${freeText || 'None'}
 
         Task:
         1. Select the SINGLE best matching product from our menu for this user.
         2. Write a short, personalized, and charming explanation (in Hebrew) telling the user why this specific coffee fits their current mood and taste.
-        3. Be creative but accurate.
+        3. Generate a "Flavor Profile" estimate for this user based on their answers (0-100 scale).
 
         Output must be valid JSON only:
         {
             "productId": "id_of_product",
-            "explanation": "Your explanation in Hebrew here"
+            "explanation": "Your explanation in Hebrew here",
+            "flavorProfile": {
+                "fruity": number,
+                "nutty": number,
+                "body": number,
+                "acidity": number
+            }
         }
         `;
 
@@ -58,7 +65,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             product: selectedProduct,
-            explanation: parsedResult.explanation
+            explanation: parsedResult.explanation,
+            flavorProfile: parsedResult.flavorProfile
         });
 
     } catch (error) {

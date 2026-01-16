@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ShoppingBag, Star, Plus, Minus } from 'lucide-react';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: any[], initialFavoriteIds?: string[] }) {
     const [activeCategory, setActiveCategory] = useState<string>('הכל');
@@ -89,13 +90,16 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 className="relative bg-white rounded-[2rem] p-6 pt-24 shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center mt-12 group/card"
                             >
                                 {/* Floating Image */}
-                                <div className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover/card:scale-110 transition-transform duration-500">
+                                <Link
+                                    href={`/shop/${product.id}`}
+                                    className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover/card:scale-110 transition-transform duration-500 cursor-pointer"
+                                >
                                     <img
                                         src={product.image}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
                                     />
-                                </div>
+                                </Link>
 
                                 {/* Heart Button */}
                                 <button
@@ -107,7 +111,9 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
 
 
                                 {/* Content */}
-                                <h3 className="text-xl font-serif font-bold text-[#2D1B14] mb-2">{product.name}</h3>
+                                <Link href={`/shop/${product.id}`} className="block mb-2 group-hover/card:text-[#C37D46] transition-colors">
+                                    <h3 className="text-xl font-serif font-bold text-[#2D1B14]">{product.name}</h3>
+                                </Link>
                                 <div className="text-[#2D1B14] font-black text-lg mb-4">₪{product.price}</div>
 
                                 <p className="text-xs text-stone-500 mb-6 px-4 leading-relaxed line-clamp-2 min-h-[2.5em]">

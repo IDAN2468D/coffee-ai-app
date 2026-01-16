@@ -188,7 +188,7 @@ export default function DailyScratchCard() {
                                     className="relative w-full h-64 bg-white rounded-2xl shadow-inner border-2 border-dashed border-[#C37D46]/30 overflow-hidden flex items-center justify-center select-none"
                                 >
                                     {/* Prize Layer (Hidden underneath) */}
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 space-y-3 bg-[url('/noise.png')] opacity-100">
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 space-y-3 bg-[#FDFCF0] opacity-100">
                                         <Trophy className="w-16 h-16 text-[#C37D46] animate-bounce" />
                                         <h3 className="text-2xl font-bold text-[#2D1B14]">{prize?.text}</h3>
                                         <div className="bg-[#2D1B14] text-white px-6 py-2 rounded-lg font-mono text-xl tracking-widest cursor-pointer hover:bg-[#4a2c20]" onClick={() => navigator.clipboard.writeText(prize?.code || '')}>
