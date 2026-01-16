@@ -11,7 +11,7 @@ export default function Footer() {
                     <div className="space-y-6">
                         <div className="flex items-center space-x-3 space-x-reverse text-white">
                             <Coffee className="w-8 h-8" />
-                            <span className="text-2xl font-serif font-bold">The Digital Roast</span>
+                            <span className="text-2xl font-serif font-bold">Cyber Barista</span>
                         </div>
                         <p className="text-lg font-light leading-relaxed">
                             יוצרים שלמות בכל כוס מאז 2026. הצטרפו אלינו לחוויית קפה ייחודית המשלבת מסורת וטכנולוגיה.
@@ -48,14 +48,14 @@ export default function Footer() {
                         <ul className="space-y-4 text-sm font-light">
                             <li>054-123-4567</li>
                             <li>03-123-4567</li>
-                            <li>hello@digitalroast.co.il</li>
+                            <li>hello@cyberbarista.co.il</li>
                             <li>רחוב הברזל 1, תל אביב, ישראל</li>
                         </ul>
                     </div>
                 </div>
 
                 <div className="pt-4 pb-12 text-center text-xs font-bold uppercase tracking-[0.3em] opacity-40">
-                    כל הזכויות שמורות © 2026, The Digital Roast
+                    כל הזכויות שמורות © 2026, Cyber Barista
                 </div>
             </div>
         </footer>

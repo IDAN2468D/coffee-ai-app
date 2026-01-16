@@ -6,7 +6,7 @@ import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: any[], initialFavoriteIds?: string[] }) {
-    const [activeCategory, setActiveCategory] = useState<string>('All');
+    const [activeCategory, setActiveCategory] = useState<string>('הכל');
     const { items, addItem, removeItem } = useCart();
     const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
     const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
@@ -35,29 +35,39 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
     };
 
 
-    const categories = ['All', 'Hot', 'Cold', 'Bakery']; // Simplified categories
+    const categories = ['הכל', 'חם', 'קר', 'מאפים', 'קפסולות'];
 
     const filteredProducts = initialProducts.filter(p => {
-        if (activeCategory === 'All') return true;
+        if (activeCategory === 'הכל') return true;
         const categoryName = typeof p.category === 'string' ? p.category : p.category?.name;
-        // Simple mapping for demo consistency
-        if (activeCategory === 'Hot' && (categoryName === 'Hot' || categoryName === 'Coffee')) return true;
-        if (activeCategory === 'Cold' && categoryName === 'Cold') return true;
-        if (activeCategory === 'Bakery' && (categoryName === 'Pastry' || categoryName === 'Bakery')) return true;
-        return categoryName === activeCategory;
+        // Map Hebrew UI categories to English DB categories or just match if DB updated
+        // For now, let's map Hebrew back to the English DB keys or string values
+        // Actually, seed used English keys 'Hot', 'Cold', etc for `category.name`?
+        // Let's check prisma logic. `prisma/seed.js` used: `name of categoryNames`.
+        // I did NOT translate `categoryNames` in seed.js to Hebrew. I only translated Product Names.
+        // So DB categories are still: Hot, Cold, Pastry, Beans, Equipment, Capsules.
+
+        switch (activeCategory) {
+            case 'חם': return categoryName === 'Hot' || categoryName === 'Coffee';
+            case 'קר': return categoryName === 'Cold';
+            case 'מאפים': return categoryName === 'Pastry' || categoryName === 'Bakery';
+            case 'קפסולות': return categoryName === 'Capsules';
+            case 'ציוד': return categoryName === 'Equipment'; // Added Equipment if needed
+            default: return false;
+        }
     });
 
     return (
-        <section id="menu" className="py-24 bg-[#F2F2F2]"> {/* Light grey background from design */}
-            <div className="max-w-7xl mx-auto px-6" dir="ltr"> {/* LTR for English design */}
+        <section id="menu" className="py-24 bg-[#F2F2F2]">
+            <div className="max-w-7xl mx-auto px-6" dir="rtl">
 
                 {/* Categories */}
-                <div className="flex justify-center space-x-8 mb-16">
+                <div className="flex justify-center flex-wrap gap-4 md:space-x-8 md:space-x-reverse mb-16">
                     {categories.map(cat => (
                         <button
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
-                            className={`text-lg font-serif font-bold tracking-wide uppercase transition-colors ${activeCategory === cat ? 'text-[#2D1B14] underline underline-offset-8 decoration-2' : 'text-stone-400 hover:text-[#2D1B14]'
+                            className={`text-lg font-serif font-bold tracking-wide uppercase transition-colors px-4 py-2 rounded-full ${activeCategory === cat ? 'bg-[#2D1B14] text-white shadow-lg' : 'text-stone-400 hover:text-[#2D1B14] hover:bg-stone-200'
                                 }`}
                         >
                             {cat}
@@ -76,10 +86,10 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 key={product.id}
-                                className="relative bg-white rounded-[2rem] p-6 pt-24 shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center mt-12"
+                                className="relative bg-white rounded-[2rem] p-6 pt-24 shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center mt-12 group/card"
                             >
                                 {/* Floating Image */}
-                                <div className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white">
+                                <div className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover/card:scale-110 transition-transform duration-500">
                                     <img
                                         src={product.image}
                                         alt={product.name}
@@ -90,7 +100,7 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 {/* Heart Button */}
                                 <button
                                     onClick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
-                                    className="absolute top-4 right-4 bg-white/80 p-2 rounded-full shadow-sm hover:scale-110 transition-transform"
+                                    className="absolute top-4 right-4 bg-white/80 p-2 rounded-full shadow-sm hover:scale-110 transition-transform z-10"
                                 >
                                     <Star className={`w-5 h-5 ${favoriteIds.includes(product.id) ? 'fill-red-500 text-red-500' : 'text-stone-300'}`} />
                                 </button>
@@ -98,9 +108,9 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
 
                                 {/* Content */}
                                 <h3 className="text-xl font-serif font-bold text-[#2D1B14] mb-2">{product.name}</h3>
-                                <div className="text-[#2D1B14] font-black text-lg mb-4">$ {product.price}</div>
+                                <div className="text-[#2D1B14] font-black text-lg mb-4">₪{product.price}</div>
 
-                                <p className="text-xs text-stone-500 mb-6 px-4 leading-relaxed line-clamp-2">
+                                <p className="text-xs text-stone-500 mb-6 px-4 leading-relaxed line-clamp-2 min-h-[2.5em]">
                                     {product.description || "Rich coffee brewed of Italian origin roast with raw sugar and steamed milk."}
                                 </p>
 
@@ -120,16 +130,16 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                         const size = (selectedSizes[product.id] || 'M') as 'S' | 'M' | 'L';
                                         addItem(normalizedProduct, size);
                                     }}
-                                    className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group"
+                                    className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold tracking-widest text-sm hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group"
                                 >
-                                    add to cart
+                                    <span>הוסף לסל</span>
                                     <span className="bg-white/20 rounded-full p-0.5 group-hover:bg-white/30 transition-colors">
                                         <Plus size={14} />
                                     </span>
                                 </button>
 
                                 {/* Right Side Toggles (Interactive) */}
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 flex flex-col gap-2 bg-white rounded-full p-1 shadow-lg border border-stone-100 hidden xl:flex">
+                                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white rounded-full p-1 shadow-lg border border-stone-100 hidden xl:flex">
                                     {['L', 'M', 'S'].map(size => (
                                         <button
                                             key={size}

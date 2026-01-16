@@ -25,6 +25,9 @@ export function getAIPairing(product: Product): PairingSuggestion | null {
     } else if (product.category === 'Equipment') {
         suggestedId = '8'; // Beans
         reason = "ציוד חדש? הגיע הזמן לנסות פולים חדשים.";
+    } else if (product.category === 'Capsules') {
+        suggestedId = '16'; // Brownie
+        reason = "קפסולות מעולות דורשות שוקולד בצד. הבראוניז שלנו הם השידוך המושלם.";
     } else if (product.name?.toLowerCase().includes('strong') || product.description?.toLowerCase().includes('intense') || product.id === '1') {
         suggestedId = '5'; // Croissant
         reason = "אספרסו חזק הולך בול עם קרואסון חמאה עשיר.";
@@ -32,9 +35,9 @@ export function getAIPairing(product: Product): PairingSuggestion | null {
         suggestedId = '17'; // Scone
         reason = "קפה קר ומרענן משלים נהדר סקונס אוכמניות.";
     } else {
-        // Generic Hot
-        suggestedId = '16'; // Brownie
-        reason = "שילוב קלאסי של קפה ושוקולד - פינוק מושלם.";
+        // Generic Hot or others
+        suggestedId = '20'; // Suggest Capsules instead of always brownie for generic hot
+        reason = "אהבת את זה? נסה גם את קפסולות הבית שלנו - Veloce Arabica.";
     }
 
     const suggestion = PRODUCTS.find(p => p.id === suggestedId);

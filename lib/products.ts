@@ -4,7 +4,7 @@ export interface Product {
     description: string;
     price: number;
     image: string;
-    category: 'Hot' | 'Cold' | 'Pastry' | 'Beans' | 'Equipment';
+    category: 'Hot' | 'Cold' | 'Pastry' | 'Beans' | 'Equipment' | 'Capsules';
 }
 
 export const PRODUCTS: Product[] = [
@@ -95,5 +95,29 @@ export const PRODUCTS: Product[] = [
         price: 22.00,
         image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1000&auto=format&fit=crop',
         category: 'Equipment'
+    },
+    {
+        id: '20',
+        name: 'Nespresso Arpeggio',
+        description: 'Pack of 10. Ispirazione Firenze Arpeggio. Intensive and creamy with cocoa notes. Intensity 9.',
+        price: 25.50,
+        image: 'https://images.unsplash.com/photo-1627850604058-52e40de1b847?q=80&w=1000&auto=format&fit=crop',
+        category: 'Capsules'
+    },
+    {
+        id: '21',
+        name: 'Landwer Ristretto',
+        description: 'Pack of 10. Powerful Italian style blend. Strong body with a deep cocoa finish. Intensity 12.',
+        price: 21.00,
+        image: 'https://images.unsplash.com/photo-1541604193435-22287d32c2c2?q=80&w=1000&auto=format&fit=crop',
+        category: 'Capsules'
+    },
+    {
+        id: '22',
+        name: 'Café Joe Cuba',
+        description: 'Pack of 10. 100% Arabica Single Origin. Rich, smoky flavor with hints of tobacco and caramel.',
+        price: 23.00,
+        image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=1000&auto=format&fit=crop',
+        category: 'Capsules'
     }
 ];

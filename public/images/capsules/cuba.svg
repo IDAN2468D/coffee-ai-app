@@ -1,0 +1,19 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="turquoiseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00838f;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00acc1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006064;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Capsule Body -->
+  <path d="M50,140 L150,140 L160,60 L40,60 Z" fill="url(#turquoiseGrad)" filter="url(#shadow)"/>
+  <!-- Rim -->
+  <ellipse cx="100" cy="60" rx="60" ry="10" fill="#00acc1" />
+  <ellipse cx="100" cy="60" rx="55" ry="8" fill="#006064" />
+  <!-- Shine -->
+  <path d="M60,70 Q70,130 90,130" stroke="rgba(255,255,255,0.4)" stroke-width="5" fill="none" />
+</svg>

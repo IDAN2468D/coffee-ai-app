@@ -44,7 +44,7 @@ export default function AIPairingPopup() {
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                className="fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 bg-white/90 backdrop-blur-xl border border-stone-200 shadow-2xl rounded-2xl p-5 z-50 flex flex-col gap-4 overflow-hidden"
+                className="fixed bottom-32 right-4 md:bottom-24 md:right-8 w-[calc(100%-2rem)] md:w-96 bg-white/90 backdrop-blur-xl border border-stone-200 shadow-2xl rounded-2xl p-5 z-[60] flex flex-col gap-4 overflow-hidden"
                 dir="rtl"
             >
                 {/* AI Badge */}

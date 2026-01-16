@@ -150,9 +150,9 @@ export default function BeanRaterPage() {
 
                                 <div>
                                     <span className="text-xs text-stone-400 font-bold uppercase block mb-3">פגמים שזוהו</span>
-                                    {result.defects && result.defects.length > 0 && result.defects[0] !== 'none' ? (
+                                    {result.defects && (Array.isArray(result.defects) ? result.defects : [result.defects]).length > 0 && (Array.isArray(result.defects) ? result.defects : [result.defects])[0] !== 'none' ? (
                                         <div className="flex flex-wrap gap-2">
-                                            {result.defects.map((defect: string, i: number) => (
+                                            {(Array.isArray(result.defects) ? result.defects : [result.defects]).map((defect: string, i: number) => (
                                                 <span key={i} className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-sm font-bold flex items-center gap-1">
                                                     <AlertCircle size={14} />
                                                     {defect}

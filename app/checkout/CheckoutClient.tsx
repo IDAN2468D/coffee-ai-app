@@ -44,6 +44,16 @@ export default function CheckoutPage() {
         if (isValid) setStep(step + 1);
     };
 
+    const [usePoints, setUsePoints] = useState(false);
+    // Mock points for now, or fetch from session/API. 
+    // Ideally pass this as prop or fetch on mount. Let's assume user has 403 points as seen in logs.
+    const userPoints = 403;
+    const pointsValue = Math.floor(userPoints / 10); // 10 points = 1 NIS
+
+    // Calculate final total
+    const discount = usePoints ? Math.min(pointsValue, total) : 0;
+    const finalTotal = total - discount;
+
     const onSubmit = async (data: any) => {
         if (!session) {
             alert("אנא התחבר כדי להשלים את ההזמנה");
@@ -57,8 +67,9 @@ export default function CheckoutPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     items: items,
-                    total: total,
-                    shippingDetails: data
+                    total: finalTotal, // Send discounted total
+                    shippingDetails: data,
+                    redeemedPoints: usePoints ? Math.min(userPoints, Math.ceil(discount * 10)) : 0
                 })
             });
 
@@ -68,7 +79,7 @@ export default function CheckoutPage() {
                     id: result.orderId,
                     pointsEarned: result.pointsEarned,
                     items: [...items],
-                    total: total,
+                    total: finalTotal,
                     shippingDetails: data,
                     date: new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
                 });
@@ -493,7 +504,7 @@ export default function CheckoutPage() {
                                         ) : (
                                             <>
                                                 <span>בצע תשלום</span>
-                                                <span className="bg-white/20 px-2 py-0.5 rounded text-sm text-[#CAB3A3]">₪{total.toFixed(0)}</span>
+                                                <span className="bg-white/20 px-2 py-0.5 rounded text-sm text-[#CAB3A3]">₪{finalTotal.toFixed(0)}</span>
                                             </>
                                         )}
                                     </button>
@@ -559,10 +570,36 @@ export default function CheckoutPage() {
                                     </div>
                                     <span className="text-emerald-400 font-black px-2 py-0.5 bg-emerald-400/10 rounded">חינם</span>
                                 </div>
+
+                                {/* Points Redemption UI */}
+                                <div className="border-t border-white/5 pt-4">
+                                    <div className="flex items-center justify-between flex-row-reverse mb-2">
+                                        <div className="flex items-center gap-2 flex-row-reverse text-amber-400">
+                                            <Star className="w-4 h-4 fill-current" />
+                                            <span className="text-xs font-black uppercase tracking-widest">נקודות ({userPoints})</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setUsePoints(!usePoints)}
+                                            className={`text-[10px] font-bold px-3 py-1 rounded-full transition-all ${usePoints
+                                                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                                : 'bg-amber-400/20 text-amber-400 hover:bg-amber-400/30'
+                                                }`}
+                                        >
+                                            {usePoints ? 'בטל שימוש' : 'נצל נקודות'}
+                                        </button>
+                                    </div>
+                                    {usePoints && (
+                                        <div className="flex justify-between text-amber-400 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse animate-in fade-in slide-in-from-top-2">
+                                            <span>הנחת נקודות</span>
+                                            <span>-₪{discount.toFixed(0)}</span>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="pt-6 flex justify-between items-center flex-row-reverse border-t border-white/5 mt-2">
                                     <div className="text-right">
                                         <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-1">סה״כ לתשלום</p>
-                                        <p className="text-4xl font-black text-[#CAB3A3]">₪{total.toFixed(0)}</p>
+                                        <p className="text-4xl font-black text-[#CAB3A3]">₪{finalTotal.toFixed(0)}</p>
                                     </div>
                                     <ShieldCheck className="w-12 h-12 opacity-20 text-[#CAB3A3]" />
                                 </div>

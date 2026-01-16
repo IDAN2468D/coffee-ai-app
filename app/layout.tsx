@@ -7,7 +7,7 @@ import DailyScratchCard from "@/components/DailyScratchCard";
 import AIChatWidget from "@/components/AIChatWidget";
 
 export const metadata: Metadata = {
-  title: "The Digital Roast | בית קלייה וקפה פרימיום",
+  title: "Cyber Barista | בית קלייה וקפה פרימיום",
   description: "חווית קפה דיגיטלית מתקדמת עם בריסטה AI ומשלוחים עד הבית",
 };
 
@@ -18,6 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+      </head>
       <body className="antialiased font-sans">
         <Providers>
           {children}

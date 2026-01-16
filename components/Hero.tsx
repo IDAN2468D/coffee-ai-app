@@ -22,35 +22,33 @@ export default function Hero() {
             <div className="relative z-10 max-w-7xl mx-auto px-6 w-full pt-20">
                 <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <motion.div
-                        initial={{ opacity: 0, x: -50 }}
+                        initial={{ opacity: 0, x: 50 }} // Slide from right for RTL feel? Or just keep simple
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="space-y-6 text-left" // Left align as per standard web design, or specific to image? Image shows typical hero.
-                    // Image shows centered or left. Let's go with Left aligned for clear typography.
+                        className="space-y-6 text-right" // Hebrew alignment
                     >
                         <h1 className="text-5xl md:text-7xl font-serif text-white font-bold leading-tight">
-                            Brewed to <br />
-                            Perfection, Sipped <br />
-                            with <span className="text-[#C37D46]">Passion</span>.
+                            חלוט <span className="text-[#C37D46]">לשלמות</span>,<br />
+                            נלגם בתשוקה.
                         </h1>
 
-                        <p className="text-lg text-white/80 font-light leading-relaxed max-w-lg">
-                            We curate the world's finest coffee beans, roasted to perfection to bring you the ultimate coffee experience. Start your morning right with Latte Lane.
+                        <p className="text-lg text-white/80 font-light leading-relaxed max-w-lg ml-auto">
+                            אנו מלקטים את פולי הקפה המשובחים בעולם, קלויים לשלמות כדי להביא לכם את חווית הקפה האולטימטיבית. התחילו את הבוקר טוב יותר עם סייבר בריסטה.
                         </p>
 
-                        <div className="flex flex-wrap gap-4 pt-4">
+                        <div className="flex flex-wrap gap-4 pt-4 justify-start"> {/* Buttons */}
                             <Link
                                 href="/shop"
                                 className="bg-[#C37D46] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#A66330] transition-all shadow-lg hover:shadow-[#C37D46]/20 border-2 border-transparent hover:scale-105 flex items-center gap-2"
                             >
-                                Shop Now
-                                <ArrowRight className="w-4 h-4" />
+                                <ArrowRight className="w-4 h-4 rotate-180" /> {/* Rotate arrow for RTL */}
+                                הזמן עכשיו
                             </Link>
                             <Link
                                 href="/dashboard"
                                 className="bg-transparent border border-white/30 text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center gap-2"
                             >
-                                My Dashboard
+                                האזור האישי
                             </Link>
                         </div>
                     </motion.div>

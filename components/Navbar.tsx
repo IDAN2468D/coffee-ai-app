@@ -50,16 +50,22 @@ export default function Navbar() {
             <div className="max-w-[1440px] mx-auto px-6 h-12 flex items-center justify-between">
 
                 {/* Logo & Brand */}
-                <Link href="/" className="flex items-center gap-2 group relative z-50">
-                    <div className={`p-2 rounded-full border transition-colors ${useDarkText
-                        ? 'bg-[#2D1B14] border-[#2D1B14] group-hover:bg-[#C37D46] group-hover:border-[#C37D46]'
-                        : 'bg-white/10 border-white/10 group-hover:bg-[#C37D46]'
+                <Link href="/" className="flex items-center gap-3 group relative z-50">
+                    <div className={`relative p-2.5 rounded-xl border transition-all duration-300 ${useDarkText
+                        ? 'bg-[#2D1B14] border-[#2D1B14] group-hover:bg-[#C37D46] group-hover:border-[#C37D46] shadow-lg'
+                        : 'bg-white/10 border-white/10 group-hover:bg-[#C37D46] backdrop-blur-md'
                         }`}>
-                        <Coffee className={`w-5 h-5 ${useDarkText ? 'text-white' : 'text-white'}`} />
+                        <Coffee className={`w-5 h-5 transition-colors ${useDarkText ? 'text-white' : 'text-white'}`} />
+                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-400 animate-pulse" />
                     </div>
-                    <span className={`text-xl md:text-2xl font-serif font-bold tracking-tight transition-colors ${useDarkText ? 'text-[#2D1B14]' : 'text-white'}`}>
-                        Latte Lane<span className="text-[#C37D46]">.</span>
-                    </span>
+                    <div className="flex flex-col">
+                        <span className={`text-xl font-serif font-black tracking-tight leading-none transition-colors ${useDarkText ? 'text-[#2D1B14]' : 'text-white'}`}>
+                            Cyber Barista
+                        </span>
+                        <span className={`text-[11px] font-sans font-bold ${useDarkText ? 'text-[#C37D46]' : 'text-white/60'} group-hover:text-[#C37D46] transition-colors tracking-wide`}>
+                            בית הקפה הדיגיטלי
+                        </span>
+                    </div>
                 </Link>
 
                 {/* Desktop Navigation */}
@@ -69,16 +75,16 @@ export default function Navbar() {
                     }`}>
                     <div className="flex items-center gap-1">
                         {[
-                            { name: 'Shop', href: '/shop' },
-                            { name: 'Menu', href: '/#menu' },
-                            { name: 'Club', href: '/subscription', icon: Crown },
+                            { name: 'חנות', href: '/shop' },
+                            { name: 'תפריט', href: '/#menu' },
+                            { name: 'מועדון', href: '/subscription', icon: Crown },
                         ].map((link) => (
                             <Link
-                                key={link.name}
+                                key={link.href}
                                 href={link.href}
-                                className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${isActive(link.href)
+                                className={`px-5 py-2 rounded-full text-sm font-medium tracking-normal transition-all flex items-center gap-2 ${isActive(link.href)
                                     ? (useDarkText ? 'bg-[#2D1B14] text-white shadow-lg' : 'text-white bg-white/10 shadow-inner')
-                                    : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/70 hover:bg-white/10')
+                                    : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/80 hover:bg-white/10')
                                     }`}
                             >
                                 {link.icon && <link.icon className={`w-3 h-3 ${isActive(link.href) && useDarkText ? 'text-[#C37D46]' : 'text-[#C37D46]'}`} />}
@@ -94,12 +100,12 @@ export default function Navbar() {
                             onMouseEnter={() => setFeaturesOpen(true)}
                             onMouseLeave={() => setFeaturesOpen(false)}
                         >
-                            <button className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 ${['/expert', '/fortune', '/match'].includes(pathname || '')
+                            <button className={`px-5 py-2 rounded-full text-sm font-medium tracking-normal transition-all flex items-center gap-1.5 ${['/expert', '/fortune', '/match'].includes(pathname || '')
                                 ? 'text-[#C37D46]'
-                                : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/70 hover:bg-white/10')
+                                : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/80 hover:bg-white/10')
                                 }`}>
                                 <Sparkles className="w-3 h-3" />
-                                <span>AI Experiences</span>
+                                <span>חוויות AI</span>
                                 <ChevronDown className={`w-3 h-3 transition-transform ${featuresOpen ? 'rotate-180' : ''}`} />
                             </button>
 
@@ -114,18 +120,18 @@ export default function Navbar() {
                                         className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-[#2D1B14] border border-white/10 rounded-2xl shadow-xl overflow-hidden p-1 z-[60]"
                                     >
                                         {[
-                                            { name: 'AI Barista', href: '/expert', desc: 'Chat & Order' },
-                                            { name: 'Coffee Match', href: '/match', desc: 'Find your flavor' },
-                                            { name: 'Custom Blend', href: '/expert/custom-blend-lab', desc: 'Create your own' },
-                                            { name: 'Bean Rater', href: '/expert/bean-rater', desc: 'Quality Check' },
-                                            { name: 'Brew Calc', href: '/expert/brew-calculator', desc: 'Pro Tools' },
-                                            { name: 'Oracle', href: '/fortune', desc: 'Daily reading' },
-                                            { name: 'Gallery', href: '/gallery', desc: 'Community Art' },
+                                            { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה' },
+                                            { name: 'התאמת קפה', href: '/match', desc: 'מצא את הטעם שלך' },
+                                            { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', desc: 'צור בעצמך' },
+                                            { name: 'מדרג פולים', href: '/expert/bean-rater', desc: 'בדיקת איכות' },
+                                            { name: 'מחשבון חליטה', href: '/expert/brew-calculator', desc: 'כלים למקצוענים' },
+                                            { name: 'אורקל הקפה', href: '/fortune', desc: 'קריאה יומית' },
+                                            { name: 'גלריה', href: '/gallery', desc: 'אומנות הקהילה' },
                                         ].map((item) => (
                                             <Link
-                                                key={item.name}
+                                                key={item.href}
                                                 href={item.href}
-                                                className="block p-3 rounded-xl hover:bg-white/5 transition-colors group"
+                                                className="block p-3 rounded-xl hover:bg-white/5 transition-colors group text-right"
                                             >
                                                 <div className="font-bold text-white text-sm group-hover:text-[#C37D46] transition-colors">{item.name}</div>
                                                 <div className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{item.desc}</div>
