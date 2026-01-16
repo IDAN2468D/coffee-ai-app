@@ -1,5 +1,5 @@
 
-import CustomBlendClient from './CustomBlendClient';
+import CustomBlendClient from './BlendClient';
 
 export const metadata = {
     title: 'מעבדת הבלנדים | The Digital Roast',
