@@ -12,7 +12,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Gemini API Key is missing" }, { status: 500 });
         }
 
-        // For text-only input, use the gemini-pro model
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         // Menu Context
