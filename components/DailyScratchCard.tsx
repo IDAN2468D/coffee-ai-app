@@ -2,33 +2,55 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Gift, Sparkles, Trophy, Eraser } from 'lucide-react';
+import { X, Gift, Sparkles, Trophy, Lightbulb } from 'lucide-react';
 
 export default function DailyScratchCard() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScratched, setIsScratched] = useState(false);
-    const [prize, setPrize] = useState<{ text: string, code: string } | null>(null);
+    const [prize, setPrize] = useState<{ text: string, code?: string, type: 'coupon' | 'fact' } | null>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const PRIZES = [
-        { text: '15% הנחה על פולים', code: 'BEAN15' },
-        { text: 'משלוח חינם', code: 'FREESHIP' },
-        { text: 'קפה שני מתנה', code: 'BOGO' },
-        { text: 'עוגייה מתנה', code: 'COOKIE' },
-    ];
-
     useEffect(() => {
-        // Reduced to 1 min for testing
+        // Check cooldown (24 hours)
         const lastPlay = localStorage.getItem('lastDailyPlay');
         const now = new Date().getTime();
-        if (!lastPlay || now - parseInt(lastPlay) > 60000) {
-            setTimeout(() => setIsOpen(true), 1500);
-        }
+        const COOLDOWN = 24 * 60 * 60 * 1000; // 24 Hours
 
-        // Select prize once on mount/open
-        setPrize(PRIZES[Math.floor(Math.random() * PRIZES.length)]);
+        if (!lastPlay || now - parseInt(lastPlay) > COOLDOWN) {
+            // Auto open strictly for demo if not played
+            setTimeout(() => setIsOpen(true), 2000);
+        }
     }, []);
+
+    const fetchPrize = async () => {
+        if (prize) return; // Already fetched
+
+        const rand = Math.random();
+
+        if (rand < 0.7) {
+            // 70% - Coffee Fact (AI)
+            try {
+                const res = await fetch('/api/daily-fact');
+                const data = await res.json();
+                setPrize({ text: data.fact, type: 'fact' });
+            } catch (e) {
+                setPrize({ text: "הידעת? קפה הוא פרי!", type: 'fact' });
+            }
+        } else if (rand < 0.9) {
+            // 20% - Small Coupon
+            setPrize({ text: '5% הנחה לקנייה הבאה', code: 'COFFEE5', type: 'coupon' });
+        } else {
+            // 10% - Big Prize
+            setPrize({ text: 'משלוח חינם!', code: 'FREESHIP', type: 'coupon' });
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchPrize();
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         if (isOpen && canvasRef.current && containerRef.current) {
@@ -78,7 +100,6 @@ export default function DailyScratchCard() {
                 ctx.beginPath();
                 ctx.arc(x, y, 30, 0, Math.PI * 2);
                 ctx.fill();
-                checkProgress();
             };
 
             const start = () => isDrawing = true;
@@ -99,28 +120,10 @@ export default function DailyScratchCard() {
 
             return () => {
                 canvas.removeEventListener('mousedown', start);
-                // ... cleanup if strictly needed, but component unmount handles visuals
+                // clean up
             };
         }
     }, [isOpen]);
-
-    const checkProgress = () => {
-        if (!canvasRef.current) return;
-        const ctx = canvasRef.current.getContext('2d');
-        if (!ctx) return;
-
-        // Simple pixel check logic - optimized to not run every pixel
-        // For demo, we just check if enough "transparent" pixels exist in a sampled grid
-        // Or just rely on user interaction. 
-        // Let's do a simple counter based on scratch events? No, pixel data is better.
-        // We'll trust the user scratches enough or trigger it after some movement.
-
-        // Actually, let's just sample center
-        const imgData = ctx.getImageData(canvasRef.current.width / 2, canvasRef.current.height / 2, 1, 1);
-        if (imgData.data[3] === 0 && !isScratched) {
-            // Center revealed?
-        }
-    };
 
     // Better check: on mouse up, check %
     const handleScratchEnd = () => {
@@ -189,12 +192,26 @@ export default function DailyScratchCard() {
                                 >
                                     {/* Prize Layer (Hidden underneath) */}
                                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4 space-y-3 bg-[#FDFCF0] opacity-100">
-                                        <Trophy className="w-16 h-16 text-[#C37D46] animate-bounce" />
-                                        <h3 className="text-2xl font-bold text-[#2D1B14]">{prize?.text}</h3>
-                                        <div className="bg-[#2D1B14] text-white px-6 py-2 rounded-lg font-mono text-xl tracking-widest cursor-pointer hover:bg-[#4a2c20]" onClick={() => navigator.clipboard.writeText(prize?.code || '')}>
-                                            {prize?.code}
-                                        </div>
-                                        <p className="text-xs text-stone-400">לחץ להעתקת הקוד</p>
+                                        {prize?.type === 'fact' ? (
+                                            <>
+                                                <Lightbulb className="w-16 h-16 text-yellow-500 animate-bounce" />
+                                                <h3 className="text-xl font-bold text-[#2D1B14] leading-relaxed">"{prize.text}"</h3>
+                                                <p className="text-xs text-stone-400">חזור מחר להפתעה נוספת!</p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Trophy className="w-16 h-16 text-[#C37D46] animate-bounce" />
+                                                <h3 className="text-2xl font-bold text-[#2D1B14]">{prize?.text}</h3>
+                                                {prize?.code && (
+                                                    <>
+                                                        <div className="bg-[#2D1B14] text-white px-6 py-2 rounded-lg font-mono text-xl tracking-widest cursor-pointer hover:bg-[#4a2c20]" onClick={() => navigator.clipboard.writeText(prize.code || '')}>
+                                                            {prize.code}
+                                                        </div>
+                                                        <p className="text-xs text-stone-400">לחץ להעתקת הקוד</p>
+                                                    </>
+                                                )}
+                                            </>
+                                        )}
                                     </div>
 
                                     {/* Scratch Layer (Canvas) */}
