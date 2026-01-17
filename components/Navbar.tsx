@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -126,6 +126,7 @@ export default function Navbar() {
                                             { name: 'מדרג פולים', href: '/expert/bean-rater', desc: 'בדיקת איכות' },
                                             { name: 'מחשבון חליטה', href: '/expert/brew-calculator', desc: 'כלים למקצוענים' },
                                             { name: 'אורקל הקפה', href: '/fortune', desc: 'קריאה יומית' },
+                                            { name: 'מעקב קפאין', href: '/tracker', desc: 'בריאות ושינה' },
                                             { name: 'גלריה', href: '/gallery', desc: 'אומנות הקהילה' },
                                         ].map((item) => (
                                             <Link
@@ -207,61 +208,116 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu - Premium Glass Design */}
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="lg:hidden bg-[#1A100C] border-t border-white/5 overflow-hidden shadow-2xl"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 top-16 z-40 bg-black/60 backdrop-blur-xl lg:hidden h-[calc(100vh-4rem)] overflow-y-auto"
                     >
-                        <div className="p-6 space-y-2">
-                            {[
-                                { name: 'Home', href: '/' },
-                                { name: 'Shop', href: '/shop' },
-                                { name: 'The Club', href: '/subscription' },
-                                { name: 'Custom Blend', href: '/expert/custom-blend-lab' },
-                                { name: 'Bean Rater', href: '/expert/bean-rater' },
-                                { name: 'Brew Calculator', href: '/expert/brew-calculator' },
-                                { name: 'Coffee Match', href: '/match' },
-                                { name: 'AI Barista', href: '/expert' },
-                                { name: 'Daily Oracle', href: '/fortune' },
-                                { name: 'Community Gallery', href: '/gallery' },
-                            ].map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="block p-4 rounded-xl hover:bg-white/5 text-white/80 hover:text-[#C37D46] font-serif text-xl border-b border-white/5 last:border-0 transition-colors"
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-
-                            {!session && (
-                                <div className="grid grid-cols-2 gap-4 pt-4">
-                                    <Link href="/auth?mode=login" onClick={() => setMobileMenuOpen(false)} className="py-3 text-center border border-white/20 rounded-xl text-white font-bold text-sm">
-                                        Log In
-                                    </Link>
-                                    <Link href="/auth?mode=signup" onClick={() => setMobileMenuOpen(false)} className="py-3 text-center bg-[#C37D46] rounded-xl text-white font-bold text-sm">
-                                        Sign Up
-                                    </Link>
+                        <motion.div
+                            initial={{ y: -20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            className="p-6 pb-24 space-y-8"
+                            dir="rtl"
+                        >
+                            {/* Main Navigation */}
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold text-[#C37D46] uppercase tracking-widest opacity-80 mb-4 px-2">תפריט ראשי</h3>
+                                <div className="grid gap-2">
+                                    {[
+                                        { name: 'דף הבית', href: '/', icon: Home },
+                                        { name: 'חנות', href: '/shop', icon: Store },
+                                        { name: 'מועדון החברים', href: '/subscription', icon: Crown },
+                                        { name: 'גלריה', href: '/gallery', icon: ImageIcon },
+                                    ].map((link, i) => (
+                                        <motion.div
+                                            key={link.name}
+                                            initial={{ x: 20, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: 0.1 + i * 0.05 }}
+                                        >
+                                            <Link
+                                                href={link.href}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group"
+                                            >
+                                                <div className="p-2 bg-[#2D1B14] rounded-lg text-[#C37D46] group-hover:bg-[#C37D46] group-hover:text-white transition-colors">
+                                                    <link.icon size={20} />
+                                                </div>
+                                                <span className="font-serif text-lg text-white font-medium">{link.name}</span>
+                                            </Link>
+                                        </motion.div>
+                                    ))}
                                 </div>
-                            )}
+                            </div>
 
-                            {session && (
-                                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 p-4 bg-white/5 rounded-xl mt-4">
-                                    <div className="w-10 h-10 rounded-full bg-[#C37D46] flex items-center justify-center text-white font-bold">
-                                        {session.user?.name?.[0]}
+                            {/* AI Tools & Extras */}
+                            <div className="space-y-4">
+                                <h3 className="text-xs font-bold text-[#C37D46] uppercase tracking-widest opacity-80 mb-4 px-2">כלים וחוויות AI</h3>
+                                <div className="grid gap-2">
+                                    {[
+                                        { name: 'בריסטה AI', href: '/expert', icon: Bot },
+                                        { name: 'אורקל הקפה', href: '/fortune', icon: Sparkles },
+                                        { name: 'מעקב קפאין', href: '/tracker', icon: Activity },
+                                        { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
+                                        { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', icon: FlaskConical },
+                                        { name: 'מדרג הפולים', href: '/expert/bean-rater', icon: Gavel },
+                                        { name: 'מחשבון חליטה', href: '/expert/brew-calculator', icon: Scale },
+                                    ].map((link, i) => (
+                                        <motion.div
+                                            key={link.name}
+                                            initial={{ x: 20, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: 0.3 + i * 0.05 }}
+                                        >
+                                            <Link
+                                                href={link.href}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-white/80 hover:text-white"
+                                            >
+                                                <link.icon size={18} className="text-[#C37D46]" />
+                                                <span className="font-medium">{link.name}</span>
+                                            </Link>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* User Section */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                                className="pt-4 border-t border-white/10"
+                            >
+                                {!session ? (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Link href="/auth?mode=login" onClick={() => setMobileMenuOpen(false)} className="py-3.5 text-center border border-white/20 rounded-xl text-white font-bold text-sm hover:bg-white/5 transition-colors">
+                                            התחברות
+                                        </Link>
+                                        <Link href="/auth?mode=signup" onClick={() => setMobileMenuOpen(false)} className="py-3.5 text-center bg-[#C37D46] rounded-xl text-white font-bold text-sm shadow-lg shadow-orange-900/20">
+                                            הרשמה
+                                        </Link>
                                     </div>
-                                    <div>
-                                        <div className="text-white font-bold">My Dashboard</div>
-                                        <div className="text-white/50 text-xs text-left">View profile & orders</div>
-                                    </div>
-                                </Link>
-                            )}
-                        </div>
+                                ) : (
+                                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 p-4 bg-[#2D1B14]/50 border border-white/10 rounded-2xl">
+                                        <div className="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] to-transparent">
+                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center text-white font-bold text-lg">
+                                                {session.user?.name?.[0]}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-white font-bold text-lg">האיזור האישי</div>
+                                            <div className="text-white/50 text-xs">מחובר כ-{session.user?.name?.split(' ')[0]}</div>
+                                        </div>
+                                    </Link>
+                                )}
+                            </motion.div>
+
+                        </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
