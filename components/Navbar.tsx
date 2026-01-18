@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 
+
+
 export default function Navbar() {
+    // ...
+
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [featuresOpen, setFeaturesOpen] = useState(false);
@@ -231,6 +235,7 @@ export default function Navbar() {
                                         { name: 'דף הבית', href: '/', icon: Home },
                                         { name: 'חנות', href: '/shop', icon: Store },
                                         { name: 'מועדון החברים', href: '/subscription', icon: Crown },
+                                        { name: 'מיקסר אווירה', href: '/ambience', icon: Headphones },
                                         { name: 'גלריה', href: '/gallery', icon: ImageIcon },
                                     ].map((link, i) => (
                                         <motion.div

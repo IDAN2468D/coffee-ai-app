@@ -1,11 +1,18 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, User, Bot, Loader2, Coffee, ShoppingBag } from 'lucide-react';
+import { Send, Sparkles, User, Bot, Loader2, Coffee, ShoppingBag, Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { useCart } from '@/lib/store';
 import { PRODUCTS } from '@/lib/products';
+
+declare global {
+    interface Window {
+        webkitSpeechRecognition: any;
+        SpeechRecognition: any;
+    }
+}
 
 interface Message {
     id: string;
@@ -29,6 +36,8 @@ export default function ExpertClient() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [isListening, setIsListening] = useState(false);
+    const recognitionRef = useRef<any>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -37,6 +46,70 @@ export default function ExpertClient() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.lang = 'he-IL';
+                recognition.interimResults = false;
+
+                recognition.onstart = () => setIsListening(true);
+
+                recognition.onresult = (event: any) => {
+                    const transcript = event.results[0][0].transcript;
+                    setInput(transcript);
+                    // Safe auto-submit after short delay to allow state update
+                    setTimeout(() => {
+                        const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+                        if (submitButton) submitButton.click();
+                    }, 500);
+                };
+
+                recognition.onerror = (event: any) => {
+                    console.error("Speech error", event.error);
+                    setIsListening(false);
+
+                    let msg = "שגיאה במיקרופון.";
+                    if (event.error === 'not-allowed') msg = "הגישה למיקרופון נחסמה. אנא אשרו בהגדרות הדפדפן.";
+                    if (event.error === 'no-speech') return; // Ignore if just silence
+
+                    alert(msg); // Using alert for immediate visibility on mobile
+                };
+
+                recognition.onend = () => setIsListening(false);
+
+                recognitionRef.current = recognition;
+            }
+        }
+    }, []);
+
+    const toggleListening = () => {
+        // Security Check for Mobile/IP access
+        if (typeof window !== 'undefined' && window.isSecureContext === false) {
+            alert('שים לב: דפדפנים חוסמים גישה למיקרופון בכתובות לא מאובטחות (HTTP). נסה להתחבר דרך localhost או העבר את האתר ל-HTTPS.');
+            return;
+        }
+
+        if (!recognitionRef.current) {
+            alert('הדפדפן שלך לא תומך בפקודות קוליות. נסה להשתמש ב-Chrome.');
+            return;
+        }
+        if (isListening) {
+            recognitionRef.current.stop();
+        } else {
+            try {
+                recognitionRef.current.start();
+            } catch (error) {
+                console.error("Speech start error:", error);
+                // If it crashes on start, it might be busy. Resetting.
+                recognitionRef.current.stop();
+                setIsListening(false);
+            }
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -191,13 +264,23 @@ export default function ExpertClient() {
                     {/* Input Area */}
                     <div className="p-6 bg-[#1a100c] border-t border-white/5">
                         <form onSubmit={handleSubmit} className="relative flex items-center gap-4">
-                            <input
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                placeholder="שאלות על קפה, מתכונים, או המלצות..."
-                                className="w-full bg-white/5 border border-white/10 focus:border-[#C37D46]/50 focus:bg-white/10 rounded-xl py-5 pl-6 pr-6 text-white placeholder-white/30 font-medium transition-all outline-none"
-                            />
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    placeholder={isListening ? "מקשיב..." : "שאלות על קפה, מתכונים, או המלצות..."}
+                                    className={`w-full bg-white/5 border border-white/10 focus:border-[#C37D46]/50 focus:bg-white/10 rounded-xl py-5 pl-14 pr-6 text-white placeholder-white/30 font-medium transition-all outline-none ${isListening ? 'ring-2 ring-red-500/50' : ''}`}
+                                />
+                                <button
+                                    type="button" // Important so it doesn't submit form
+                                    onClick={toggleListening}
+                                    className={`absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-stone-400 hover:text-[#C37D46]'}`}
+                                >
+                                    {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                                </button>
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={!input.trim() || isLoading}
