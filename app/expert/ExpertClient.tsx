@@ -86,7 +86,7 @@ export default function ExpertClient() {
                 recognitionRef.current = recognition;
 
                 // Auto-start if requested via URL
-                if (searchParams.get('autoMic') === 'true') {
+                if (searchParams?.get('autoMic') === 'true') {
                     // Slight delay to ensure component is ready and maybe bypass some race conditions
                     setTimeout(() => {
                         toggleListening();
