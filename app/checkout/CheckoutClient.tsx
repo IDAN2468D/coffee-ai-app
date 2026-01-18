@@ -524,7 +524,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="lg:col-span-5 space-y-8">
-                        <div className="sticky top-12 bg-[#2D1B14] text-white p-6 sm:p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col min-h-[600px] border border-white/5">
+                        <div className="sticky top-12 bg-[#2D1B14] text-white p-6 sm:p-10 rounded-[2rem] lg:rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col min-h-fit lg:min-h-[600px] border border-white/5">
                             {/* Decorative Background Effects */}
                             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C37D46]/10 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
                             <div className="absolute bottom-0 left-0 w-80 h-80 bg-black/40 rounded-full blur-[80px] -ml-20 -mb-20 pointer-events-none" />
@@ -538,16 +538,16 @@ export default function CheckoutPage() {
 
                             <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[450px]">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex gap-5 items-center group flex-row-reverse bg-white/5 p-4 rounded-3xl border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
+                                    <div key={item.id} className="flex gap-4 lg:gap-5 items-center group flex-row-reverse bg-white/5 p-4 rounded-3xl border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
                                         {/* Product Image */}
-                                        <div className="w-24 h-24 rounded-2xl overflow-hidden border border-white/10 shadow-xl relative flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                                        <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl overflow-hidden border border-white/10 shadow-xl relative flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
 
                                         {/* Product Details */}
-                                        <div className="text-right flex-grow space-y-2">
+                                        <div className="text-right flex-grow space-y-1 lg:space-y-2">
                                             <div>
-                                                <h4 className="font-bold text-xl leading-tight text-white mb-1">{item.name}</h4>
+                                                <h4 className="font-bold text-lg lg:text-xl leading-tight text-white mb-1">{item.name}</h4>
                                                 <div className="flex items-center gap-2 flex-row-reverse">
                                                     {item.size && (
                                                         <span className="px-2.5 py-1 bg-[#C37D46]/20 text-[#C37D46] border border-[#C37D46]/20 rounded-lg text-[10px] font-black uppercase tracking-wider">
@@ -559,7 +559,7 @@ export default function CheckoutPage() {
 
                                             <div className="flex justify-between items-end flex-row-reverse pt-2">
                                                 <span className="text-stone-400 text-xs font-bold bg-black/20 px-2 py-1 rounded-lg">x{item.quantity}</span>
-                                                <span className="font-serif font-bold text-2xl text-[#E8CBAD]">₪{item.price.toFixed(0)}</span>
+                                                <span className="font-serif font-bold text-xl lg:text-2xl text-[#E8CBAD]">₪{item.price.toFixed(0)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -619,13 +619,13 @@ export default function CheckoutPage() {
                                         <div className="text-right">
                                             <p className="text-xs font-black uppercase text-[#C37D46] tracking-[0.3em] mb-2">סה״כ לתשלום סופי</p>
                                             <div className="flex items-baseline gap-1 justify-end" dir="ltr">
-                                                <span className="text-3xl text-[#C37D46] font-sans font-bold translate-y-[-4px]">₪</span>
-                                                <span className="text-7xl font-serif font-black text-white tracking-tighter drop-shadow-2xl">{finalTotal.toFixed(0)}</span>
-                                                <span className="text-2xl text-white/40 font-serif font-light">.00</span>
+                                                <span className="text-2xl lg:text-3xl text-[#C37D46] font-sans font-bold translate-y-[-4px]">₪</span>
+                                                <span className="text-5xl lg:text-7xl font-serif font-black text-white tracking-tighter drop-shadow-2xl">{finalTotal.toFixed(0)}</span>
+                                                <span className="text-xl lg:text-2xl text-white/40 font-serif font-light">.00</span>
                                             </div>
                                         </div>
                                         <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                                            <ShieldCheck className="w-10 h-10 text-[#C37D46]" />
+                                            <ShieldCheck className="w-8 h-8 lg:w-10 lg:h-10 text-[#C37D46]" />
                                         </div>
                                     </div>
                                 </div>
