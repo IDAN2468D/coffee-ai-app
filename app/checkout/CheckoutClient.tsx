@@ -524,84 +524,107 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="lg:col-span-5 space-y-8">
-                        <div className="sticky top-12 bg-[#2D1B14] text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col min-h-[500px]">
-                            {/* Decorative Blobs */}
-                            <div className="absolute top-0 right-0 w-96 h-96 bg-[#CAB3A3]/10 rounded-full blur-[80px] -mr-20 -mt-20 pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 w-72 h-72 bg-black/30 rounded-full blur-[60px] -ml-10 -mb-10 pointer-events-none" />
+                        <div className="sticky top-12 bg-[#2D1B14] text-white p-6 sm:p-10 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col min-h-[600px] border border-white/5">
+                            {/* Decorative Background Effects */}
+                            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C37D46]/10 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-80 h-80 bg-black/40 rounded-full blur-[80px] -ml-20 -mb-20 pointer-events-none" />
 
-                            <h3 className="text-3xl font-serif font-bold mb-8 relative z-10 text-right flex items-center justify-between">
-                                <span>ההזמנה שלך</span>
-                                <span className="text-sm font-sans bg-white/10 px-3 py-1 rounded-full">{items.length} פריטים</span>
-                            </h3>
+                            <div className="relative z-10 flex items-center justify-between mb-10 border-b border-white/5 pb-6">
+                                <h3 className="text-3xl font-serif font-bold text-white flex items-center gap-3">
+                                    <span>ההזמנה שלך</span>
+                                    <span className="text-sm font-sans bg-[#C37D46] px-3 py-1 rounded-full text-white shadow-lg">{items.length} פריטים</span>
+                                </h3>
+                            </div>
 
-                            <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[400px]">
+                            <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[450px]">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex justify-between items-center group flex-row-reverse bg-white/5 p-3 rounded-2xl hover:bg-white/10 transition-colors">
-                                        <div className="flex items-center space-x-4 space-x-reverse">
-                                            <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shadow-lg relative">
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="flex items-center gap-2 flex-row-reverse mb-1">
-                                                    <p className="font-bold text-lg leading-tight">{item.name}</p>
+                                    <div key={item.id} className="flex gap-5 items-center group flex-row-reverse bg-white/5 p-4 rounded-3xl border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
+                                        {/* Product Image */}
+                                        <div className="w-24 h-24 rounded-2xl overflow-hidden border border-white/10 shadow-xl relative flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        </div>
+
+                                        {/* Product Details */}
+                                        <div className="text-right flex-grow space-y-2">
+                                            <div>
+                                                <h4 className="font-bold text-xl leading-tight text-white mb-1">{item.name}</h4>
+                                                <div className="flex items-center gap-2 flex-row-reverse">
                                                     {item.size && (
-                                                        <span className="px-2 py-0.5 bg-amber-400/20 text-amber-200 rounded-md text-[9px] font-black uppercase">
+                                                        <span className="px-2.5 py-1 bg-[#C37D46]/20 text-[#C37D46] border border-[#C37D46]/20 rounded-lg text-[10px] font-black uppercase tracking-wider">
                                                             {item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-[#CAB3A3] text-[10px] uppercase font-black tracking-[0.2em]">{item.quantity} × ₪{item.price.toFixed(0)}</p>
+                                            </div>
+
+                                            <div className="flex justify-between items-end flex-row-reverse pt-2">
+                                                <span className="text-stone-400 text-xs font-bold bg-black/20 px-2 py-1 rounded-lg">x{item.quantity}</span>
+                                                <span className="font-serif font-bold text-2xl text-[#E8CBAD]">₪{item.price.toFixed(0)}</span>
                                             </div>
                                         </div>
-                                        <p className="font-black text-xl">₪{(item.price * item.quantity).toFixed(0)}</p>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-8 pt-8 border-t border-white/10 space-y-5 relative z-10">
-                                <div className="flex justify-between text-white/60 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
-                                    <span>סיכום ביניים</span>
-                                    <span>₪{total.toFixed(0)}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-white/60 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse">
-                                    <div className="flex items-center space-x-2 space-x-reverse">
-                                        <Truck className="w-4 h-4" />
-                                        <span>משלוח</span>
+                            {/* Summary Footer */}
+                            <div className="mt-auto pt-8 space-y-6 relative z-10">
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between text-white/50 text-sm font-bold flex-row-reverse items-center">
+                                        <span>סיכום ביניים</span>
+                                        <span className="font-mono text-white text-lg">₪{total.toFixed(0)}</span>
                                     </div>
-                                    <span className="text-emerald-400 font-black px-2 py-0.5 bg-emerald-400/10 rounded">חינם</span>
+                                    <div className="flex justify-between items-center text-white/50 text-sm font-bold flex-row-reverse">
+                                        <div className="flex items-center gap-2 flex-row-reverse">
+                                            <Truck className="w-4 h-4 opacity-50" />
+                                            <span>משלוח</span>
+                                        </div>
+                                        <span className="text-emerald-400 font-bold bg-emerald-400/10 px-3 py-1 rounded-full text-xs border border-emerald-400/20">חינם</span>
+                                    </div>
+
+                                    {/* Points Redemption - Gold Card Design */}
+                                    <div className={`mt-6 p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${usePoints ? 'bg-gradient-to-br from-[#FFD700]/10 to-[#B8860B]/20 border-[#FFD700]/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
+                                        <div className="flex items-center justify-between flex-row-reverse relative z-10">
+                                            <div className="flex items-center gap-3 flex-row-reverse">
+                                                <div className={`p-2 rounded-xl ${usePoints ? 'bg-[#FFD700] text-[#2D1B14]' : 'bg-white/10 text-white'}`}>
+                                                    <Star className="w-5 h-5 fill-current" />
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className={`text-sm font-black uppercase tracking-wider ${usePoints ? 'text-[#FFD700]' : 'text-white'}`}>{(userPoints)} נקודות</p>
+                                                    <p className="text-[10px] text-white/40 font-bold">זמינות למימוש מיידי</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setUsePoints(!usePoints)}
+                                                className={`text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg ${usePoints
+                                                    ? 'bg-[#2D1B14] text-[#FFD700] ring-1 ring-[#FFD700]/50'
+                                                    : 'bg-[#C37D46] text-white hover:bg-[#A05A2C]'
+                                                    }`}
+                                            >
+                                                {usePoints ? 'בטל שימוש' : 'נצל נקודות'}
+                                            </button>
+                                        </div>
+                                        {usePoints && (
+                                            <div className="mt-4 pt-3 border-t border-[#FFD700]/20 flex justify-between items-center flex-row-reverse">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-[#FFD700]/80">הנחת מועדון</span>
+                                                <span className="text-lg font-bold text-[#FFD700]">-₪{discount.toFixed(0)}</span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Points Redemption UI */}
-                                <div className="border-t border-white/5 pt-4">
-                                    <div className="flex items-center justify-between flex-row-reverse mb-2">
-                                        <div className="flex items-center gap-2 flex-row-reverse text-amber-400">
-                                            <Star className="w-4 h-4 fill-current" />
-                                            <span className="text-xs font-black uppercase tracking-widest">נקודות ({userPoints})</span>
+                                <div className="pt-8 border-t border-white/10 mt-4">
+                                    <div className="flex justify-between items-end flex-row-reverse">
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-2">סה״כ לתשלום</p>
+                                            <div className="flex items-baseline gap-1 flex-row-reverse">
+                                                <span className="text-5xl font-serif font-bold text-white tracking-tight">₪{finalTotal.toFixed(0)}</span>
+                                                <span className="text-xl text-white/40 font-serif">.00</span>
+                                            </div>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => setUsePoints(!usePoints)}
-                                            className={`text-[10px] font-bold px-3 py-1 rounded-full transition-all ${usePoints
-                                                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                                : 'bg-amber-400/20 text-amber-400 hover:bg-amber-400/30'
-                                                }`}
-                                        >
-                                            {usePoints ? 'בטל שימוש' : 'נצל נקודות'}
-                                        </button>
+                                        <ShieldCheck className="w-14 h-14 text-white/5" />
                                     </div>
-                                    {usePoints && (
-                                        <div className="flex justify-between text-amber-400 text-xs font-black uppercase tracking-[0.2em] flex-row-reverse animate-in fade-in slide-in-from-top-2">
-                                            <span>הנחת נקודות</span>
-                                            <span>-₪{discount.toFixed(0)}</span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="pt-6 flex justify-between items-center flex-row-reverse border-t border-white/5 mt-2">
-                                    <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-1">סה״כ לתשלום</p>
-                                        <p className="text-4xl font-black text-[#CAB3A3]">₪{finalTotal.toFixed(0)}</p>
-                                    </div>
-                                    <ShieldCheck className="w-12 h-12 opacity-20 text-[#CAB3A3]" />
                                 </div>
                             </div>
                         </div>
