@@ -7,7 +7,6 @@ import { ArrowLeft, ShoppingBag, Map, Star } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import ARProduct from '@/components/ARProduct';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,17 +26,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
     }
 
     const isEthiopia = product.name.toLowerCase().includes('ethiopia') || product.name.includes('אתיופיה');
-
-    // Smart 3D Model Logic
-    let modelSource = '/models/coffee-cup.glb'; // Default fallback
-    const lowerName = product.name.toLowerCase();
-
-    // Heuristics to choose between Bag, Cup, or Machine
-    if (lowerName.includes('bag') || lowerName.includes('bean') || lowerName.includes('blend') || lowerName.includes('espresso') || lowerName.includes('ethiopia') || lowerName.includes('colombia')) {
-        modelSource = '/models/coffee-bag.glb';
-    } else if (lowerName.includes('mug') || lowerName.includes('cup') || lowerName.includes('glass')) {
-        modelSource = '/models/coffee-mug.glb';
-    }
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] font-sans" dir="rtl">
@@ -68,22 +56,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
                                     מסע למקור
                                 </div>
                             )}
-                        </div>
-
-                        {/* AR Preview Section */}
-                        <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="bg-[#C37D46] w-2 h-8 rounded-full"></span>
-                                <h3 className="text-xl font-bold text-[#2D1B14]">מבט ב-3D / AR</h3>
-                            </div>
-                            <ARProduct
-                                modelSrc={modelSource}
-                                posterImg={product.image || '/placeholder.png'}
-                            />
-                            <p className="text-sm text-stone-400 mt-2 text-center flex items-center justify-center gap-2">
-                                <span>📱</span>
-                                נתמך במכשירי iOS ואנדרואיד
-                            </p>
                         </div>
                     </div>
 
