@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -124,7 +124,7 @@ export default function Navbar() {
                                         className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-[#2D1B14] border border-white/10 rounded-2xl shadow-xl overflow-hidden p-1 z-[60]"
                                     >
                                         {[
-                                            { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה' },
+                                            { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה', action: { icon: Mic, href: '/expert?autoMic=true' } },
                                             { name: 'התאמת קפה', href: '/match', desc: 'מצא את הטעם שלך' },
                                             { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', desc: 'צור בעצמך' },
                                             { name: 'מדרג פולים', href: '/expert/bean-rater', desc: 'בדיקת איכות' },
@@ -133,14 +133,24 @@ export default function Navbar() {
                                             { name: 'מעקב קפאין', href: '/tracker', desc: 'בריאות ושינה' },
                                             { name: 'גלריה', href: '/gallery', desc: 'אומנות הקהילה' },
                                         ].map((item) => (
-                                            <Link
-                                                key={item.href}
-                                                href={item.href}
-                                                className="block p-3 rounded-xl hover:bg-white/5 transition-colors group text-right"
-                                            >
-                                                <div className="font-bold text-white text-sm group-hover:text-[#C37D46] transition-colors">{item.name}</div>
-                                                <div className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{item.desc}</div>
-                                            </Link>
+                                            <div key={item.href} className="relative group">
+                                                <Link
+                                                    href={item.href}
+                                                    className="block p-3 rounded-xl hover:bg-white/5 transition-colors text-right relative z-10"
+                                                >
+                                                    <div className="font-bold text-white text-sm group-hover:text-[#C37D46] transition-colors">{item.name}</div>
+                                                    <div className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{item.desc}</div>
+                                                </Link>
+                                                {item.action && (
+                                                    <Link
+                                                        href={item.action.href}
+                                                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 text-[#C37D46] hover:bg-[#C37D46] hover:text-white transition-all z-20 opacity-0 group-hover:opacity-100"
+                                                        title="דיבור"
+                                                    >
+                                                        <item.action.icon className="w-4 h-4" />
+                                                    </Link>
+                                                )}
+                                            </div>
                                         ))}
                                     </motion.div>
                                 )}
@@ -264,7 +274,7 @@ export default function Navbar() {
                                 <h3 className="text-xs font-bold text-[#C37D46] uppercase tracking-widest opacity-80 mb-4 px-2">כלים וחוויות AI</h3>
                                 <div className="grid gap-2">
                                     {[
-                                        { name: 'בריסטה AI', href: '/expert', icon: Bot },
+                                        { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
                                         { name: 'אורקל הקפה', href: '/fortune', icon: Sparkles },
                                         { name: 'מעקב קפאין', href: '/tracker', icon: Activity },
                                         { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
@@ -277,15 +287,26 @@ export default function Navbar() {
                                             initial={{ x: 20, opacity: 0 }}
                                             animate={{ x: 0, opacity: 1 }}
                                             transition={{ delay: 0.3 + i * 0.05 }}
+                                            className="relative flex items-center"
                                         >
                                             <Link
                                                 href={link.href}
                                                 onClick={() => setMobileMenuOpen(false)}
-                                                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-white/80 hover:text-white"
+                                                className="flex-grow flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-white/80 hover:text-white"
                                             >
                                                 <link.icon size={18} className="text-[#C37D46]" />
                                                 <span className="font-medium">{link.name}</span>
                                             </Link>
+
+                                            {link.action && (
+                                                <Link
+                                                    href={link.action.href}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="p-3 bg-[#C37D46]/20 text-[#C37D46] rounded-xl ml-2 hover:bg-[#C37D46] hover:text-white transition-all"
+                                                >
+                                                    <link.action.icon size={18} />
+                                                </Link>
+                                            )}
                                         </motion.div>
                                     ))}
                                 </div>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from "@/components/Navbar";
 import { useCart } from '@/lib/store';
 import { PRODUCTS } from '@/lib/products';
+import { useSearchParams } from 'next/navigation';
 
 declare global {
     interface Window {
@@ -38,6 +39,7 @@ export default function ExpertClient() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef<any>(null);
+    const searchParams = useSearchParams();
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -82,9 +84,17 @@ export default function ExpertClient() {
                 recognition.onend = () => setIsListening(false);
 
                 recognitionRef.current = recognition;
+
+                // Auto-start if requested via URL
+                if (searchParams.get('autoMic') === 'true') {
+                    // Slight delay to ensure component is ready and maybe bypass some race conditions
+                    setTimeout(() => {
+                        toggleListening();
+                    }, 800);
+                }
             }
         }
-    }, []);
+    }, [searchParams]);
 
     const toggleListening = () => {
         // Security Check for Mobile/IP access
