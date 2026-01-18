@@ -35,9 +35,6 @@ export default function SubscriptionPage() {
             name: `${subscriptionProduct.name} - ${bagsPerMonth} Bags`,
             price: subscriptionProduct.price,
             image: subscriptionProduct.image,
-            quantity: 1,
-            // category: 'Beans' // Store might not need category, but Product interface has it.
-            // Using logic from store.ts which spreads product.
             description: subscriptionProduct.description,
             category: 'Beans'
         });
