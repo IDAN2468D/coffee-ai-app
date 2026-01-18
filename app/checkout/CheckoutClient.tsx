@@ -275,7 +275,7 @@ export default function CheckoutPage() {
     }
 
     return (
-        <main className="min-h-screen bg-[#FDFCF0] p-6 lg:p-12 relative overflow-hidden" dir="rtl">
+        <main className="min-h-screen bg-[#FDFCF0] p-6 lg:p-12 relative overflow-hidden pb-40" dir="rtl">
             {/* Background Atmosphere */}
             <div className="fixed inset-0 pointer-events-none opacity-[0.03]">
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#2D1B14] rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
@@ -614,16 +614,19 @@ export default function CheckoutPage() {
                                     </div>
                                 </div>
 
-                                <div className="pt-8 border-t border-white/10 mt-4">
+                                <div className="pt-8 border-t border-white/10 mt-4 bg-black/20 -mx-6 sm:-mx-10 px-6 sm:px-10 py-6 -mb-6 sm:-mb-10 backdrop-blur-sm">
                                     <div className="flex justify-between items-end flex-row-reverse">
                                         <div className="text-right">
-                                            <p className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-2">סה״כ לתשלום</p>
-                                            <div className="flex items-baseline gap-1 flex-row-reverse">
-                                                <span className="text-5xl font-serif font-bold text-white tracking-tight">₪{finalTotal.toFixed(0)}</span>
-                                                <span className="text-xl text-white/40 font-serif">.00</span>
+                                            <p className="text-xs font-black uppercase text-[#C37D46] tracking-[0.3em] mb-2">סה״כ לתשלום סופי</p>
+                                            <div className="flex items-baseline gap-1 justify-end" dir="ltr">
+                                                <span className="text-3xl text-[#C37D46] font-sans font-bold translate-y-[-4px]">₪</span>
+                                                <span className="text-7xl font-serif font-black text-white tracking-tighter drop-shadow-2xl">{finalTotal.toFixed(0)}</span>
+                                                <span className="text-2xl text-white/40 font-serif font-light">.00</span>
                                             </div>
                                         </div>
-                                        <ShieldCheck className="w-14 h-14 text-white/5" />
+                                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                            <ShieldCheck className="w-10 h-10 text-[#C37D46]" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
