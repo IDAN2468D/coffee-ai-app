@@ -18,6 +18,13 @@ interface ARProductProps {
 const ARProduct: React.FC<ARProductProps> = ({ modelSrc: initialModelSrc, posterImg }) => {
     const [modelSrc, setModelSrc] = React.useState(initialModelSrc);
     const [isDragging, setIsDragging] = React.useState(false);
+    const modelViewerRef = React.useRef<any>(null);
+
+    const activateAR = () => {
+        if (modelViewerRef.current) {
+            modelViewerRef.current.activateAR();
+        }
+    };
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
@@ -52,6 +59,7 @@ const ARProduct: React.FC<ARProductProps> = ({ modelSrc: initialModelSrc, poster
                 <div className="text-2xl font-bold text-[#C37D46]">שחרר כדי לטעון מודל</div>
             </div>
             <model-viewer
+                ref={modelViewerRef}
                 src={modelSrc}
                 poster={posterImg}
                 alt="A 3D model of our coffee cup"
@@ -63,7 +71,11 @@ const ARProduct: React.FC<ARProductProps> = ({ modelSrc: initialModelSrc, poster
                 style={{ width: '100%', height: '100%' }}
             >
                 {/* Custom AR Button */}
-                <button slot="ar-button" className="absolute bottom-4 right-4 bg-[#2D1B14] text-white px-5 py-3 rounded-full font-bold shadow-xl flex items-center gap-2 hover:bg-[#C37D46] transition-all z-10 cursor-pointer">
+                <button
+                    slot="ar-button"
+                    onClick={activateAR}
+                    className="absolute bottom-4 right-4 bg-[#2D1B14] text-white px-5 py-3 rounded-full font-bold shadow-xl flex items-center gap-2 hover:bg-[#C37D46] transition-all z-10 cursor-pointer"
+                >
                     <span>📍 ראה בחדר שלי</span>
                 </button>
 
