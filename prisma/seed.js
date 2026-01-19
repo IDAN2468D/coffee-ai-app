@@ -60,13 +60,6 @@ async function main() {
             category: 'Pastry'
         },
         {
-            name: 'אתיופיה ירגשף (250 גרם)',
-            description: 'פולים מובחרים בייבוש טבעי עם חומציות בהירה ותווי יסמין פרחוניים.',
-            price: 65.00,
-            image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=1000&auto=format&fit=crop',
-            category: 'Beans'
-        },
-        {
             name: 'ערכת V60 שעה זהובה',
             description: 'ערכת פור-אובר למתחילים הכוללת טפטפת, מסננים וקנקן זכוכית.',
             price: 180.00,
@@ -81,25 +74,46 @@ async function main() {
             category: 'Equipment'
         },
         {
-            name: 'מארז התנסות סטארבקס (50 קפסולות)',
-            description: 'מיקס 5 שרוולים (50 קפסולות) הכולל: House Blend, Pike Place, Colombia, Espresso Roast, Decaf. מגוון דרגות חוזק.',
-            price: 95.00,
-            image: '/images/bundles/pack-50.svg',
-            category: 'Capsules'
+            name: 'מארז התנסות Starbucks',
+            description: 'מארז הכולל מגוון טעמי סטארבקס להתנסות - קלייה בינונית וחזקה.',
+            price: 29.90,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1641804732000-36f84e887b21?auto=format&fit=crop&q=80&w=800'
         },
         {
-            name: 'מארז הבית ענק (100 קפסולות)',
-            description: '10 שרוולים של התערובות האהובות ביותר. מתאים למכונות Nespresso. מחיר מיוחד למזמינים באתר.',
-            price: 180.00,
-            image: '/images/bundles/pack-100.svg',
-            category: 'Capsules'
+            name: 'מארז הבית - 100 קפסולות',
+            description: 'המארז המשתלם ביותר. תערובת הבית האהובה באריזת חיסכון ענקית.',
+            price: 110.00,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1607681034540-2c46cc71896d?auto=format&fit=crop&q=80&w=800'
         },
         {
-            name: 'מארז משרדי מושלם (30 שרוולים)',
-            description: '300 קפסולות במחיר סיטונאי! מגוון טעמים לבחירה או המיקס המומלץ שלנו. הפתרון המושלם למשרד.',
-            price: 490.00,
-            image: '/images/bundles/pack-300.svg',
-            category: 'Capsules'
+            name: 'קפה אתיופיה (Single Origin)',
+            description: '100% ערביקה מאתיופיה. טעמים פירותיים וחומציות עדינה.',
+            price: 22.00,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1587859892837-238d8212626e?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+            name: 'אספרסו נטול קפאין',
+            description: 'טעם עשיר ללא קפאין. מתאים לשעות הערב.',
+            price: 20.00,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1627850604058-52e40de1b847?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+            name: 'מארז משרדי - 300 קפסולות',
+            description: 'פתרון מושלם למשרדים. מגוון טעמים לבחירה.',
+            price: 290.00,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1517088455889-1fc7b1d1f054?auto=format&fit=crop&q=80&w=800'
+        },
+        {
+            name: 'קולומביה סופרמו',
+            description: 'קפה מאוזן עם גוף מלא ונגיעות אגוזים.',
+            price: 24.00,
+            category: 'Capsules',
+            image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800'
         }
     ];
 
