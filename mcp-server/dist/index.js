@@ -35,6 +35,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 },
             },
             {
+                name: "get_product_count",
+                description: "Get the total number of products in the database",
+                inputSchema: {
+                    type: "object",
+                    properties: {},
+                },
+            },
+            {
                 name: "get_user_count",
                 description: "Get the total number of registered users",
                 inputSchema: {
@@ -50,6 +58,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     properties: {
                         limit: { type: "number", default: 5 },
                     },
+                },
+            },
+            {
+                name: "list_categories",
+                description: "List all product categories",
+                inputSchema: {
+                    type: "object",
+                    properties: {},
+                },
+            },
+            {
+                name: "get_sales_report",
+                description: "Get sales report with total revenue and order count",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        startDate: { type: "string", description: "Start date (ISO format)" },
+                        endDate: { type: "string", description: "End date (ISO format)" }
+                    },
+                },
+            },
+            {
+                name: "get_top_customers",
+                description: "Get top customers based on total spending",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        limit: { type: "number", default: 5 }
+                    },
+                },
+            },
+            {
+                name: "search_users",
+                description: "Search users by name or email",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        query: { type: "string" }
+                    },
+                    required: ["query"]
                 },
             },
             {
@@ -161,6 +209,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 content: [{ type: "text", text: JSON.stringify(products, null, 2) }],
             };
         }
+        if (name === "get_product_count") {
+            const count = await prisma.product.count();
+            return {
+                content: [{ type: "text", text: `Total products: ${count}` }],
+            };
+        }
         // 2. ספירת משתמשים
         if (name === "get_user_count") {
             const count = await prisma.user.count();
@@ -269,6 +323,84 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
             return {
                 content: [{ type: "text", text: `Order ${orderId} status updated to ${status}` }]
+            };
+        }
+        if (name === "list_categories") {
+            const categories = await prisma.category.findMany({
+                include: { _count: { select: { products: true } } }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(categories, null, 2) }]
+            };
+        }
+        if (name === "get_sales_report") {
+            const { startDate, endDate } = args;
+            const where = {};
+            if (startDate || endDate) {
+                where.createdAt = {};
+                if (startDate)
+                    where.createdAt.gte = new Date(startDate);
+                if (endDate)
+                    where.createdAt.lte = new Date(endDate);
+            }
+            const aggregates = await prisma.order.aggregate({
+                _sum: { total: true },
+                _count: { id: true },
+                where
+            });
+            return {
+                content: [{
+                        type: "text", text: `Sales Report:
+Total Revenue: ${aggregates._sum.total || 0}
+Total Orders: ${aggregates._count.id}
+Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
+`
+                    }]
+            };
+        }
+        if (name === "get_top_customers") {
+            const limit = args?.limit || 5;
+            const topUsers = await prisma.order.groupBy({
+                by: ['userId'],
+                _sum: { total: true },
+                orderBy: {
+                    _sum: {
+                        total: 'desc',
+                    }
+                },
+                take: limit,
+            });
+            const userIds = topUsers.map(u => u.userId);
+            const users = await prisma.user.findMany({
+                where: { id: { in: userIds } },
+                select: { id: true, name: true, email: true }
+            });
+            const result = topUsers.map(u => {
+                const userInfo = users.find(usr => usr.id === u.userId);
+                return {
+                    userId: u.userId,
+                    name: userInfo?.name || 'Unknown',
+                    email: userInfo?.email || 'N/A',
+                    totalSpent: u._sum.total
+                };
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
+            };
+        }
+        if (name === "search_users") {
+            const { query } = args;
+            const users = await prisma.user.findMany({
+                where: {
+                    OR: [
+                        { name: { contains: query, mode: "insensitive" } },
+                        { email: { contains: query, mode: "insensitive" } }
+                    ]
+                },
+                take: 10
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(users, null, 2) }]
             };
         }
         throw new Error(`Tool not found: ${name}`);
