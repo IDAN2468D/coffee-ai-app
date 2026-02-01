@@ -1,10 +1,14 @@
 
-const { PrismaClient } = require('@prisma/client');
-const fs = require('fs');
-const path = require('path');
+import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Manually load .env file
-const envPath = path.join(__dirname, '.env');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Manually load .env file from root
+const envPath = path.join(__dirname, '../../.env');
 if (fs.existsSync(envPath)) {
     const envConfig = fs.readFileSync(envPath, 'utf8');
     envConfig.split('\n').forEach(line => {
