@@ -38,32 +38,37 @@ export async function GET(request: Request) {
         // If no results, maybe city name variant issue?
         // Try searching without city filter but include city in query string? 
         // "Tel Aviv Ibn Gvirol"
-        if (!data.success || !data.result || data.result.records.length === 0) {
-            // Fallback: try searching "Street City" in 'q' without strict filter?
-            // Or try "שם_ישוב" variant?
-            // Unlikely to guess "Tel Aviv - Yafo" if invalid.
-
-            // Let's rely on the user picking a valid city from the Autocomplete Cities list.
-            // If Cities API returned "Tel Aviv - Yafo", we send "Tel Aviv - Yafo".
-            // If Streets dataset also uses "Tel Aviv - Yafo", it matches.
+        if (!data.success || !data.result || !data.result.records) {
+            console.error("Data.gov.il Streets API failed", data);
+            return NextResponse.json({ results: [] });
         }
 
-        const records = data.result?.records || [];
+        let records = data.result.records;
 
-        // Dynamic field finding for Streets
+        // Dynamic field detection for Streets
         if (records.length > 0) {
-            // const first = records[0];
-            // fields: שם_רחוב, שם_ישוב
+            const first = records[0];
+            const streetNameField = Object.keys(first).find(k => k.includes('שם_רחוב') || k.includes('שם רחוב')) || 'שם_רחוב';
+            const cityNameField = Object.keys(first).find(k => k.includes('שם_ישוב') || k.includes('שם ישוב')) || 'שם_ישוב';
+
+            records = records.map((record: any) => ({
+                ...record,
+                _extracted_name: record[streetNameField],
+                _extracted_city: record[cityNameField]
+            }));
         }
 
         const results = records.map((record: any) => ({
             id: record._id,
-            name: (record['שם_רחוב'] || '').trim(),
-            city: (record['שם_ישוב'] || '').trim()
-        })).filter((item: any) => item.name); // Filter out empty names
+            name: (record._extracted_name || record['שם_רחוב'] || '').trim(),
+            city: (record._extracted_city || record['שם_ישוב'] || '').trim()
+        })).filter((item: any) => item.name);
 
         const uniqueResults = Array.from(new Set(results.map((a: any) => a.name)))
             .map(name => results.find((a: any) => a.name === name));
+
+        // If we found nothing with strict filter, maybe try relax?
+        // But for now, returning unique results is safer.
 
         return NextResponse.json({ results: uniqueResults });
 
