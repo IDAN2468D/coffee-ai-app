@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "coffee-explorer": {
+            "command": "node",
+            "args": [
+                "C:/Users/Lenovo/Desktop/App/coffee-ai-app/mcp-server/dist/index.js"
+            ],
+            "env": {
+                "DATABASE_URL": "mongodb+srv://idankzm:idankzm2468@cluster0.purdk.mongodb.net/coffee_shop?retryWrites=true&w=majority"
+            }
+        }
+    }
+}
