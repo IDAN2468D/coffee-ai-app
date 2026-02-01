@@ -13,31 +13,16 @@ export async function GET(request: Request) {
         return NextResponse.json({ results: [] });
     }
 
-    // Sanitize city name: remove hyphens or spaces if needed? 
-    // Usually strict match required but let's try raw first.
-    city = city.trim();
-
     try {
-        // We do a full text search using 'q' which includes street name.
-        // And we filter by city name.
-        // Note: 'filters' param in CKAN must match exact field value.
-        // If city name mismatch (e.g. users writes "Tel Aviv" but DB has "Tel Aviv - Yafo"), filter will fail.
-        // So we might search ONLY by street name and filter in memory? 
-        // No, dataset is huge (all streets in Israel). We MUST filter by city.
+        // Strategy: Use full text search 'q' with both street and city to find matches even if city name isn't exact.
+        // This is more robust than strict 'filters' which requires exact string match.
+        const combinedQuery = `${query} ${city}`;
 
-        // Strategy: Try exact filter. If empty, maybe try just 'q' with "city street" combined?
-        // But 'filters' is safer for performance.
+        const apiUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${STREETS_RESOURCE_ID}&q=${encodeURIComponent(combinedQuery)}&limit=${LIMIT}`;
 
-        const filters = JSON.stringify({ "שם_ישוב": city });
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-        const apiUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${STREETS_RESOURCE_ID}&q=${encodeURIComponent(query)}&filters=${encodeURIComponent(filters)}&limit=${LIMIT}`;
-
-        let res = await fetch(apiUrl);
-        let data = await res.json();
-
-        // If no results, maybe city name variant issue?
-        // Try searching without city filter but include city in query string? 
-        // "Tel Aviv Ibn Gvirol"
         if (!data.success || !data.result || !data.result.records) {
             console.error("Data.gov.il Streets API failed", data);
             return NextResponse.json({ results: [] });
@@ -64,11 +49,15 @@ export async function GET(request: Request) {
             city: (record._extracted_city || record['שם_ישוב'] || '').trim()
         })).filter((item: any) => item.name);
 
-        const uniqueResults = Array.from(new Set(results.map((a: any) => a.name)))
-            .map(name => results.find((a: any) => a.name === name));
+        // Optional: Filter by city if we got results from other cities (though 'q' usually handles it well)
+        // We use loose matching to allow "Tel Aviv" to match "Tel Aviv - Yafo"
+        const filteredResults = results.filter((item: any) => {
+            if (!item.city) return true;
+            return item.city.includes(city) || city.includes(item.city) || (item.city.includes('תל אביב') && city.includes('תל אביב'));
+        });
 
-        // If we found nothing with strict filter, maybe try relax?
-        // But for now, returning unique results is safer.
+        const uniqueResults = Array.from(new Set(filteredResults.map((a: any) => a.name)))
+            .map(name => filteredResults.find((a: any) => a.name === name));
 
         return NextResponse.json({ results: uniqueResults });
 
