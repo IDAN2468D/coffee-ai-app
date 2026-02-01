@@ -65,7 +65,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             {
                 name: "update_product_price",
-                description: "עדכון מחיר של מוצר לפי ה-ID שלו ב-Database",
+                description: "(Deprecated) עדכון מחיר של מוצר - עדיף להשתמש ב-update_product",
                 inputSchema: {
                     type: "object",
                     properties: {
@@ -73,6 +73,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         newPrice: { type: "number", description: "המחיר החדש להגדרה" }
                     },
                     required: ["id", "newPrice"]
+                }
+            },
+            {
+                name: "update_product",
+                description: "עדכון פרטי מוצר (שם, מחיר, תמונה, וכו')",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        id: { type: "string", description: "ה-ID של המוצר לעדכון" },
+                        name: { type: "string" },
+                        description: { type: "string" },
+                        price: { type: "number" },
+                        categoryId: { type: "string" },
+                        image: { type: "string", description: "URL של התמונה" },
+                        isArchived: { type: "boolean" }
+                    },
+                    required: ["id"]
                 }
             },
             {
@@ -84,7 +101,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         name: { type: "string" },
                         description: { type: "string" },
                         price: { type: "number" },
-                        categoryId: { type: "string" }
+                        categoryId: { type: "string" },
+                        image: { type: "string" }
                     },
                     required: ["name", "price", "categoryId"]
                 }
@@ -150,11 +168,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             };
         }
 
+        if (name === "update_product") {
+            const { id, ...data } = args as any;
+
+            const updatedProduct = await prisma.product.update({
+                where: { id },
+                data: data
+            });
+
+            return {
+                content: [{
+                    type: "text",
+                    text: `✅ המוצר "${updatedProduct.name}" עודכן בהצלחה.`
+                }]
+            };
+        }
+
         // והוסף את זה בתוך CallToolRequestSchema
         if (name === "create_product") {
-            const { name, description, price, categoryId } = args as any;
+            const { name, description, price, categoryId, image } = args as any;
             const newProduct = await prisma.product.create({
-                data: { name, description, price, categoryId }
+                data: { name, description, price, categoryId, image }
             });
             return {
                 content: [{ type: "text", text: `המוצר ${newProduct.name} נוצר בהצלחה!` }]
