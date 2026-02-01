@@ -51,7 +51,7 @@ export function Autocomplete({
         setInputValue(query);
         onChange(query);
 
-        if (query.length < 2) {
+        if (query.length < 1) {
             setSuggestions([]);
             setIsOpen(false);
             return;
