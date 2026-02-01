@@ -80,6 +80,94 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 },
             },
             {
+                name: "get_public_gallery",
+                description: "Get recent AI generated images from the public gallery",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        limit: { type: "number", default: 10 }
+                    },
+                },
+            },
+            {
+                name: "get_user_gallery",
+                description: "Get AI generated images for a specific user",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        limit: { type: "number", default: 10 }
+                    },
+                    required: ["userId"]
+                },
+            },
+            {
+                name: "toggle_image_privacy",
+                description: "Toggle the public/private status of an AI generated image",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        imageId: { type: "string" }
+                    },
+                    required: ["imageId"]
+                },
+            },
+            {
+                name: "get_user_points",
+                description: "Get the current points balance for a user",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" }
+                    },
+                    required: ["userId"]
+                },
+            },
+            {
+                name: "add_points",
+                description: "Add points to a user's balance",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        points: { type: "number", description: "Amount of points to add" }
+                    },
+                    required: ["userId", "points"]
+                },
+            },
+            {
+                name: "get_richest_users",
+                description: "Get users with the most points",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        limit: { type: "number", default: 10 }
+                    },
+                },
+            },
+            {
+                name: "get_most_favorited",
+                description: "Get products that appear in the most user favorites lists",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        limit: { type: "number", default: 5 }
+                    },
+                },
+            },
+            {
+                name: "get_orders_by_status",
+                description: "Get orders filtered by their status",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        status: { type: "string", enum: ["pending", "processing", "completed", "cancelled"] },
+                        limit: { type: "number", default: 10 }
+                    },
+                    required: ["status"]
+                },
+            },
+            {
                 name: "get_sales_report",
                 description: "Get sales report with total revenue and order count",
                 inputSchema: {
@@ -434,6 +522,124 @@ Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
             });
             return {
                 content: [{ type: "text", text: JSON.stringify(users, null, 2) }]
+            };
+        }
+
+        if (name === "get_public_gallery") {
+            const limit = (args?.limit as number) || 10;
+            const images = await prisma.coffeeImage.findMany({
+                where: { isPublic: true },
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: { user: { select: { name: true } } }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(images, null, 2) }]
+            };
+        }
+
+        if (name === "get_user_gallery") {
+            const { userId, limit } = args as { userId: string, limit?: number };
+            const images = await prisma.coffeeImage.findMany({
+                where: { userId },
+                take: limit || 10,
+                orderBy: { createdAt: 'desc' }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(images, null, 2) }]
+            };
+        }
+
+        if (name === "toggle_image_privacy") {
+            const { imageId } = args as { imageId: string };
+            const image = await prisma.coffeeImage.findUnique({ where: { id: imageId } });
+            if (!image) throw new Error("Image not found");
+
+            const updated = await prisma.coffeeImage.update({
+                where: { id: imageId },
+                data: { isPublic: !image.isPublic }
+            });
+
+            return {
+                content: [{ type: "text", text: `Image ${imageId} is now ${updated.isPublic ? 'Public' : 'Private'}` }]
+            };
+        }
+
+        if (name === "get_user_points") {
+            const { userId } = args as { userId: string };
+            const user = await prisma.user.findUnique({ where: { id: userId }, select: { points: true, name: true } });
+            return {
+                content: [{ type: "text", text: `User ${user?.name || userId} has ${user?.points || 0} points` }]
+            };
+        }
+
+        if (name === "add_points") {
+            const { userId, points } = args as { userId: string, points: number };
+            const updated = await prisma.user.update({
+                where: { id: userId },
+                data: { points: { increment: points } }
+            });
+            return {
+                content: [{ type: "text", text: `Added ${points} points. New balance: ${updated.points}` }]
+            };
+        }
+
+        if (name === "get_richest_users") {
+            const limit = (args?.limit as number) || 10;
+            const users = await prisma.user.findMany({
+                orderBy: { points: 'desc' },
+                take: limit,
+                select: { id: true, name: true, email: true, points: true }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(users, null, 2) }]
+            };
+        }
+
+        if (name === "get_most_favorited") {
+            const limit = (args?.limit as number) || 5;
+            // Fetch all favoriteIds
+            const users = await prisma.user.findMany({
+                select: { favoriteIds: true }
+            });
+
+            const productCounts: Record<string, number> = {};
+            users.forEach(u => {
+                u.favoriteIds.forEach(pid => {
+                    productCounts[pid] = (productCounts[pid] || 0) + 1;
+                });
+            });
+
+            // Sort and take top N
+            const sorted = Object.entries(productCounts)
+                .sort(([, a], [, b]) => b - a)
+                .slice(0, limit);
+
+            // Fetch product details
+            const topProducts = await Promise.all(sorted.map(async ([pid, count]) => {
+                const product = await prisma.product.findUnique({ where: { id: pid }, select: { name: true } });
+                return {
+                    productId: pid,
+                    name: product?.name || 'Unknown',
+                    favoritesCount: count
+                };
+            }));
+
+            return {
+                content: [{ type: "text", text: JSON.stringify(topProducts, null, 2) }]
+            };
+        }
+
+        if (name === "get_orders_by_status") {
+            const { status, limit } = args as { status: string, limit?: number };
+            const orders = await prisma.order.findMany({
+                where: { status },
+                take: limit || 10,
+                orderBy: { createdAt: 'desc' },
+                include: { user: { select: { name: true, email: true } } }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(orders, null, 2) }]
             };
         }
 
