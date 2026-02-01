@@ -13,10 +13,6 @@ export async function GET(request: Request) {
     }
 
     try {
-        // Construct the CKAN datastore search URL
-        // We use 'distinct' to uppercase or just standard search. 
-        // The field for city name is usually 'שם_ישוב'.
-        // We can use a simple SQL-like query or simple q parameter.
         const apiUrl = `https://data.gov.il/api/3/action/datastore_search?resource_id=${CITIES_RESOURCE_ID}&q=${encodeURIComponent(query)}&limit=${LIMIT}`;
 
         const res = await fetch(apiUrl);
@@ -26,22 +22,40 @@ export async function GET(request: Request) {
 
         const data = await res.json();
 
-        if (!data.success) {
-            throw new Error("External API reported failure");
+        if (!data.success || !data.result || !data.result.records) {
+            console.error("Data.gov.il API failed or header mismatch", data);
+            return NextResponse.json({ results: [] });
         }
 
-        // Map the results to a simple format
-        // Modify this based on actual field names if needed.
-        // Usually: "שם_ישוב", "סמל_ישוב"
-        const results = data.result.records.map((record: any) => ({
-            id: record._id,
-            name: record['שם_ישוב'].trim(), // Assuming Hebrew field name
-            symbol: record['סמל_ישוב']
-        })).filter((item: any) => item.name.includes(query) || item.name.startsWith(query));
-        // The API 'q' is a full text search, so we might get loose matches. 
-        // We can refine clientside or here.  
+        const records = data.result.records;
+        if (records.length === 0) return NextResponse.json({ results: [] });
 
-        // Remove duplicates if any (though records have unique IDs, names might duplicate slightly?)
+        // Dynamic field detection - "List of settlements" usually uses 'שם_ישוב' but let's be safe
+        const firstRecord = records[0];
+        // Try known keys or find one that looks like a name
+        const nameField = Object.keys(firstRecord).find(key =>
+            key.includes('שם_ישוב') ||
+            key.includes('שם ישוב') ||
+            key === 'שם' ||
+            key.toLowerCase().includes('name')
+        ) || 'שם_ישוב';
+
+        const idField = Object.keys(firstRecord).find(key =>
+            key.includes('סמל_ישוב') ||
+            key.includes('סמל')
+        ) || '_id';
+
+        const results = records.map((record: any) => {
+            const nameVal = record[nameField];
+            return {
+                id: record[idField] || record._id,
+                name: (typeof nameVal === 'string' ? nameVal : String(nameVal || '')).trim(),
+                symbol: record[idField]
+            };
+        }).filter((item: any) => !!item.name);
+        // Logic: filtered by 'q' from API, so assume relevance. 
+        // Client-side filtering can happen if needed, but data.gov.il 'q' is fuzzy.
+
         const uniqueResults = Array.from(new Set(results.map((a: any) => a.name)))
             .map(name => results.find((a: any) => a.name === name));
 
@@ -49,6 +63,6 @@ export async function GET(request: Request) {
 
     } catch (error) {
         console.error('Error fetching cities:', error);
-        return NextResponse.json({ error: 'Failed to fetch cities' }, { status: 500 });
+        return NextResponse.json({ results: [] });
     }
 }
