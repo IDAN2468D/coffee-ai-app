@@ -63,6 +63,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     },
                     required: ["id", "newPrice"]
                 }
+            },
+            {
+                name: "create_product",
+                description: "יצירת מוצר קפה חדש ב-Database",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        name: { type: "string" },
+                        description: { type: "string" },
+                        price: { type: "number" },
+                        categoryId: { type: "string" }
+                    },
+                    required: ["name", "price", "categoryId"]
+                }
             }
         ],
     };
@@ -115,6 +129,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                         type: "text",
                         text: `✅ המוצר "${updatedProduct.name}" עודכן בהצלחה. מחיר חדש: ${newPrice} ש"ח.`
                     }],
+            };
+        }
+        // והוסף את זה בתוך CallToolRequestSchema
+        if (name === "create_product") {
+            const { name, description, price, categoryId } = args;
+            const newProduct = await prisma.product.create({
+                data: { name, description, price, categoryId }
+            });
+            return {
+                content: [{ type: "text", text: `המוצר ${newProduct.name} נוצר בהצלחה!` }]
             };
         }
         throw new Error(`Tool not found: ${name}`);
