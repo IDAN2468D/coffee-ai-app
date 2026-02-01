@@ -54,7 +54,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             {
                 name: "update_product_price",
-                description: "עדכון מחיר של מוצר לפי ה-ID שלו ב-Database",
+                description: "(Deprecated) עדכון מחיר של מוצר - עדיף להשתמש ב-update_product",
                 inputSchema: {
                     type: "object",
                     properties: {
@@ -62,6 +62,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         newPrice: { type: "number", description: "המחיר החדש להגדרה" }
                     },
                     required: ["id", "newPrice"]
+                }
+            },
+            {
+                name: "update_product",
+                description: "עדכון פרטי מוצר (שם, מחיר, תמונה, וכו')",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        id: { type: "string", description: "ה-ID של המוצר לעדכון" },
+                        name: { type: "string" },
+                        description: { type: "string" },
+                        price: { type: "number" },
+                        categoryId: { type: "string" },
+                        image: { type: "string", description: "URL של התמונה" },
+                        isArchived: { type: "boolean" }
+                    },
+                    required: ["id"]
                 }
             },
             {
@@ -73,12 +90,58 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                         name: { type: "string" },
                         description: { type: "string" },
                         price: { type: "number" },
-                        categoryId: { type: "string" }
+                        categoryId: { type: "string" },
+                        image: { type: "string" }
                     },
                     required: ["name", "price", "categoryId"]
                 }
+            },
+            {
+                name: "search_products",
+                description: "Search for products by name or description",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        query: { type: "string" }
+                    },
+                    required: ["query"]
+                }
+            },
+            {
+                name: "get_products_by_category",
+                description: "Get products belonging to a specific category",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        categoryName: { type: "string" }
+                    },
+                    required: ["categoryName"]
+                }
+            },
+            {
+                name: "get_order_details",
+                description: "Get full details of a specific order",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        orderId: { type: "string" }
+                    },
+                    required: ["orderId"]
+                }
+            },
+            {
+                name: "update_order_status",
+                description: "Update the status of an order",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        orderId: { type: "string" },
+                        status: { type: "string", enum: ["pending", "processing", "completed", "cancelled"] }
+                    },
+                    required: ["orderId", "status"]
+                }
             }
-        ],
+        ]
     };
 });
 /**
@@ -131,14 +194,81 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     }],
             };
         }
+        if (name === "update_product") {
+            const { id, ...data } = args;
+            const updatedProduct = await prisma.product.update({
+                where: { id },
+                data: data
+            });
+            return {
+                content: [{
+                        type: "text",
+                        text: `✅ המוצר "${updatedProduct.name}" עודכן בהצלחה.`
+                    }]
+            };
+        }
         // והוסף את זה בתוך CallToolRequestSchema
         if (name === "create_product") {
-            const { name, description, price, categoryId } = args;
+            const { name, description, price, categoryId, image } = args;
             const newProduct = await prisma.product.create({
-                data: { name, description, price, categoryId }
+                data: { name, description, price, categoryId, image }
             });
             return {
                 content: [{ type: "text", text: `המוצר ${newProduct.name} נוצר בהצלחה!` }]
+            };
+        }
+        if (name === "search_products") {
+            const { query } = args;
+            const products = await prisma.product.findMany({
+                where: {
+                    OR: [
+                        { name: { contains: query, mode: "insensitive" } },
+                        { description: { contains: query, mode: "insensitive" } }
+                    ]
+                },
+                include: { category: true }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(products, null, 2) }]
+            };
+        }
+        if (name === "get_products_by_category") {
+            const { categoryName } = args;
+            const products = await prisma.product.findMany({
+                where: {
+                    category: {
+                        name: { contains: categoryName, mode: "insensitive" }
+                    }
+                },
+                include: { category: true }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(products, null, 2) }]
+            };
+        }
+        if (name === "get_order_details") {
+            const { orderId } = args;
+            const order = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: {
+                    user: true,
+                    items: {
+                        include: { product: true }
+                    }
+                }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(order, null, 2) }]
+            };
+        }
+        if (name === "update_order_status") {
+            const { orderId, status } = args;
+            const updatedOrder = await prisma.order.update({
+                where: { id: orderId },
+                data: { status }
+            });
+            return {
+                content: [{ type: "text", text: `Order ${orderId} status updated to ${status}` }]
             };
         }
         throw new Error(`Tool not found: ${name}`);

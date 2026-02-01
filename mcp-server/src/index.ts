@@ -106,8 +106,53 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     },
                     required: ["name", "price", "categoryId"]
                 }
+            },
+            {
+                name: "search_products",
+                description: "Search for products by name or description",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        query: { type: "string" }
+                    },
+                    required: ["query"]
+                }
+            },
+            {
+                name: "get_products_by_category",
+                description: "Get products belonging to a specific category",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        categoryName: { type: "string" }
+                    },
+                    required: ["categoryName"]
+                }
+            },
+            {
+                name: "get_order_details",
+                description: "Get full details of a specific order",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        orderId: { type: "string" }
+                    },
+                    required: ["orderId"]
+                }
+            },
+            {
+                name: "update_order_status",
+                description: "Update the status of an order",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        orderId: { type: "string" },
+                        status: { type: "string", enum: ["pending", "processing", "completed", "cancelled"] }
+                    },
+                    required: ["orderId", "status"]
+                }
             }
-        ],
+        ]
     };
 });
 
@@ -192,6 +237,64 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
             return {
                 content: [{ type: "text", text: `המוצר ${newProduct.name} נוצר בהצלחה!` }]
+            };
+        }
+
+        if (name === "search_products") {
+            const { query } = args as { query: string };
+            const products = await prisma.product.findMany({
+                where: {
+                    OR: [
+                        { name: { contains: query, mode: "insensitive" } },
+                        { description: { contains: query, mode: "insensitive" } }
+                    ]
+                },
+                include: { category: true }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(products, null, 2) }]
+            };
+        }
+
+        if (name === "get_products_by_category") {
+            const { categoryName } = args as { categoryName: string };
+            const products = await prisma.product.findMany({
+                where: {
+                    category: {
+                        name: { contains: categoryName, mode: "insensitive" }
+                    }
+                },
+                include: { category: true }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(products, null, 2) }]
+            };
+        }
+
+        if (name === "get_order_details") {
+            const { orderId } = args as { orderId: string };
+            const order = await prisma.order.findUnique({
+                where: { id: orderId },
+                include: {
+                    user: true,
+                    items: {
+                        include: { product: true }
+                    }
+                }
+            });
+            return {
+                content: [{ type: "text", text: JSON.stringify(order, null, 2) }]
+            };
+        }
+
+        if (name === "update_order_status") {
+            const { orderId, status } = args as { orderId: string, status: string };
+            const updatedOrder = await prisma.order.update({
+                where: { id: orderId },
+                data: { status }
+            });
+            return {
+                content: [{ type: "text", text: `Order ${orderId} status updated to ${status}` }]
             };
         }
 
