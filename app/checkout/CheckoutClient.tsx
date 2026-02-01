@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useCart } from '@/lib/store';
 import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -30,7 +31,7 @@ export default function CheckoutPage() {
     // State to hold order details for the success screen
     const [orderSuccessData, setOrderSuccessData] = useState<any>(null);
 
-    const { register, handleSubmit, trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, trigger, formState: { errors }, setValue, watch } = useForm({
         resolver: zodResolver(checkoutSchema),
         mode: 'onChange'
     });
@@ -388,28 +389,31 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div className="space-y-8">
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">רחוב ומספר</label>
-                                            <div className="relative group">
-                                                <input
-                                                    {...register('street')}
-                                                    type="text" placeholder="הברזל 1"
-                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
-                                                />
-                                                <Home className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
-                                            </div>
-                                            {errors.street && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.street as any).message}</p>}
-                                        </div>
-
                                         <div className="grid grid-cols-2 gap-8">
                                             <div className="space-y-4">
-                                                <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">עיר</label>
-                                                <input
-                                                    {...register('city')}
-                                                    type="text" placeholder="תל אביב"
-                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
+                                                {/* City Autocomplete */}
+                                                <Autocomplete
+                                                    label="עיר"
+                                                    placeholder="תל אביב"
+                                                    value={watch('city') || ''}
+                                                    onChange={(val) => {
+                                                        setValue('city', val, { shouldValidate: true });
+                                                        // Clear street when city changes to avoid mismatch
+                                                        if (watch('street')) setValue('street', '', { shouldValidate: true });
+                                                    }}
+                                                    fetchSuggestions={async (query) => {
+                                                        try {
+                                                            const res = await fetch(`/api/locations/cities?q=${encodeURIComponent(query)}`);
+                                                            const data = await res.json();
+                                                            return data.results || [];
+                                                        } catch (e) {
+                                                            console.error(e);
+                                                            return [];
+                                                        }
+                                                    }}
+                                                    error={(errors.city as any)?.message}
+                                                    icon={<MapPin className="w-5 h-5" />}
                                                 />
-                                                {errors.city && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.city as any).message}</p>}
                                             </div>
 
                                             <div className="space-y-4">
@@ -423,6 +427,31 @@ export default function CheckoutPage() {
                                                     <Building2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {/* Street Autocomplete */}
+                                            <Autocomplete
+                                                label="רחוב"
+                                                placeholder="הברזל"
+                                                value={watch('street') || ''}
+                                                onChange={(val) => setValue('street', val, { shouldValidate: true })}
+                                                fetchSuggestions={async (query) => {
+                                                    const city = watch('city');
+                                                    if (!city) return [];
+                                                    try {
+                                                        const res = await fetch(`/api/locations/streets?city=${encodeURIComponent(city)}&q=${encodeURIComponent(query)}`);
+                                                        const data = await res.json();
+                                                        return data.results || [];
+                                                    } catch (e) {
+                                                        console.error(e);
+                                                        return [];
+                                                    }
+                                                }}
+                                                error={(errors.street as any)?.message}
+                                                icon={<Home className="w-5 h-5" />}
+                                                disabled={!watch('city')}
+                                            />
                                         </div>
                                     </div>
                                 </div>
