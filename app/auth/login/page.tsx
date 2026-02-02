@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { ArrowRight, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowRight, Mail, Lock, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { signIn } from 'next-auth/react';
@@ -15,7 +15,7 @@ const loginSchema = z.object({
     password: z.string().min(6, 'הסיסמה חייבת להכיל לפחות 6 תווים'),
 });
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(false);
@@ -132,5 +132,17 @@ export default function LoginPage() {
                 </p>
             </form>
         </motion.div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={
+            <div className="w-full flex justify-center py-20">
+                <Loader2 className="w-10 h-10 text-[#2D1B14] animate-spin opacity-20" />
+            </div>
+        }>
+            <LoginForm />
+        </Suspense>
     );
 }
