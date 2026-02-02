@@ -7,6 +7,7 @@ import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
+import { ThemeToggle } from './ThemeToggle';
 
 
 
@@ -161,6 +162,7 @@ export default function Navbar() {
 
                 {/* Right Side Actions */}
                 <div className="flex items-center gap-4">
+                    <ThemeToggle />
                     <div className="hidden md:flex items-center gap-4">
                         {session ? (
                             <div className={`flex items-center gap-3 pl-4 border-l ${useDarkText ? 'border-[#2D1B14]/10' : 'border-white/10'}`}>
