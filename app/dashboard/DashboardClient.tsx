@@ -42,7 +42,8 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
     }, [status, router]);
 
     const handleLogout = async () => {
-        await signOut({ callbackUrl: `${window.location.origin}/auth/login` });
+        await signOut({ redirect: false });
+        window.location.href = '/auth/login';
     };
 
     const fetchDashboardData = async () => {
