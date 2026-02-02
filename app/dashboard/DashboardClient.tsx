@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
     Coffee,
@@ -15,7 +15,8 @@ import {
     Sparkles,
     Package,
     Plus,
-    Check
+    Check,
+    LogOut
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -39,6 +40,10 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
             fetchDashboardData();
         }
     }, [status, router]);
+
+    const handleLogout = async () => {
+        await signOut({ callbackUrl: '/auth' });
+    };
 
     const fetchDashboardData = async () => {
         try {
@@ -81,6 +86,14 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                         <p className="text-stone-400 font-light text-lg">מרכז השליטה האישי שלך בבית הקלייה הדיגיטלי.</p>
                     </div>
                     <div className="flex items-center space-x-6 space-x-reverse">
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 text-stone-400 hover:text-[#8B4513] transition-colors"
+                            title="התנתק"
+                        >
+                            <span className="hidden md:inline font-bold text-xs uppercase tracking-widest">התנתק</span>
+                            <LogOut className="w-5 h-5" />
+                        </button>
                         <div className="text-right">
                             <p className="text-[10px] font-black uppercase text-stone-400 tracking-widest mb-1">נקודות Roast</p>
                             <div className="flex items-center space-x-2 space-x-reverse text-[#8B4513]">
