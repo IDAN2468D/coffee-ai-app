@@ -19,6 +19,7 @@ model User {
   sessions      Session[]
   orders        Order[]
   coffeeImages  CoffeeImage[]
+  reviews       Review[]
   favoriteIds   String[]  @db.ObjectId
   isAdmin       Boolean   @default(false)
   points        Int       @default(0)
@@ -66,6 +67,7 @@ model Product {
   // Backward compatibility
   image       String?
   // Relations
+  reviews     Review[]
   orderItems  OrderItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -116,4 +118,15 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   size      String? // S, M, L for coffee sizes
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rating    Int
+  comment   String
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
 }

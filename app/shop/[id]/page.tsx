@@ -7,6 +7,7 @@ import { ArrowLeft, ShoppingBag, Map, Star } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import ProductReviews from "@/components/reviews/ProductReviews";
 
 export const dynamic = 'force-dynamic';
 
@@ -118,9 +119,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
                     </div>
                 </div>
+
+                <ProductReviews productId={product.id} />
+
             </div>
 
             <Footer />
         </main>
     );
-}
