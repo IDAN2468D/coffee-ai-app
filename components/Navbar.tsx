@@ -179,7 +179,16 @@ export default function Navbar() {
                                     </div>
                                     <div className="hidden xl:block">
                                         <div className="text-xs font-bold leading-none">{session.user?.name?.split(' ')[0]}</div>
-                                        <div className={`text-[9px] uppercase tracking-wider font-medium ${useDarkText ? 'text-[#2D1B14]/50' : 'text-white/50'}`}>Dashboard</div>
+                                        <div className="flex items-center gap-1">
+                                            <div className={`text-[9px] uppercase tracking-wider font-medium ${useDarkText ? 'text-[#2D1B14]/50' : 'text-white/50'}`}>Dashboard</div>
+                                            {/* Points Badge */}
+                                            {(session.user as any).points > 0 && (
+                                                <div className="flex items-center gap-0.5 bg-yellow-500/20 px-1 py-0.5 rounded text-[9px] font-bold text-yellow-500">
+                                                    <Crown size={8} />
+                                                    <span>{(session.user as any).points}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </Link>
                             </div>

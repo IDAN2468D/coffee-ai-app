@@ -6,6 +6,25 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { sendLoginEmail } from "./mailer";
 
+declare module "next-auth" {
+    interface User {
+        id: string;
+        isAdmin: boolean;
+        points: number;
+    }
+    interface Session {
+        user: User;
+    }
+}
+
+declare module "next-auth/jwt" {
+    interface JWT {
+        id: string;
+        isAdmin: boolean;
+        points: number;
+    }
+}
+
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
@@ -43,6 +62,8 @@ export const authOptions: NextAuthOptions = {
                     id: user.id,
                     email: user.email,
                     name: user.name,
+                    isAdmin: user.isAdmin,
+                    points: user.points,
                 };
             }
         })
@@ -57,12 +78,16 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user }) {
             if (user) {
                 token.id = user.id;
+                token.isAdmin = user.isAdmin;
+                token.points = user.points;
             }
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
-                (session.user as any).id = token.id;
+                session.user.id = token.id as string;
+                (session.user as any).isAdmin = token.isAdmin as boolean;
+                (session.user as any).points = token.points as number;
             }
             return session;
         }
