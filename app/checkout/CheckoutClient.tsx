@@ -496,27 +496,46 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div className="space-y-8">
-                                        {/* Card Visual */}
-                                        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#000] p-8 rounded-3xl shadow-xl border border-stone-800 relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10" />
-                                            <div className="relative z-10 flex justify-between items-start flex-row-reverse mb-12">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-10 opacity-80" alt="Mastercard" />
-                                                <div className="w-12 h-8 bg-[#E6C68F] rounded-md flex items-center justify-center opacity-80">
-                                                    <div className="w-8 h-5 border border-black/20 rounded-sm" />
-                                                </div>
-                                            </div>
-                                            <div className="relative z-10 space-y-2">
-                                                <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">מספר כרטיס</p>
-                                                <div className="text-white text-2xl font-mono tracking-wider flex justify-between items-center dir-ltr">
-                                                    <span>****</span>
-                                                    <span>****</span>
-                                                    <span>****</span>
-                                                    <span>3921</span>
+                                        {/* Card Visual - Mobile Optimized */}
+                                        <div className="relative mx-auto w-full max-w-[340px] aspect-[1.586/1]">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#000] rounded-3xl shadow-2xl shadow-stone-300 transform transition-transform hover:scale-[1.02] border border-stone-800 overflow-hidden">
+                                                {/* Card Background Effects */}
+                                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none" />
+                                                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#C37D46]/20 rounded-full blur-2xl -ml-6 -mb-6 pointer-events-none" />
+
+                                                <div className="relative z-10 h-full flex flex-col justify-between p-6 sm:p-7">
+                                                    <div className="flex justify-between items-start flex-row-reverse">
+                                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" className="h-8 sm:h-10 opacity-90" alt="Mastercard" />
+                                                        <div className="w-10 h-7 sm:w-12 sm:h-8 bg-[#E6C68F] rounded-md flex items-center justify-center opacity-80 shadow-inner">
+                                                            <div className="w-7 h-4 sm:w-8 sm:h-5 border border-black/20 rounded-sm" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-1 sm:space-y-2 dir-ltr">
+                                                        <p className="text-stone-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-right">מספר כרטיס</p>
+                                                        <div className="text-white text-lg sm:text-2xl font-mono tracking-widest flex justify-between items-center w-full px-1 drop-shadow-md">
+                                                            <span>****</span>
+                                                            <span>****</span>
+                                                            <span>****</span>
+                                                            <span>3456</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex justify-between items-end flex-row-reverse">
+                                                        <div className="text-right">
+                                                            <p className="text-stone-500 text-[8px] font-black uppercase tracking-widest">בעל הכרטיס</p>
+                                                            <p className="text-white/90 text-xs sm:text-sm font-bold tracking-wider uppercase truncate max-w-[150px]">{session?.user?.name || 'VISITOR'}</p>
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <p className="text-stone-500 text-[8px] font-black uppercase tracking-widest">תוקף</p>
+                                                            <p className="text-white/90 text-xs sm:text-sm font-bold tracking-widest">09/28</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="space-y-4">
+                                        <div className="space-y-4 pt-2">
                                             <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">מספר כרטיס מלא</label>
                                             <div className="relative group">
                                                 <input
@@ -528,11 +547,14 @@ export default function CheckoutPage() {
                                                         val = val.match(/.{1,4}/g)?.join(' ') ?? val;
                                                         e.target.value = val;
                                                     }}
-                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pl-12 text-sm transition-all outline-none font-mono font-bold text-center tracking-widest placeholder:text-stone-300"
+                                                    className="w-full bg-stone-50 border-2 border-stone-100 focus:border-[#2D1B14] focus:bg-white rounded-2xl p-5 pl-12 text-sm transition-all outline-none font-mono font-bold text-center tracking-[0.15em] placeholder:text-stone-300 placeholder:tracking-normal"
                                                 />
-                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 group-focus-within:text-[#2D1B14] transition-colors" />
                                             </div>
-                                            {errors.cardNumber && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.cardNumber as any).message}</p>}
+                                            {errors.cardNumber && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase flex items-center gap-1">
+                                                <span className="w-1 h-1 rounded-full bg-red-500 inline-block" />
+                                                {(errors.cardNumber as any).message}
+                                            </p>}
                                         </div>
                                     </div>
                                 </div>
