@@ -415,7 +415,7 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div className="space-y-8">
-                                        <div className="grid grid-cols-2 gap-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                                             <div className="space-y-4">
                                                 {/* City Autocomplete */}
                                                 <Autocomplete
@@ -591,9 +591,9 @@ export default function CheckoutPage() {
                                 </h3>
                             </div>
 
-                            <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[450px]">
+                            <div className="space-y-6 relative z-10 overflow-y-auto pr-2 custom-scrollbar flex-grow max-h-[400px] lg:max-h-[450px]">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex gap-4 lg:gap-5 items-center group flex-row-reverse bg-white/5 p-4 rounded-3xl border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
+                                    <div key={item.id} className="flex gap-4 lg:gap-5 items-center group flex-row-reverse bg-white/5 p-3 sm:p-4 rounded-3xl border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all">
                                         {/* Product Image */}
                                         <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl overflow-hidden border border-white/10 shadow-xl relative flex-shrink-0 group-hover:scale-105 transition-transform duration-500">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
