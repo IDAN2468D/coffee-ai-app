@@ -47,7 +47,7 @@ function LoginForm() {
                 setFeedback({ type: 'error', message: "פרטי התחברות שגויים. אנא נסה שוב." });
             } else {
                 setFeedback({ type: 'success', message: 'התחברת בהצלחה! מעביר אותך...' });
-                router.push('/dashboard');
+                router.push('/');
             }
         } catch (err) {
             setFeedback({ type: 'error', message: "משהו השתבש. אנא נסה שוב מאוחר יותר." });
