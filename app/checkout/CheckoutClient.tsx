@@ -538,12 +538,12 @@ export default function CheckoutPage() {
                                 </div>
                             )}
 
-                            <div className="pt-8 border-t border-stone-100 flex justify-between items-center flex-row-reverse">
+                            <div className="pt-8 border-t border-stone-100 flex flex-col gap-4 sm:flex-row-reverse sm:justify-between sm:items-center">
                                 {step < 3 ? (
                                     <button
                                         type="button"
                                         onClick={nextStep}
-                                        className="bg-[#2D1B14] text-white px-10 py-5 rounded-2xl font-black shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center space-x-3 space-x-reverse text-lg"
+                                        className="bg-[#2D1B14] text-white px-8 py-4 sm:px-10 sm:py-5 rounded-2xl font-black shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center space-x-3 space-x-reverse text-lg w-full sm:w-auto"
                                     >
                                         <span>המשך לשלב הבא</span>
                                         <ChevronRight className="w-5 h-5 rotate-180" />
@@ -569,7 +569,7 @@ export default function CheckoutPage() {
                                     <button
                                         type="button"
                                         onClick={() => setStep(step - 1)}
-                                        className="text-stone-400 hover:text-[#2D1B14] font-black text-xs uppercase tracking-widest transition-colors flex items-center gap-2 group border border-transparent hover:border-stone-200 px-4 py-2 rounded-xl"
+                                        className="text-stone-400 hover:text-[#2D1B14] font-black text-xs uppercase tracking-widest transition-colors flex items-center justify-center gap-2 group border border-transparent hover:border-stone-200 px-4 py-3 sm:py-2 rounded-xl w-full sm:w-auto"
                                     >
                                         חזרה אחורה
                                     </button>
