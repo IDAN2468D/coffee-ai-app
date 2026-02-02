@@ -172,26 +172,52 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            {/* Shipping Details */}
-                            <div className="bg-white p-8 rounded-[2.5rem] shadow-lg border border-stone-100">
+                            {/* Shipping Details - Mobile Optimized */}
+                            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-lg border border-stone-100">
                                 <h3 className="text-xl font-black text-[#2D1B14] mb-6 flex items-center gap-3">
-                                    <Truck className="w-5 h-5 text-[#8B4513]" />
-                                    <span>פרטי משלוח</span>
+                                    <div className="bg-stone-50 p-2 rounded-xl">
+                                        <Truck className="w-5 h-5 text-[#8B4513]" />
+                                    </div>
+                                    <span>פרטי למשלוח</span>
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
-                                    <div className="space-y-2">
-                                        <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">נשלח אל</p>
-                                        <div>
-                                            <p className="font-bold text-[#2D1B14] text-lg">{orderSuccessData.shippingDetails.fullName}</p>
-                                            <p className="text-stone-500 font-medium">{orderSuccessData.shippingDetails.email}</p>
+
+                                <div className="space-y-4">
+                                    {/* Name Row */}
+                                    <div className="flex items-center gap-4 bg-stone-50/50 p-4 rounded-2xl hover:bg-stone-50 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#2D1B14] shadow-sm flex-shrink-0">
+                                            <User className="w-5 h-5" />
+                                        </div>
+                                        <div className="flex-grow text-right">
+                                            <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-0.5">נשלח אל</p>
+                                            <p className="font-bold text-[#2D1B14] text-base md:text-lg">{orderSuccessData.shippingDetails.fullName}</p>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <p className="text-stone-400 text-[10px] font-black uppercase tracking-widest">כתובת</p>
-                                        <div>
-                                            <p className="font-bold text-[#2D1B14] text-lg">{orderSuccessData.shippingDetails.street}, {orderSuccessData.shippingDetails.city}</p>
+
+                                    {/* Email Row */}
+                                    <div className="flex items-center gap-4 bg-stone-50/50 p-4 rounded-2xl hover:bg-stone-50 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#2D1B14] shadow-sm flex-shrink-0">
+                                            <Mail className="w-5 h-5" />
+                                        </div>
+                                        <div className="flex-grow text-right overflow-hidden">
+                                            <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-0.5">אימייל</p>
+                                            <p className="font-bold text-[#2D1B14] text-base truncate">{orderSuccessData.shippingDetails.email}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Address Row */}
+                                    <div className="flex items-center gap-4 bg-stone-50/50 p-4 rounded-2xl hover:bg-stone-50 transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[#2D1B14] shadow-sm flex-shrink-0">
+                                            <MapPin className="w-5 h-5" />
+                                        </div>
+                                        <div className="flex-grow text-right">
+                                            <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest mb-0.5">כתובת</p>
+                                            <p className="font-bold text-[#2D1B14] text-base md:text-lg">
+                                                {orderSuccessData.shippingDetails.street}, {orderSuccessData.shippingDetails.city}
+                                            </p>
                                             {orderSuccessData.shippingDetails.apartment && (
-                                                <p className="text-stone-500 font-medium">כניסה: {orderSuccessData.shippingDetails.apartment}</p>
+                                                <p className="text-sm text-stone-500 font-medium mt-0.5">
+                                                    כניסה/דירה: {orderSuccessData.shippingDetails.apartment}
+                                                </p>
                                             )}
                                         </div>
                                     </div>
