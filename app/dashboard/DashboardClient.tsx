@@ -160,9 +160,9 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                     {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-12">
 
-                        {/* Recent Orders Section -- ADDED */}
+                        {/* Recent Orders Section -- REDESIGNED */}
                         <div className="space-y-6 text-right">
-                            <div className="flex items-center justify-between flex-row-reverse">
+                            <div className="flex items-center justify-between flex-row-reverse px-2">
                                 <h2 className="text-2xl font-serif font-bold text-[#2D1B14] flex items-center gap-2 flex-row-reverse">
                                     <ShoppingBag className="w-6 h-6 text-[#C37D46]" />
                                     ההזמנות שלי
@@ -173,55 +173,63 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                 <div className="bg-white rounded-[2.5rem] p-12 text-center border border-stone-100 shadow-sm">
                                     <Package className="w-12 h-12 text-stone-200 mx-auto mb-4" />
                                     <p className="text-stone-400">טרם ביצעת הזמנות. זה הזמן לקפה ראשון!</p>
-                                    <Link href="/shop" className="inline-block mt-4 text-[#8B4513] font-bold">למעבר לחנות &larr;</Link>
+                                    <Link href="/shop" className="inline-block mt-4 text-[#8B4513] font-bold hover:underline">למעבר לחנות &larr;</Link>
                                 </div>
                             ) : (
-                                <div className="bg-white rounded-[2.5rem] shadow-sm border border-stone-100 overflow-hidden">
+                                <div className="space-y-4">
                                     {(showAllOrders ? initialOrders : initialOrders.slice(0, 3)).map((order) => (
-                                        <div key={order.id} className="p-6 border-b border-stone-50 last:border-0 hover:bg-stone-50/50 transition-colors">
+                                        <div key={order.id} className="bg-white p-5 rounded-[2rem] shadow-sm border border-stone-100 hover:shadow-md transition-all">
+                                            {/* Order Header */}
                                             <div className="flex justify-between items-start mb-4 flex-row-reverse">
                                                 <div className="text-right">
                                                     <div className="flex items-center gap-3 flex-row-reverse mb-1">
-                                                        <span className="font-mono font-bold text-lg text-[#2D1B14]">#{order.id.slice(-6).toUpperCase()}</span>
-                                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest ${order.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-600'
+                                                        <span className="font-mono font-black text-lg text-[#2D1B14] tracking-wider">#{order.id.slice(-6).toUpperCase()}</span>
+                                                        <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${order.status === 'COMPLETED'
+                                                            ? 'bg-green-50 text-green-700 border-green-100'
+                                                            : 'bg-blue-50 text-blue-600 border-blue-100'
                                                             }`}>
                                                             {order.status === 'COMPLETED' ? 'הושלם' : 'בטיפול'}
                                                         </span>
                                                     </div>
-                                                    <span className="text-xs text-stone-400 font-bold">
+                                                    <p className="text-xs text-stone-400 font-bold flex items-center gap-1 flex-row-reverse">
+                                                        <Clock className="w-3 h-3" />
                                                         {new Date(order.createdAt).toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                                    </span>
+                                                    </p>
                                                 </div>
-                                                <span className="font-black text-xl text-[#2D1B14]">₪{order.total.toFixed(0)}</span>
+                                                <div className="flex flex-col items-end">
+                                                    <span className="font-serif font-black text-2xl text-[#2D1B14]">₪{order.total.toFixed(0)}</span>
+                                                </div>
                                             </div>
 
-                                            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide flex-row-reverse">
+                                            {/* Items Scroll */}
+                                            <div className="flex gap-3 overflow-x-auto pb-4 pt-2 -mx-2 px-2 scrollbar-hide flex-row-reverse">
                                                 {order.items.map((item: any) => (
-                                                    <div key={item.id} className="flex items-center gap-3 bg-white border border-stone-100 p-2 pr-2 pl-4 rounded-xl flex-shrink-0">
-                                                        <div className="w-10 h-10 rounded-lg bg-stone-100 overflow-hidden">
+                                                    <div key={item.id} className="flex items-center gap-3 bg-stone-50/50 border border-stone-100 p-2 pr-2 pl-4 rounded-2xl flex-shrink-0 min-w-[200px]">
+                                                        <div className="w-12 h-12 rounded-xl bg-white overflow-hidden shadow-sm flex-shrink-0 border border-stone-100">
                                                             {item.product?.image && <img src={item.product.image} className="w-full h-full object-cover" />}
                                                         </div>
-                                                        <div className="text-right">
-                                                            <div className="flex items-center gap-2 flex-row-reverse mb-1">
-                                                                <p className="text-xs font-bold text-[#2D1B14]">{item.product?.name || 'מוצר'}</p>
+                                                        <div className="text-right min-w-0 flex-grow">
+                                                            <div className="flex items-center gap-2 flex-row-reverse mb-0.5">
+                                                                <p className="text-xs font-bold text-[#2D1B14] truncate">{item.product?.name || 'מוצר'}</p>
                                                                 {item.size && (
-                                                                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md text-[9px] font-black uppercase">
-                                                                        {item.size === 'S' ? 'קטן' : item.size === 'M' ? 'בינוני' : 'גדול'}
+                                                                    <span className="px-1.5 py-0.5 bg-[#CAB3A3]/20 text-[#8B4513] rounded-md text-[9px] font-black uppercase flex-shrink-0">
+                                                                        {item.size === 'S' ? 'S' : item.size === 'M' ? 'M' : 'L'}
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <p className="text-[10px] text-stone-400">x{item.quantity}</p>
+                                                            <p className="text-[10px] text-stone-400 font-bold">כמות: {item.quantity}</p>
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
                                     ))}
+
                                     {initialOrders.length > 3 && (
-                                        <div className="p-4 text-center border-t border-stone-50">
+                                        <div className="text-center pt-2">
                                             <button
                                                 onClick={() => setShowAllOrders(!showAllOrders)}
-                                                className="text-xs font-bold text-stone-400 hover:text-[#2D1B14] transition-colors"
+                                                className="bg-white border border-stone-200 text-stone-500 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest hover:bg-[#2D1B14] hover:text-white hover:border-[#2D1B14] transition-all shadow-sm"
                                             >
                                                 {showAllOrders ? 'הצג פחות' : `צפה בכל ההזמנות (${initialOrders.length})`}
                                             </button>
