@@ -82,6 +82,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-1">
                         {[
                             { name: 'חנות', href: '/shop' },
+                            { name: 'סניפים', href: '/stores', icon: Store },
                             { name: 'תפריט', href: '/#menu' },
                             { name: 'מועדון', href: '/subscription', icon: Crown },
                         ].map((link) => (
@@ -257,6 +258,7 @@ export default function Navbar() {
                                     {[
                                         { name: 'דף הבית', href: '/', icon: Home },
                                         { name: 'חנות', href: '/shop', icon: Store },
+                                        { name: 'הסניפים שלנו', href: '/stores', icon: Store },
                                         { name: 'מועדון החברים', href: '/subscription', icon: Crown },
                                         { name: 'מיקסר אווירה', href: '/ambience', icon: Headphones },
                                         { name: 'גלריה', href: '/gallery', icon: ImageIcon },
