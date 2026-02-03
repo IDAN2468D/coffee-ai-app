@@ -7,24 +7,9 @@ import { useEffect, useState } from 'react';
 
 // Fix for default Leaflet icons in Webpack/Next.js
 // We need to define the custom icon to avoid 404s on marker images
-const customIcon = new Icon({
-    iconUrl: '/images/marker-icon.png', // We'll need to make sure this exists or use a CDN
-    shadowUrl: '/images/marker-shadow.png', // Optional
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
-
-// Fallback to CDN images if local assets are missing
-const defaultIcon = new Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-});
+// These will be initialized inside the component to ensure they only run on the client.
+let customIcon: Icon;
+let defaultIcon: Icon;
 
 interface Branch {
     _id: string;
@@ -43,6 +28,18 @@ export default function StoreMap({ branches }: StoreMapProps) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        // Initialize icons only once on the client
+        if (!defaultIcon) {
+            defaultIcon = new Icon({
+                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+            });
+        }
+
         setIsMounted(true);
     }, []);
 
