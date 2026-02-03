@@ -6,9 +6,7 @@ import { Icon } from 'leaflet';
 import { useEffect, useState } from 'react';
 
 // Helper to get the default icon safely
-const getLeafletIcon = () => {
-    if (typeof window === 'undefined') return null;
-    const L = require('leaflet');
+const getLeafletIcon = (L: any) => {
     return new L.Icon({
         iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
         shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
@@ -37,8 +35,11 @@ export default function StoreMap({ branches = [] }: StoreMapProps) {
     const [mapIcon, setMapIcon] = useState<any>(null);
 
     useEffect(() => {
-        setMapIcon(getLeafletIcon());
-        setIsMounted(true);
+        if (typeof window !== 'undefined') {
+            const L = require('leaflet');
+            setMapIcon(getLeafletIcon(L));
+            setIsMounted(true);
+        }
     }, []);
 
     if (!isMounted || !branches) {
