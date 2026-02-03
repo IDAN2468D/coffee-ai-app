@@ -23,22 +23,36 @@ export interface IProcessedBranch {
 
 async function getBranches(): Promise<IProcessedBranch[]> {
     try {
+        if (!process.env.MONGODB_URI && !process.env.DATABASE_URL) {
+            console.error('STORES_DEBUG: Database environment variables are missing');
+            return [];
+        }
+
+        console.log('STORES_DEBUG: Connecting to database...');
         await dbConnect();
+
+        console.log('STORES_DEBUG: Fetching branches from MongoDB...');
         // Explicitly selecting fields and using .lean()
         const rawBranches = await Branch.find({}).select('name address lat lng phoneNumber createdAt updatedAt').lean();
 
+        console.log(`STORES_DEBUG: Found ${rawBranches?.length || 0} branches`);
+
+        if (!rawBranches || rawBranches.length === 0) {
+            return [];
+        }
+
         return rawBranches.map((branch: any) => ({
-            _id: branch._id.toString(),
-            name: branch.name,
-            address: branch.address,
-            lat: branch.lat,
-            lng: branch.lng,
+            _id: branch._id?.toString() || Math.random().toString(),
+            name: branch.name || 'Unknown Store',
+            address: branch.address || 'No Address Provided',
+            lat: branch.lat || 32.0853,
+            lng: branch.lng || 34.7818,
             phoneNumber: branch.phoneNumber || '',
             createdAt: branch.createdAt?.toISOString() || '',
             updatedAt: branch.updatedAt?.toISOString() || ''
         }));
-    } catch (error) {
-        console.error('Error fetching branches:', error);
+    } catch (error: any) {
+        console.error('STORES_DEBUG_ERROR: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         return [];
     }
 }
