@@ -1,12 +1,14 @@
-import dynamic from 'next/dynamic';
+import NextDynamic from 'next/dynamic';
 import dbConnect from '@/lib/dbConnect';
 import Branch, { IBranch } from '@/models/Branch';
 
 // Dynamically import StoreMap with ssr: false to prevent Leaflet window errors
-const StoreMap = dynamic(() => import('@/components/StoreMap').then((mod) => mod.default), {
+const StoreMap = NextDynamic(() => import('@/components/StoreMap').then((mod) => mod.default), {
     loading: () => <div className="h-[500px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center text-gray-500 font-medium">Preparing Map...</div>,
     ssr: false
 });
+
+export const dynamic = 'force-dynamic';
 
 export interface IProcessedBranch {
     _id: string;
@@ -20,18 +22,25 @@ export interface IProcessedBranch {
 }
 
 async function getBranches(): Promise<IProcessedBranch[]> {
-    await dbConnect();
-    // Using .lean() to get POJOs and avoiding hydration issues
-    // Convert _id to string for serialization
-    const branches = await Branch.find({}).lean();
+    try {
+        await dbConnect();
+        // Explicitly selecting fields and using .lean()
+        const rawBranches = await Branch.find({}).select('name address lat lng phoneNumber createdAt updatedAt').lean();
 
-    return branches.map((branch: IBranch) => ({
-        ...branch,
-        _id: branch._id.toString(),
-        // Ensure dates are strings if we use them, though they aren't in the interface right now
-        createdAt: branch.createdAt?.toISOString(),
-        updatedAt: branch.updatedAt?.toISOString()
-    }));
+        return rawBranches.map((branch: any) => ({
+            _id: branch._id.toString(),
+            name: branch.name,
+            address: branch.address,
+            lat: branch.lat,
+            lng: branch.lng,
+            phoneNumber: branch.phoneNumber || '',
+            createdAt: branch.createdAt?.toISOString() || '',
+            updatedAt: branch.updatedAt?.toISOString() || ''
+        }));
+    } catch (error) {
+        console.error('Error fetching branches:', error);
+        return [];
+    }
 }
 
 export default async function StoresPage() {
