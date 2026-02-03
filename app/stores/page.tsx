@@ -1,14 +1,15 @@
-import NextDynamic from 'next/dynamic';
+import dynamicHelper from 'next/dynamic';
 import dbConnect from '@/lib/dbConnect';
 import Branch, { IBranch } from '@/models/Branch';
 
 // Dynamically import StoreMap with ssr: false to prevent Leaflet window errors
-const StoreMap = NextDynamic(() => import('@/components/StoreMap').then((mod) => mod.default), {
+const StoreMap = dynamicHelper(() => import('@/components/StoreMap'), {
     loading: () => <div className="h-[500px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center text-gray-500 font-medium">Preparing Map...</div>,
     ssr: false
 });
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export interface IProcessedBranch {
     _id: string;
@@ -41,7 +42,7 @@ async function getBranches(): Promise<IProcessedBranch[]> {
             return [];
         }
 
-        return rawBranches.map((branch: any) => ({
+        const serializedBranches = rawBranches.map((branch: any) => ({
             _id: branch._id?.toString() || Math.random().toString(),
             name: branch.name || 'Unknown Store',
             address: branch.address || 'No Address Provided',
@@ -51,6 +52,9 @@ async function getBranches(): Promise<IProcessedBranch[]> {
             createdAt: branch.createdAt?.toISOString() || '',
             updatedAt: branch.updatedAt?.toISOString() || ''
         }));
+
+        // Final deep clone to ensure pure objects for Next.js serialization
+        return JSON.parse(JSON.stringify(serializedBranches));
     } catch (error: any) {
         console.error('STORES_DEBUG_ERROR: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         return [];

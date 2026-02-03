@@ -5,11 +5,19 @@ import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
 import { useEffect, useState } from 'react';
 
-// Fix for default Leaflet icons in Webpack/Next.js
-// We need to define the custom icon to avoid 404s on marker images
-// These will be initialized inside the component to ensure they only run on the client.
-let customIcon: Icon;
-let defaultIcon: Icon;
+// Helper to get the default icon safely
+const getLeafletIcon = () => {
+    if (typeof window === 'undefined') return null;
+    const L = require('leaflet');
+    return new L.Icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    });
+};
 
 interface Branch {
     _id: string;
@@ -24,27 +32,17 @@ interface StoreMapProps {
     branches: Branch[];
 }
 
-export default function StoreMap({ branches }: StoreMapProps) {
+export default function StoreMap({ branches = [] }: StoreMapProps) {
     const [isMounted, setIsMounted] = useState(false);
+    const [mapIcon, setMapIcon] = useState<any>(null);
 
     useEffect(() => {
-        // Initialize icons only once on the client
-        if (!defaultIcon) {
-            defaultIcon = new Icon({
-                iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-                shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-        }
-
+        setMapIcon(getLeafletIcon());
         setIsMounted(true);
     }, []);
 
-    if (!isMounted) {
-        return <div className="h-[500px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading Map...</div>;
+    if (!isMounted || !branches) {
+        return <div className="h-[500px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center text-gray-400">Loading Map...</div>;
     }
 
     // Default center (Tel Aviv)
@@ -66,7 +64,7 @@ export default function StoreMap({ branches }: StoreMapProps) {
                     <Marker
                         key={branch._id}
                         position={[branch.lat, branch.lng]}
-                        icon={defaultIcon}
+                        icon={mapIcon}
                     >
                         <Popup>
                             <div className="text-center">
