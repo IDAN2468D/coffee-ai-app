@@ -8,7 +8,18 @@ const StoreMap = dynamic(() => import('@/components/StoreMap'), {
     ssr: false
 });
 
-async function getBranches() {
+export interface IProcessedBranch {
+    _id: string;
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+    phoneNumber?: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+async function getBranches(): Promise<IProcessedBranch[]> {
     await dbConnect();
     // Using .lean() to get POJOs and avoiding hydration issues
     // Convert _id to string for serialization
@@ -39,7 +50,7 @@ export default async function StoresPage() {
             <StoreMap branches={branches} />
 
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                {branches.map((branch) => (
+                {branches.map((branch: IProcessedBranch) => (
                     <div key={branch._id} className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                         <h3 className="text-xl font-semibold mb-2 text-amber-800">{branch.name}</h3>
                         <p className="text-gray-600 mb-2">{branch.address}</p>
