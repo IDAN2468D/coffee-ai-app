@@ -53,51 +53,123 @@ export default function Navbar() {
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${navBackgroundClass}`}>
-            <div className="max-w-[1440px] mx-auto px-6 h-12 flex items-center justify-between">
+            <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between">
 
-                {/* 1. Desktop Branding (Far Left) */}
-                <Link href="/" className="hidden lg:flex items-center gap-4 group relative z-50">
-                    <div className="flex flex-col text-left">
-                        <div className="font-serif font-black flex flex-col tracking-tight leading-[0.85]">
-                            <span className="text-2xl text-white">Cyber</span>
-                            <span className="text-2xl text-[#C37D46]">Barista</span>
-                        </div>
-                        <span className="text-[10px] font-bold text-[#C37D46]/60 tracking-[0.1em] mt-1 uppercase">
-                            בית הקפה הדיגיטלי
-                        </span>
-                    </div>
-                    <div className="relative p-2.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:border-[#C37D46]/40 transition-all duration-300">
-                        <Coffee className="w-5 h-5 text-white" />
-                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-500 animate-pulse" />
-                    </div>
-                </Link>
+                {/* 1. Integrated Branding Signature (Left Side) */}
+                <div className="flex items-center gap-4 sm:gap-6 order-1 relative z-50 group">
+                    {/* Holographic Background Aura (Hover Only) */}
+                    <div
+                        className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl pointer-events-none"
+                        style={{ backgroundImage: 'radial-gradient(circle, rgba(195,125,70,0.15) 0%, transparent 70%)' }}
+                    />
 
-                {/* 2. Mobile Actions (Left/Center) - Keep as per user image */}
-                <div className="flex lg:hidden items-center gap-1 sm:gap-4">
-                    <ThemeToggle />
-                    <NotificationBell />
-                    <Link href="/checkout" className="relative p-2 text-white/70">
-                        <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
-                        {cartCount > 0 && (
-                            <div className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full">
-                                {cartCount}
+                    {/* Cyber Coffee Icon Block */}
+                    <Link href="/" className="relative">
+                        <motion.div
+                            whileHover={{ scale: 1.05, rotate: [0, -5, 5, 0] }}
+                            className="relative"
+                        >
+                            {/* The "Cyber" Squircle */}
+                            <div className="relative p-3 sm:p-3.5 rounded-[1.25rem] bg-[#1A100C] border border-white/10 shadow-[0_0_30px_rgba(195,125,70,0.15)] overflow-hidden">
+                                {/* Digital Grid Overlay */}
+                                <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:4px_4px]" />
+
+                                <div className="relative z-10 flex items-center justify-center">
+                                    <Coffee className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[1.5] group-hover:text-amber-400 transition-colors" />
+
+                                    {/* Digital Steam Effect */}
+                                    <div className="absolute -top-1 flex space-x-0.5">
+                                        {[0, 1, 2].map((i) => (
+                                            <motion.div
+                                                key={i}
+                                                animate={{
+                                                    y: [0, -8, -12],
+                                                    opacity: [0, 1, 0],
+                                                    scale: [0.5, 1, 0.8]
+                                                }}
+                                                transition={{
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    delay: i * 0.4,
+                                                    ease: "easeOut"
+                                                }}
+                                                className="w-0.5 h-2 bg-amber-400/60 rounded-full blur-[1px]"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Luxury Reflection Sweep */}
+                                <motion.div
+                                    animate={{ x: ['-100%', '200%'] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "linear", repeatDelay: 3 }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                                />
                             </div>
-                        )}
+
+                            {/* Outer Glow Ring */}
+                            <div className="absolute inset-0 rounded-[1.25rem] border border-amber-500/0 group-hover:border-amber-500/30 transition-colors duration-500 ring-1 ring-white/5" />
+                        </motion.div>
                     </Link>
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="p-4 bg-white/5 rounded-full text-white mx-1"
-                    >
-                        {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                    </button>
-                    <Link href="/" className="relative p-4 rounded-[2rem] bg-stone-900/40 border border-white/5 backdrop-blur-sm group">
-                        <Coffee className="w-8 h-8 text-white stroke-[1.5]" />
-                        <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-amber-500" />
+
+                    {/* Signature Typography */}
+                    <Link href="/" className="flex flex-col text-left relative z-10">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex flex-col leading-[0.8]">
+                                <span className="text-[10px] sm:text-[11px] font-black text-amber-500/80 tracking-[0.4em] uppercase mb-1.5 transition-all group-hover:tracking-[0.5em] duration-500">
+                                    Cyber
+                                </span>
+                                <div className="relative">
+                                    <motion.span
+                                        animate={{
+                                            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                                        }}
+                                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                                        className="text-2xl sm:text-4xl font-serif font-black italic bg-gradient-to-r from-white via-amber-200 to-white bg-[length:200%_auto] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]"
+                                    >
+                                        Barista
+                                    </motion.span>
+
+                                    {/* Decorative Underline */}
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: '100%' }}
+                                        className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-amber-500/0 via-amber-500/40 to-amber-500/0"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Floating AI Glass Badge */}
+                            <motion.div
+                                animate={{ y: [0, -3, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="flex self-start mt-0.5 items-center justify-center px-1.5 py-0.5 rounded-lg bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_8px_20px_rgba(0,0,0,0.3)] ring-1 ring-white/10 overflow-hidden"
+                            >
+                                <span className="text-[7px] sm:text-[8px] font-black text-white/60 tracking-tighter group-hover:text-amber-400 transition-colors">AI 2.0</span>
+                                <motion.div
+                                    animate={{ opacity: [0, 0.5, 0] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    className="absolute inset-0 bg-amber-500/10"
+                                />
+                            </motion.div>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-1 sm:mt-2">
+                            <div className="h-[1px] w-4 sm:w-6 bg-gradient-to-r from-amber-500/40 to-transparent" />
+                            <span className="text-[8px] sm:text-[9px] font-bold text-white/30 tracking-[0.2em] uppercase leading-none whitespace-nowrap">
+                                The Future of Coffee
+                            </span>
+                        </div>
                     </Link>
                 </div>
 
-                {/* 3. Central Navigation Pill (Desktop) */}
-                <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-1.5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md transition-all">
+                {/* Mobile Empty Spacer (Since branding moved left) */}
+                <div className="flex lg:hidden flex-1" />
+
+
+
+                {/* 2. Central Navigation Pill (Desktop) */}
+                <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-1.5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md transition-all z-[40]">
                     <div className="flex items-center gap-1">
                         {[
                             { name: 'חנות', href: '/shop' },
@@ -165,21 +237,10 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* 4. Desktop Actions (Far Right) & Mobile Logo (Match image) */}
-                <div className="flex items-center gap-6">
-                    {/* Mobile Branding (Match latest image spec) */}
-                    <Link href="/" className="flex flex-col text-right lg:hidden">
-                        <div className="font-serif font-black flex flex-col tracking-tight leading-[0.8]">
-                            <span className="text-3xl text-white">Cyber</span>
-                            <span className="text-3xl text-[#C37D46]">Barista</span>
-                        </div>
-                        <span className="text-[11px] font-bold text-white/40 tracking-wider mt-1">
-                            בית הקפה הדיגיטלי
-                        </span>
-                    </Link>
-
+                {/* 3. Actions Group (Right Side) - Order 3 */}
+                <div className="flex items-center gap-1.5 sm:gap-4 order-3 relative z-50">
                     {/* Desktop Actions Group */}
-                    <div className="hidden lg:flex items-center gap-2 pr-2 border-r border-white/10">
+                    <div className="hidden lg:flex items-center gap-2 pl-6 border-l border-white/10">
                         <ThemeToggle />
                         <NotificationBell />
 
@@ -192,7 +253,7 @@ export default function Navbar() {
                                         <span className="text-xs font-bold text-white">{session.user?.name?.[0]}</span>
                                     )}
                                 </div>
-                                <div className="text-right ml-1">
+                                <div className="text-right mx-1">
                                     <div className="text-[10px] font-black text-white leading-none capitalize">{session.user?.name?.split(' ')[0]}</div>
                                     <div className="text-[8px] font-bold text-[#C37D46] tracking-widest uppercase">Member</div>
                                 </div>
@@ -206,15 +267,64 @@ export default function Navbar() {
                         <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] transition-colors">
                             <ShoppingBag className="w-5 h-5" />
                             {cartCount > 0 && (
+                                <div className="absolute top-0 right-0 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg">
+                                    {cartCount}
+                                </div>
+                            )}
+                        </Link>
+                    </div>
+
+                    {/* Mobile Only: premium Action Group (Right Side on Mobile) */}
+                    <div className="flex lg:hidden items-center gap-1 sm:gap-2">
+                        {/* Shopping Bag with Luxury Glow */}
+                        <Link href="/checkout" className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 active:scale-90 transition-all group/bag">
+                            <ShoppingBag className="w-5 h-5 text-white/70 group-hover/bag:text-amber-400 transition-colors" />
+                            {cartCount > 0 && (
                                 <motion.div
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
-                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full"
+                                    className="absolute -top-1 -right-1 bg-gradient-to-tr from-amber-600 to-amber-400 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg border border-white/20"
                                 >
                                     {cartCount}
                                 </motion.div>
                             )}
                         </Link>
+
+                        <div className="flex items-center gap-0.5">
+                            <NotificationBell />
+                            <ThemeToggle />
+                        </div>
+
+                        {/* Premium Menu Trigger */}
+                        <motion.button
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="p-3 bg-gradient-to-br from-white/10 to-white/5 rounded-xl text-white border border-white/10 backdrop-blur-md shadow-inner shadow-white/5 ml-1 flex items-center justify-center"
+                        >
+                            <div className="relative w-5 h-5 flex items-center justify-center">
+                                <AnimatePresence mode="wait">
+                                    {mobileMenuOpen ? (
+                                        <motion.div
+                                            key="x"
+                                            initial={{ rotate: -90, opacity: 0 }}
+                                            animate={{ rotate: 0, opacity: 1 }}
+                                            exit={{ rotate: 90, opacity: 0 }}
+                                        >
+                                            <X className="w-5 h-5 stroke-[2]" />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="menu"
+                                            initial={{ rotate: 90, opacity: 0 }}
+                                            animate={{ rotate: 0, opacity: 1 }}
+                                            exit={{ rotate: -90, opacity: 0 }}
+                                        >
+                                            <Menu className="w-5 h-5 stroke-[2]" />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </motion.button>
                     </div>
                 </div>
             </div>

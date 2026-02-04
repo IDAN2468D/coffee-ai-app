@@ -59,9 +59,10 @@ export default function StoresClient({ branches = [] }: StoresClientProps) {
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0503]/50 to-[#0A0503]" />
 
                 {/* Visual Flair */}
-                <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-                    <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500/10 blur-[120px] rounded-full" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-900/10 blur-[150px] rounded-full" />
+                <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]" />
+                    <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500/10 blur-[120px] rounded-full animate-pulse" />
+                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-900/10 blur-[150px] rounded-full animate-pulse" />
                 </div>
 
                 <motion.div
@@ -83,47 +84,65 @@ export default function StoresClient({ branches = [] }: StoresClientProps) {
                 </motion.div>
             </section>
 
-            {/* Sticky Interaction Bar */}
-            <div className="sticky top-16 md:top-20 z-40 px-4 md:px-6 -mt-8 mb-8">
-                <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-3">
-                    {/* Search Field */}
-                    <div className="relative flex-grow group">
-                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-stone-500 group-focus-within:text-amber-500 transition-colors">
-                            <Search className="w-4 h-4" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="חפשו עיר או שם סניף..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-14 pr-11 pl-4 bg-stone-900/80 backdrop-blur-xl border border-white/5 rounded-2xl text-white placeholder:text-stone-600 focus:outline-none focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 transition-all text-sm font-bold shadow-2xl"
-                        />
-                    </div>
+            {/* Interaction Bar - Clean Flow */}
+            <div className="relative z-30 px-4 md:px-6 mt-8 mb-12">
+                <div className="max-w-5xl mx-auto">
+                    <div className="flex flex-col lg:flex-row gap-4 p-2 bg-[#1A100C]/60 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] lg:items-center">
 
-                    {/* View Switcher (Mobile Optimized) */}
-                    <div className="flex gap-2 h-14">
-                        <div className="flex p-1.5 bg-stone-900/80 backdrop-blur-xl border border-white/5 rounded-2xl shadow-xl flex-grow">
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`flex-1 flex items-center justify-center gap-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-[#C37D46] text-white shadow-lg' : 'text-stone-500 hover:text-white'
-                                    }`}
-                            >
-                                <List className="w-4 h-4" />
-                                <span className="text-xs font-black uppercase">רשימה</span>
-                            </button>
-                            <button
-                                onClick={() => setViewMode('map')}
-                                className={`flex-1 flex items-center justify-center gap-2 rounded-xl transition-all ${viewMode === 'map' ? 'bg-[#C37D46] text-white shadow-lg' : 'text-stone-500 hover:text-white'
-                                    }`}
-                            >
-                                <MapIcon className="w-4 h-4" />
-                                <span className="text-xs font-black uppercase">מפה</span>
-                            </button>
+                        {/* 1. Search Field - High Precision */}
+                        <div className="relative flex-grow group">
+                            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                                <Search className="w-5 h-5 text-stone-500 group-focus-within:text-amber-500 transition-colors duration-300" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="חפשו עיר, כתובת או שם סניף..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full h-14 pr-12 pl-4 bg-white/5 border border-transparent rounded-[1.4rem] text-white placeholder:text-stone-600 focus:outline-none focus:bg-white/[0.08] focus:border-amber-500/30 transition-all text-sm font-black tracking-tight"
+                            />
+                            {/* Focus Beam Animation */}
+                            <motion.div
+                                initial={{ opacity: 0, scaleX: 0 }}
+                                whileFocus={{ opacity: 1, scaleX: 1 }}
+                                className="absolute bottom-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"
+                            />
                         </div>
 
-                        <button className="w-14 h-full flex items-center justify-center bg-stone-900/80 backdrop-blur-xl border border-white/5 rounded-2xl text-stone-500 hover:text-amber-500 transition-all shadow-xl">
-                            <Filter className="w-5 h-5" />
-                        </button>
+                        {/* 2. Tools Group (View Switcher + Filter) */}
+                        <div className="flex items-center gap-2 h-14">
+                            {/* Segmented Control View Switcher */}
+                            <div className="relative flex p-1.5 bg-black/40 rounded-2xl border border-white/5 flex-grow lg:w-64 h-full overflow-hidden">
+                                {/* Sliding Background */}
+                                <motion.div
+                                    animate={{ x: viewMode === 'list' ? (document.dir === 'rtl' ? '0%' : '100%') : (document.dir === 'rtl' ? '-100%' : '0%') }}
+                                    className="absolute inset-y-1.5 right-1.5 w-[calc(50%-6px)] bg-[#C37D46] rounded-xl shadow-[0_4px_12px_rgba(195,125,70,0.4)] z-0"
+                                    layout
+                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                />
+
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={`relative z-10 flex-1 flex items-center justify-center gap-2 transition-colors duration-500 ${viewMode === 'list' ? 'text-white' : 'text-stone-500 hover:text-stone-300'}`}
+                                >
+                                    <List className="w-4 h-4" />
+                                    <span className="text-[11px] font-black uppercase tracking-wider">רשימה</span>
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('map')}
+                                    className={`relative z-10 flex-1 flex items-center justify-center gap-2 transition-colors duration-500 ${viewMode === 'map' ? 'text-white' : 'text-stone-500 hover:text-stone-300'}`}
+                                >
+                                    <MapIcon className="w-4 h-4" />
+                                    <span className="text-[11px] font-black uppercase tracking-wider">מפה</span>
+                                </button>
+                            </div>
+
+                            {/* Filter Button - Integrated */}
+                            <button className="w-14 h-full flex items-center justify-center bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl text-stone-400 hover:text-amber-500 transition-all shadow-xl group/filter relative overflow-hidden">
+                                <Filter className="w-5 h-5 relative z-10" />
+                                <div className="absolute inset-0 bg-amber-500/0 group-hover:bg-amber-500/5 transition-colors" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -174,50 +193,55 @@ export default function StoresClient({ branches = [] }: StoresClientProps) {
                                     <motion.div
                                         key={branch._id || Math.random()}
                                         variants={itemVariants}
-                                        className="group relative bg-[#1A100C]/40 backdrop-blur-md rounded-3xl border border-white/5 hover:border-amber-500/30 transition-all duration-500 overflow-hidden"
+                                        className="group relative bg-gradient-to-br from-[#1A100C]/60 to-black/40 backdrop-blur-md rounded-[2.5rem] border border-white/5 hover:border-amber-500/30 transition-all duration-700 overflow-hidden shadow-2xl"
                                     >
-                                        <div className="p-6">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="p-2 bg-amber-500/10 rounded-xl">
-                                                    <Compass className="w-5 h-5 text-amber-500" />
+                                        <div className="p-8 relative z-10">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="p-3 bg-amber-500/10 rounded-2xl border border-amber-500/20 shadow-inner">
+                                                    <Compass className="w-6 h-6 text-amber-500" />
                                                 </div>
-                                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <div className="flex items-center gap-1 text-[9px] font-black text-amber-500 bg-amber-500/5 px-2 py-1 rounded-full border border-amber-500/10">
-                                                        <Sparkles className="w-2.5 h-2.5" />
-                                                        <span>מומלץ</span>
-                                                    </div>
+                                                <div className="flex items-center gap-1.5 text-[10px] font-black text-amber-500 bg-amber-500/5 px-3 py-1.5 rounded-full border border-amber-500/10 shadow-sm">
+                                                    <Sparkles className="w-3 h-3" />
+                                                    <span className="uppercase tracking-[0.1em]">סניף דגל</span>
                                                 </div>
                                             </div>
 
-                                            <h3 className="text-xl font-serif font-black text-white mb-2 group-hover:text-amber-500 transition-colors">
+                                            <h3 className="text-2xl sm:text-3xl font-serif font-black text-white mb-3 group-hover:text-amber-400 transition-colors duration-500 italic">
                                                 {branch.name}
                                             </h3>
 
-                                            <div className="space-y-3 mb-6">
-                                                <div className="flex items-start gap-2.5 text-stone-400 group-hover:text-stone-300 transition-colors">
-                                                    <MapPin className="w-3.5 h-3.5 mt-0.5 text-amber-500/70" />
-                                                    <span className="text-xs font-medium leading-relaxed">{branch.address}</span>
+                                            <div className="space-y-4 mb-8">
+                                                <div className="flex items-start gap-3 text-stone-400 group-hover:text-stone-300 transition-colors">
+                                                    <div className="p-1.5 rounded-lg bg-white/5 mt-0.5">
+                                                        <MapPin className="w-4 h-4 text-amber-500/80" />
+                                                    </div>
+                                                    <span className="text-sm font-bold leading-relaxed">{branch.address}</span>
                                                 </div>
                                                 {branch.phoneNumber && (
-                                                    <div className="flex items-center gap-2.5 text-stone-400">
-                                                        <Phone className="w-3.5 h-3.5 text-amber-500/70" />
-                                                        <span className="text-xs tracking-[0.1em] font-medium">{branch.phoneNumber}</span>
+                                                    <div className="flex items-center gap-3 text-stone-400">
+                                                        <div className="p-1.5 rounded-lg bg-white/5">
+                                                            <Phone className="w-4 h-4 text-amber-500/80" />
+                                                        </div>
+                                                        <span className="text-sm tracking-[0.1em] font-bold">{branch.phoneNumber}</span>
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-3">
                                                 <a
                                                     href={`https://waze.com/ul?ll=${branch.lat},${branch.lng}&navigate=yes`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex-grow flex items-center justify-center gap-2 h-12 bg-white text-black rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-xl group/btn"
+                                                    className="flex-grow flex items-center justify-center gap-3 h-14 bg-white text-black rounded-[1.4rem] hover:bg-amber-500 hover:text-white transition-all duration-500 shadow-[0_10px_20px_rgba(255,255,255,0.05)] group/btn relative overflow-hidden active:scale-95"
                                                 >
-                                                    <Navigation className="w-4 h-4 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter">פתיחת ניווט</span>
+                                                    <div className="relative z-10 flex items-center gap-3">
+                                                        <Navigation className="w-5 h-5 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                                                        <span className="text-xs font-black uppercase tracking-widest">פתיחת ניווט</span>
+                                                    </div>
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-amber-400 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
                                                 </a>
-                                                <button className="w-12 h-12 flex items-center justify-center bg-white/5 text-white/50 rounded-2xl hover:bg-white/10 transition-all border border-white/5">
-                                                    <ChevronLeft className="w-5 h-5" />
+                                                <button className="w-14 h-14 flex items-center justify-center bg-white/5 text-white/40 rounded-[1.4rem] hover:bg-white/10 hover:text-white transition-all border border-white/5 active:scale-95 shadow-xl">
+                                                    <ChevronLeft className="w-6 h-6" />
                                                 </button>
                                             </div>
                                         </div>
