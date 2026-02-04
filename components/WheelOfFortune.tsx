@@ -267,7 +267,7 @@ export default function WheelOfFortune() {
                                                 </div>
                                             )}
 
-                                            {prize.msg && <p className="text-xl text-stone-600 font-serif italic">"{prize.msg}"</p>}
+                                            {prize.msg && <p className="text-xl text-stone-600 font-serif italic">&quot;{prize.msg}&quot;</p>}
                                         </div>
 
                                         <button

@@ -23,7 +23,7 @@ export default function DailyScratchCard() {
         }
     }, []);
 
-    const fetchPrize = async () => {
+    const fetchPrize = React.useCallback(async () => {
         if (prize) return; // Already fetched
 
         const rand = Math.random();
@@ -44,13 +44,13 @@ export default function DailyScratchCard() {
             // 10% - Big Prize
             setPrize({ text: 'משלוח חינם!', code: 'FREESHIP', type: 'coupon' });
         }
-    };
+    }, [prize]);
 
     useEffect(() => {
         if (isOpen) {
             fetchPrize();
         }
-    }, [isOpen]);
+    }, [isOpen, fetchPrize]);
 
     useEffect(() => {
         if (isOpen && canvasRef.current && containerRef.current) {
@@ -195,7 +195,7 @@ export default function DailyScratchCard() {
                                         {prize?.type === 'fact' ? (
                                             <>
                                                 <Lightbulb className="w-16 h-16 text-yellow-500 animate-bounce" />
-                                                <h3 className="text-xl font-bold text-[#2D1B14] leading-relaxed">"{prize.text}"</h3>
+                                                <h3 className="text-xl font-bold text-[#2D1B14] leading-relaxed">&quot;{prize.text}&quot;</h3>
                                                 <p className="text-xs text-stone-400">חזור מחר להפתעה נוספת!</p>
                                             </>
                                         ) : (
