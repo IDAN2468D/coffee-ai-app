@@ -55,22 +55,59 @@ export default function Navbar() {
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${navBackgroundClass}`}>
             <div className="max-w-[1440px] mx-auto px-6 h-12 flex items-center justify-between">
 
-                {/* Logo & Brand */}
-                <Link href="/" className="flex items-center gap-3 group relative z-50">
-                    <div className={`relative p-2.5 rounded-xl border transition-all duration-300 ${useDarkText
-                        ? 'bg-[#2D1B14] border-[#2D1B14] group-hover:bg-[#C37D46] group-hover:border-[#C37D46] shadow-lg'
-                        : 'bg-white/10 border-white/10 group-hover:bg-[#C37D46] backdrop-blur-md'
-                        }`}>
-                        <Coffee className={`w-5 h-5 transition-colors ${useDarkText ? 'text-white' : 'text-white'}`} />
-                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-400 animate-pulse" />
+                {/* Header Actions - Left Side (Image-inspired) */}
+                <div className="flex lg:hidden items-center gap-2">
+                    {/* Mobile Toggle */}
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="p-3 bg-white/5 rounded-full text-white hover:bg-white/10 transition-colors"
+                        aria-label="פתח תפריט"
+                    >
+                        {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                    </button>
+
+                    {/* Cart */}
+                    <Link href="/checkout" className="relative p-2 text-white/70 hover:text-white transition-colors">
+                        <ShoppingBag className="w-5 h-5" />
+                        <AnimatePresence>
+                            {cartCount > 0 && (
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-[#1A100C]"
+                                >
+                                    {cartCount}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </Link>
+
+                    {/* Notification Bell */}
+                    <div className="opacity-70 hover:opacity-100 transition-opacity">
+                        <NotificationBell />
                     </div>
-                    <div className="flex flex-col">
-                        <span className={`text-xl font-serif font-black tracking-tight leading-none transition-colors ${useDarkText ? 'text-[#2D1B14]' : 'text-white'}`}>
-                            Cyber Barista
-                        </span>
-                        <span className={`text-[11px] font-sans font-bold ${useDarkText ? 'text-[#C37D46]' : 'text-white/60'} group-hover:text-[#C37D46] transition-colors tracking-wide`}>
+
+                    {/* Theme Toggle */}
+                    <div className="opacity-70 hover:opacity-100 transition-opacity">
+                        <ThemeToggle />
+                    </div>
+                </div>
+
+                {/* Logo & Brand - Right Side (Image-inspired) */}
+                <Link href="/" className="flex items-center gap-3 group relative z-50 ml-auto lg:ml-0 order-first lg:order-none">
+                    <div className="flex flex-col text-right">
+                        <div className="font-serif font-black text-white leading-[0.9] flex flex-col">
+                            <span className="text-2xl tracking-tighter">Cyber</span>
+                            <span className="text-2xl tracking-tighter">Barista</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-white/60 tracking-tight mt-1">
                             בית הקפה הדיגיטלי
                         </span>
+                    </div>
+                    <div className="relative p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:bg-[#C37D46]/20 transition-all duration-300">
+                        <Coffee className="w-6 h-6 text-white" />
+                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-400 animate-pulse" />
                     </div>
                 </Link>
 
@@ -162,16 +199,16 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Right Side Actions */}
+                {/* Desktop and Mobile User Section Wrapper */}
                 <div className="flex items-center gap-4">
-                    <ThemeToggle />
-                    <NotificationBell />
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden lg:flex items-center gap-4">
+                        <ThemeToggle />
+                        <NotificationBell />
                         {session ? (
-                            <div className={`flex items-center gap-3 pl-4 border-l ${useDarkText ? 'border-[#2D1B14]/10' : 'border-white/10'}`}>
+                            <div className="flex items-center gap-3 pl-4 border-l border-white/10">
                                 <Link
                                     href="/dashboard"
-                                    className={`flex items-center gap-2 transition-colors group ${useDarkText ? 'text-[#2D1B14]/80 hover:text-[#2D1B14]' : 'text-white/80 hover:text-white'}`}
+                                    className="flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C37D46] to-[#E8CBAD] p-0.5">
                                         <div className="w-full h-full rounded-full bg-[#2D1B14] flex items-center justify-center overflow-hidden">
@@ -185,8 +222,7 @@ export default function Navbar() {
                                     <div className="hidden xl:block">
                                         <div className="text-xs font-bold leading-none">{session.user?.name?.split(' ')[0]}</div>
                                         <div className="flex items-center gap-1">
-                                            <div className={`text-[9px] uppercase tracking-wider font-medium ${useDarkText ? 'text-[#2D1B14]/50' : 'text-white/50'}`}>Dashboard</div>
-                                            {/* Points Badge */}
+                                            <div className="text-[9px] uppercase tracking-wider font-medium text-white/50">Dashboard</div>
                                             {(session.user as any).points > 0 && (
                                                 <div className="flex items-center gap-0.5 bg-yellow-500/20 px-1 py-0.5 rounded text-[9px] font-bold text-yellow-500">
                                                     <Crown size={8} />
@@ -199,40 +235,30 @@ export default function Navbar() {
                             </div>
                         ) : (
                             <div className="flex items-center gap-4">
-                                <Link href="/auth?mode=login" className={`text-sm font-bold transition-colors ${useDarkText ? 'text-[#2D1B14]/70 hover:text-[#2D1B14]' : 'text-white/70 hover:text-white'}`}>
+                                <Link href="/auth?mode=login" className="text-sm font-bold text-white/70 hover:text-white transition-colors">
                                     Login
                                 </Link>
-                                <Link href="/auth?mode=signup" className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${useDarkText ? 'bg-[#2D1B14] text-white hover:bg-[#C37D46]' : 'bg-white text-[#2D1B14] hover:bg-[#C37D46] hover:text-white'}`}>
+                                <Link href="/auth?mode=signup" className="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-white text-[#2D1B14] hover:bg-[#C37D46] hover:text-white transition-all">
                                     Sign Up
                                 </Link>
                             </div>
                         )}
+                        <Link href="/checkout" className="relative p-2 text-white hover:text-[#C37D46] transition-colors">
+                            <ShoppingBag className="w-5 h-5" />
+                            <AnimatePresence>
+                                {cartCount > 0 && (
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0 }}
+                                        className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-[#2D1B14]"
+                                    >
+                                        {cartCount}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </Link>
                     </div>
-
-                    {/* Cart */}
-                    <Link href="/checkout" className={`relative p-2 transition-colors ${useDarkText ? 'text-[#2D1B14] hover:text-[#C37D46]' : 'text-white hover:text-[#C37D46]'}`}>
-                        <ShoppingBag className="w-5 h-5" />
-                        <AnimatePresence>
-                            {cartCount > 0 && (
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    exit={{ scale: 0 }}
-                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-[#2D1B14]"
-                                >
-                                    {cartCount}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </Link>
-
-                    {/* Mobile Toggle */}
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className={`lg:hidden p-2 transition-colors rounded-full ${useDarkText ? 'text-[#2D1B14] bg-[#2D1B14]/5' : 'text-white bg-white/5'}`}
-                    >
-                        {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                    </button>
                 </div>
             </div>
 
@@ -303,8 +329,8 @@ export default function Navbar() {
                                                     href={link.href}
                                                     onClick={() => setMobileMenuOpen(false)}
                                                     className={`flex items-center gap-4 p-4 rounded-2xl transition-all group ${isActive(link.href)
-                                                            ? 'bg-[#C37D46] text-white shadow-lg shadow-[#C37D46]/20'
-                                                            : 'bg-white/5 hover:bg-white/10 text-white/90 border border-white/5'
+                                                        ? 'bg-[#C37D46] text-white shadow-lg shadow-[#C37D46]/20'
+                                                        : 'bg-white/5 hover:bg-white/10 text-white/90 border border-white/5'
                                                         }`}
                                                 >
                                                     <div className={`p-2 rounded-lg transition-colors ${isActive(link.href) ? 'bg-white/20' : 'bg-[#2D1B14] text-[#C37D46] group-hover:bg-[#C37D46] group-hover:text-white'
