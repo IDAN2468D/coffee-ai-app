@@ -94,21 +94,46 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Logo & Brand - Right Side (Image-inspired) */}
-                <Link href="/" className="flex items-center gap-3 group relative z-50 ml-auto lg:ml-0 order-first lg:order-none">
+                {/* Logo & Brand - Right Side (Image-inspired & Refined) */}
+                <Link href="/" className="flex items-center gap-4 group relative z-50 ml-auto lg:ml-0 order-first lg:order-none">
                     <div className="flex flex-col text-right">
-                        <div className="font-serif font-black text-white leading-[0.9] flex flex-col">
-                            <span className="text-2xl tracking-tighter">Cyber</span>
-                            <span className="text-2xl tracking-tighter">Barista</span>
-                        </div>
-                        <span className="text-[10px] font-bold text-white/60 tracking-tight mt-1">
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="font-serif font-black flex flex-col tracking-tight leading-[0.85]"
+                        >
+                            <span className="text-2xl bg-gradient-to-l from-white via-white to-white/60 bg-clip-text text-transparent">Cyber</span>
+                            <span className="text-2xl bg-gradient-to-l from-[#C37D46] via-[#C37D46] to-[#C37D46]/60 bg-clip-text text-transparent">Barista</span>
+                        </motion.div>
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-[10px] font-bold text-[#C37D46]/60 tracking-[0.1em] mt-1 uppercase"
+                        >
                             בית הקפה הדיגיטלי
-                        </span>
+                        </motion.span>
                     </div>
-                    <div className="relative p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:bg-[#C37D46]/20 transition-all duration-300">
-                        <Coffee className="w-6 h-6 text-white" />
-                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-400 animate-pulse" />
-                    </div>
+
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        animate={{
+                            boxShadow: ["0 0 0px rgba(195, 125, 70, 0)", "0 0 15px rgba(195, 125, 70, 0.3)", "0 0 0px rgba(195, 125, 70, 0)"]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        className="relative p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:border-[#C37D46]/40 transition-all duration-300"
+                    >
+                        <div className="relative z-10">
+                            <Coffee className="w-6 h-6 text-white group-hover:text-[#C37D46] transition-colors" />
+                            <Sparkles className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-400 animate-pulse" />
+                        </div>
+                        {/* Inner Glow */}
+                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C37D46]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </motion.div>
+
+                    {/* Background Soft Glow */}
+                    <div className="absolute -right-4 -top-8 w-32 h-32 bg-[#C37D46]/10 blur-[50px] -z-10 rounded-full" />
                 </Link>
 
                 {/* Desktop Navigation */}
