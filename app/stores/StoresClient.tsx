@@ -29,7 +29,7 @@ interface StoresClientProps {
 export default function StoresClient({ branches = [] }: StoresClientProps) {
     const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const safeBranches = Array.isArray(branches) ? branches : [];
+    const safeBranches = useMemo(() => Array.isArray(branches) ? branches : [], [branches]);
 
     const filteredBranches = useMemo(() => {
         return safeBranches.filter(branch =>
