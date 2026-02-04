@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect';
-import Branch, { IBranch } from '@/models/Branch';
+import Branch from '@/models/Branch';
 import StoresClient from './StoresClient';
 
 export const dynamic = 'force-dynamic';
