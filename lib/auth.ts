@@ -11,6 +11,7 @@ declare module "next-auth" {
         id: string;
         isAdmin: boolean;
         points: number;
+        subscriptionTier?: string | null;
     }
     interface Session {
         user: User;
@@ -22,6 +23,7 @@ declare module "next-auth/jwt" {
         id: string;
         isAdmin: boolean;
         points: number;
+        subscriptionTier?: string | null;
     }
 }
 
@@ -64,6 +66,7 @@ export const authOptions: NextAuthOptions = {
                     name: user.name,
                     isAdmin: user.isAdmin,
                     points: user.points,
+                    subscriptionTier: user.subscriptionTier,
                 };
             }
         })
@@ -80,6 +83,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.isAdmin = user.isAdmin;
                 token.points = user.points;
+                token.subscriptionTier = user.subscriptionTier;
             }
             return token;
         },
@@ -88,6 +92,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 (session.user as any).isAdmin = token.isAdmin as boolean;
                 (session.user as any).points = token.points as number;
+                (session.user as any).subscriptionTier = token.subscriptionTier as string | null;
             }
             return session;
         }

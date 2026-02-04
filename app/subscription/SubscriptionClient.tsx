@@ -7,57 +7,87 @@ import { motion } from 'framer-motion';
 
 const PLANS = [
     {
-        id: 'basic',
-        name: 'The Daily Grind',
-        price: 79,
-        description: 'מושלם לאוהבי קפה מתחילים',
+        id: 'silver',
+        name: 'Cyber Silver',
+        price: 49,
+        description: 'הכניסה המושלמת לעולם הקפה החכם',
         features: [
             '2 שקיות קפה (250 גרם) בחודש',
-            'מותאם אישית ע"י AI לטעם שלך',
-            'משלוח חינם',
+            'פרופיל טעם מותאם אישית ע"י AI',
+            'משלוח חינם בכל הארץ',
+            'צבירת נקודות כפולה ברכישות',
         ],
         icon: Coffee,
         popular: false,
         color: 'bg-stone-100',
-        textColor: 'text-stone-800'
+        textColor: 'text-stone-800',
+        buttonColor: 'bg-[#2D1B14] text-white hover:bg-black'
     },
     {
-        id: 'pro',
-        name: 'The Connoisseur',
-        price: 149,
-        description: 'לחובבי קפה שרוצים לגלות יותר',
+        id: 'gold',
+        name: 'Cyber Gold',
+        price: 99,
+        description: 'לחובבי קפה שרוצים את הטוב ביותר',
         features: [
-            '4 שקיות קפה (250 גרם) בחודש',
-            'גישה מוקדמת למהדורות מוגבלות',
-            'הפתעת החודש: כלי/אביזר קפה מתנה',
+            '4 שקיות קפה פרימיום בחודש',
+            'גישה מוקדמת למהדורות נדירות',
+            'בונוס חודשי: אביזר קפה או מאפה',
+            'צבירת נקודות משולשת (x3)',
             'ייעוץ V.I.P עם הבריסטה AI',
         ],
         icon: Star,
         popular: true,
         color: 'bg-[#C37D46]',
-        textColor: 'text-white'
+        textColor: 'text-white',
+        buttonColor: 'bg-white text-[#C37D46] hover:bg-stone-100 shadow-xl'
     },
     {
-        id: 'elite',
-        name: 'Roaster\'s Circle',
-        price: 269,
-        description: 'החוויה האולטימטיבית',
+        id: 'platinum',
+        name: 'Cyber Platinum',
+        price: 199,
+        description: 'החוויה האולטימטיבית ללא פשרות',
         features: [
-            '6 שקיות קפה פרימיום (Reserve)',
-            'סדנת קפה דיגיטלית חודשית',
+            '6 שקיות קפה Reserve (נדיר ביותר)',
+            'סדנאות לאטה-ארט דיגיטליות',
             'מרצ׳נדייז בלעדי כל רבעון',
-            'כרטיס חבר זהב פיזי',
-            'משלוח אקספרס עד הדלת',
+            'כרטיס חבר מתכת יוקרתי',
+            'משלוח אקספרס (באותו יום)',
+            'זמינות 24/7 לבוט הבריסטה',
         ],
         icon: Crown,
         popular: false,
         color: 'bg-[#2D1B14]',
-        textColor: 'text-[#C37D46]'
+        textColor: 'text-[#C37D46]',
+        buttonColor: 'bg-[#C37D46] text-white hover:bg-[#A66330] shadow-xl shadow-amber-900/40'
     }
 ];
 
 export default function SubscriptionClient() {
-    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+    const [loading, setLoading] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+
+    const handleJoin = async (tierId: string) => {
+        setLoading(tierId);
+        try {
+            const response = await fetch('/api/subscription/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tier: tierId.charAt(0).toUpperCase() + tierId.slice(1) })
+            });
+
+            if (response.ok) {
+                setSuccess(tierId);
+                setTimeout(() => setSuccess(null), 5000);
+            } else {
+                alert("נראה שיש בעיה. אולי כדאי לנסות שוב?");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("שגיאת תקשורת. בדקו את החיבור לאינטרנט.");
+        } finally {
+            setLoading(null);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] font-sans" dir="rtl">
@@ -124,13 +154,21 @@ export default function SubscriptionClient() {
                                 ))}
                             </ul>
 
-                            <button className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg text-lg ${plan.id === 'pro'
-                                ? 'bg-white text-[#C37D46] hover:bg-stone-100'
-                                : plan.id === 'elite'
-                                    ? 'bg-[#C37D46] text-white hover:bg-[#A66330]'
-                                    : 'bg-[#2D1B14] text-white hover:bg-black'
-                                }`}>
-                                הצטרף למועדון
+                            <button
+                                onClick={() => handleJoin(plan.id)}
+                                disabled={loading !== null}
+                                className={`w-full py-4 rounded-xl font-bold transition-all shadow-lg text-lg flex items-center justify-center gap-2 ${plan.buttonColor}`}
+                            >
+                                {loading === plan.id ? (
+                                    <div className="w-6 h-6 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+                                ) : success === plan.id ? (
+                                    <>
+                                        <Check className="w-5 h-5" />
+                                        <span>הצטרפת בהצלחה!</span>
+                                    </>
+                                ) : (
+                                    <span>הצטרף למועדון</span>
+                                )}
                             </button>
                         </motion.div>
                     ))}

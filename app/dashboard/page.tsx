@@ -8,14 +8,20 @@ export const dynamic = 'force-dynamic';
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
     let points = 0;
+    let userData: any = null;
     let orders: any[] = [];
 
     if (session?.user?.email) {
-        const user = await prisma.user.findUnique({
+        userData = await prisma.user.findUnique({
             where: { email: session.user.email },
-            select: { points: true }
+            select: {
+                points: true,
+                subscriptionTier: true,
+                subscriptionStatus: true,
+                subscriptionExpiry: true
+            }
         });
-        if (user) points = user.points;
+        if (userData) points = userData.points;
 
         orders = await prisma.order.findMany({
             where: { user: { email: session.user.email } },
@@ -30,5 +36,13 @@ export default async function DashboardPage() {
         });
     }
 
-    return <DashboardClient initialPoints={points} initialOrders={orders} />;
+    return <DashboardClient
+        initialPoints={points}
+        initialOrders={orders}
+        subscription={userData ? {
+            tier: userData.subscriptionTier,
+            status: userData.subscriptionStatus,
+            expiry: userData.subscriptionExpiry
+        } : null}
+    />;
 }

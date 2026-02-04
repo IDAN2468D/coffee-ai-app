@@ -1,45 +1,88 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Coffee, Calendar, Info, Check, Package, Sparkles } from 'lucide-react';
-import { useCart } from '@/lib/store';
+import { Check, Sparkles, Star, Crown, Zap, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function SubscriptionPage() {
-    const [cupsPerDay, setCupsPerDay] = useState(3);
-    const [basketSize, setBasketSize] = useState(18); // grams
-    const { addItem } = useCart();
     const router = useRouter();
+    const { data: session } = useSession();
+    const [loadingTier, setLoadingTier] = useState<string | null>(null);
 
-    // Calculations
-    const gramsPerDay = cupsPerDay * basketSize;
-    const bagWeight = 250; // Standard bag
-    const daysLasting = Math.floor(bagWeight / gramsPerDay);
-    const bagsPerMonth = Math.ceil((gramsPerDay * 30) / bagWeight);
+    const handleSubscribe = async (tier: string) => {
+        if (!session) {
+            router.push('/auth/login?callbackUrl=/subscription');
+            return;
+        }
 
-    // Mock Product for Subscription
-    const subscriptionProduct = {
-        id: 'sub-ethiopia',
-        name: 'Ethiopian Bundle (Subscription)',
-        description: `Monthly supply of ${bagsPerMonth} bags based on your habit.`,
-        price: 18.00 * bagsPerMonth * 0.9, // 10% discount
-        image: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?q=80&w=1000&auto=format&fit=crop',
-        category: 'Beans' as const
+        setLoadingTier(tier);
+        try {
+            const res = await fetch('/api/subscription/join', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tier })
+            });
+
+            if (!res.ok) throw new Error('Subscription failed');
+
+            router.push('/dashboard');
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+            // innovative error handling could go here
+        } finally {
+            setLoadingTier(null);
+        }
     };
 
-    const handleSubscribe = () => {
-        addItem({
-            id: subscriptionProduct.id,
-            name: `${subscriptionProduct.name} - ${bagsPerMonth} Bags`,
-            price: subscriptionProduct.price,
-            image: subscriptionProduct.image,
-            description: subscriptionProduct.description,
-            category: 'Beans'
-        });
-        router.push('/checkout');
-    };
+    const tiers = [
+        {
+            name: 'Silver',
+            price: 59,
+            icon: Star,
+            color: 'text-stone-400',
+            bgColor: 'bg-stone-400/10',
+            borderColor: 'border-stone-400/20',
+            features: [
+                'משלוח חינם בהזמנות מעל 200₪',
+                '5% הנחה קבועה על כל האתר',
+                'גישה לבלוג המומחים'
+            ]
+        },
+        {
+            name: 'Gold',
+            price: 99,
+            popular: true,
+            icon: Zap,
+            color: 'text-[#C37D46]',
+            bgColor: 'bg-[#C37D46]/10',
+            borderColor: 'border-[#C37D46]/40',
+            features: [
+                'משלוח חינם ללא מינימום',
+                '10% הנחה קבועה על כל האתר',
+                'קדימות במשלוח (משלוח מהיר)',
+                'מתנה קטנה בכל הזמנה חודשית'
+            ]
+        },
+        {
+            name: 'Platinum',
+            price: 149,
+            icon: Crown,
+            color: 'text-purple-500',
+            bgColor: 'bg-purple-500/10',
+            borderColor: 'border-purple-500/20',
+            features: [
+                'כל הטבות ה-Gold',
+                '15% הנחה קבועה על כל האתר',
+                'ייעוץ אישי עם בריסטה מומחה',
+                'גישה מוקדמת למוצרים חדשים',
+                'מארז טעימות חודשי חינם'
+            ]
+        }
+    ];
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] font-sans" dir="rtl">
@@ -50,111 +93,68 @@ export default function SubscriptionPage() {
                 <div className="text-center mb-16 space-y-4">
                     <div className="inline-flex items-center gap-2 bg-[#C37D46]/10 px-4 py-2 rounded-full border border-[#C37D46]/20 text-[#C37D46]">
                         <Sparkles size={18} />
-                        <span className="text-sm font-bold tracking-widest uppercase">Smart Subscription AI</span>
+                        <span className="text-sm font-bold tracking-widest uppercase">מועדון החברים</span>
                     </div>
                     <h1 className="text-5xl md:text-6xl font-serif font-black text-[#2D1B14] tracking-tight">
-                        לעולם אל תיתקע בלי <span className="text-[#C37D46]">קפה</span>
+                        שדרג את חווית ה<span className="text-[#C37D46]">קפה</span> שלך
                     </h1>
                     <p className="text-xl text-stone-600 max-w-2xl mx-auto font-light leading-relaxed">
-                        המחשבון שלנו ינתח את הרגלי השתייה שלך ויבנה לך את המנוי המדויק,
-                        כדי שהפולים יגיעו לפתח הדלת בדיוק כשהשקית הקודמת נגמרת.
+                        בחר את המסלול המתאים לך ותהנה מהטבות בלעדיות, הנחות קבועות ופינוקים מיוחדים לחברי המועדון.
                     </p>
                 </div>
 
-                <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-
-                    {/* Calculator Card */}
-                    <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl border border-stone-100">
-                        <div className="space-y-10">
-                            <div>
-                                <label className="flex items-center gap-3 text-lg font-bold text-[#2D1B14] mb-4">
-                                    <Coffee className="text-[#C37D46]" />
-                                    כמה כוסות ביום?
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="range"
-                                        min="1"
-                                        max="10"
-                                        step="1"
-                                        value={cupsPerDay}
-                                        onChange={(e) => setCupsPerDay(Number(e.target.value))}
-                                        className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-[#C37D46]"
-                                    />
-                                    <div className="absolute top-[-40px] left-1/2 -translate-x-1/2 bg-[#2D1B14] text-white px-3 py-1 rounded-lg font-bold text-sm">
-                                        {cupsPerDay} כוסות
-                                    </div>
-                                    <div className="flex justify-between mt-2 text-xs text-stone-400 font-mono">
-                                        <span>1</span>
-                                        <span>5</span>
-                                        <span>10</span>
-                                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    {tiers.map((tier) => (
+                        <div
+                            key={tier.name}
+                            className={`relative bg-white rounded-[2.5rem] p-8 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl border ${tier.popular ? 'border-[#C37D46] shadow-xl scale-105 z-10' : 'border-stone-100 shadow-lg'}`}
+                        >
+                            {tier.popular && (
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C37D46] text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-lg">
+                                    הכי משתלם
                                 </div>
+                            )}
+
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${tier.bgColor} ${tier.color}`}>
+                                <tier.icon size={28} />
                             </div>
 
-                            <div>
-                                <label className="flex items-center gap-3 text-lg font-bold text-[#2D1B14] mb-4">
-                                    <Info className="text-[#C37D46]" />
-                                    גודל הסלסלה (גרם לידית)?
-                                </label>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {[16, 18, 20].map((size) => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setBasketSize(size)}
-                                            className={`py-3 rounded-xl border-2 font-bold transition-all ${basketSize === size ? 'border-[#C37D46] bg-[#C37D46]/5 text-[#C37D46]' : 'border-stone-200 text-stone-400 hover:border-stone-300'}`}
-                                        >
-                                            {size}g
-                                        </button>
-                                    ))}
-                                </div>
-                                <p className="text-xs text-stone-400 mt-2">18g הוא הסטנדרט למנה כפולה ברוב המכונות.</p>
+                            <h3 className="text-2xl font-black text-[#2D1B14] mb-2">{tier.name}</h3>
+                            <div className="flex items-baseline gap-1 mb-6">
+                                <span className="text-4xl font-black text-[#2D1B14]">₪{tier.price}</span>
+                                <span className="text-stone-400 text-sm">/חודש</span>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Result Card */}
-                    <div className="space-y-6">
-                        <div className="bg-[#2D1B14] text-white rounded-[3rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#C37D46] rounded-full blur-[80px] opacity-20 pointer-events-none" />
+                            <button
+                                onClick={() => handleSubscribe(tier.name)}
+                                disabled={loadingTier !== null}
+                                className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${tier.popular
+                                    ? 'bg-[#2D1B14] text-white hover:bg-black'
+                                    : 'bg-stone-100 text-[#2D1B14] hover:bg-stone-200'
+                                    }`}
+                            >
+                                {loadingTier === tier.name ? (
+                                    <Loader2 className="animate-spin" size={20} />
+                                ) : (
+                                    <>
+                                        הצטרף ל-{tier.name}
+                                        <Check size={18} />
+                                    </>
+                                )}
+                            </button>
 
-                            <div className="relative z-10 space-y-6">
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <h3 className="text-2xl font-serif font-bold mb-1">התוכנית שלך</h3>
-                                        <p className="text-white/60 text-sm">מבוסס על צריכה יומית של {gramsPerDay}g</p>
+                            <div className="mt-8 space-y-4">
+                                {tier.features.map((feature, idx) => (
+                                    <div key={idx} className="flex items-start gap-3 text-stone-600">
+                                        <div className={`mt-1 min-w-[1.25rem] h-5 rounded-full flex items-center justify-center ${tier.bgColor}`}>
+                                            <Check size={12} className={tier.color} />
+                                        </div>
+                                        <span className="text-sm leading-tight">{feature}</span>
                                     </div>
-                                    <Package size={40} className="text-[#C37D46]" />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-md">
-                                        <div className="text-3xl font-black mb-1">{bagsPerMonth}</div>
-                                        <div className="text-xs text-white/60 uppercase tracking-widest">שקיות בחודש</div>
-                                    </div>
-                                    <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-md">
-                                        <div className="text-3xl font-black mb-1">{daysLasting}</div>
-                                        <div className="text-xs text-white/60 uppercase tracking-widest">ימים לשקית</div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-6 border-t border-white/10">
-                                    <div className="flex justify-between items-end mb-4">
-                                        <span className="text-white/80">מחיר מיוחד למנוי</span>
-                                        <span className="text-3xl font-bold text-[#C37D46]">₪{subscriptionProduct.price.toFixed(0)}<span className="text-sm text-white/40 font-normal">/חודש</span></span>
-                                    </div>
-                                    <button
-                                        onClick={handleSubscribe}
-                                        className="w-full bg-white text-[#2D1B14] py-4 rounded-xl font-black text-lg hover:bg-stone-200 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                        הוסף מנוי לסל
-                                        <Check size={20} />
-                                    </button>
-                                    <p className="text-center text-xs text-white/40 mt-3">ביטול בכל עת. ללא התחייבות.</p>
-                                </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
 

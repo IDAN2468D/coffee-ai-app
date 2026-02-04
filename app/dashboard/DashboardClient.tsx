@@ -16,14 +16,23 @@ import {
     Package,
     Plus,
     Check,
-    LogOut
+    LogOut,
+    Crown
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PRODUCTS, Product } from '@/lib/products';
 import { useCart } from '@/lib/store';
 
-export default function Dashboard({ initialPoints, initialOrders }: { initialPoints: number, initialOrders: any[] }) {
+export default function Dashboard({
+    initialPoints,
+    initialOrders,
+    subscription
+}: {
+    initialPoints: number,
+    initialOrders: any[],
+    subscription: { tier: string | null, status: string | null, expiry: any | null } | null
+}) {
     const { data: session, status } = useSession();
     const router = useRouter();
     const { addItem } = useCart();
@@ -81,9 +90,16 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
             <header className="bg-white border-b border-stone-100 pt-32 pb-16">
                 <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div className="space-y-4 text-right">
-                        <h1 className="text-5xl font-serif font-bold text-[#2D1B14]">
-                            ברוך הבא, <span className="text-[#8B4513]">{session?.user?.name?.split(' ')[0]}</span>
-                        </h1>
+                        <div className="flex items-center gap-3 flex-row-reverse">
+                            <h1 className="text-5xl font-serif font-bold text-[#2D1B14]">
+                                ברוך הבא, <span className="text-[#8B4513]">{session?.user?.name?.split(' ')[0]}</span>
+                            </h1>
+                            {subscription?.tier && (
+                                <span className="px-3 py-1 bg-[#C37D46] text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-amber-900/20">
+                                    {subscription.tier}
+                                </span>
+                            )}
+                        </div>
                         <p className="text-stone-400 font-light text-lg">מרכז השליטה האישי שלך בבית הקלייה הדיגיטלי.</p>
                     </div>
                     <div className="flex items-center space-x-6 space-x-reverse">
@@ -352,6 +368,50 @@ export default function Dashboard({ initialPoints, initialOrders }: { initialPoi
                                 </div>
                             ))}
                             <button onClick={() => setShowAllActivity(!showAllActivity)} className="w-full py-4 border-2 border-stone-50 rounded-2xl text-[10px] font-black uppercase tracking-widest text-stone-400 hover:bg-stone-50 transition-all">{showAllActivity ? 'הצג פחות' : 'צפה בכל הפעילות'}</button>
+                        </div>
+
+                        {/* Subscription Management Sidebar Item */}
+                        <div className="bg-gradient-to-br from-[#2D1B14] to-black rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C37D46] rounded-full blur-[60px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity" />
+
+                            <div className="relative z-10 space-y-6">
+                                <div className="flex items-center justify-between flex-row-reverse">
+                                    <div className={`p-3 rounded-2xl ${subscription?.tier ? 'bg-[#C37D46]/20 text-[#C37D46]' : 'bg-white/10 text-white/40'}`}>
+                                        <Crown className="w-6 h-6" />
+                                    </div>
+                                    <div className="text-right">
+                                        <h3 className="font-serif font-black text-xl">המנוי שלי</h3>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40">סטטוס מועדון</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    {subscription?.tier ? (
+                                        <div className="space-y-4">
+                                            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                                                <div className="text-2xl font-black text-[#C37D46] mb-1">{subscription.tier}</div>
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-white/20">חבר מועדון פעיל</div>
+                                            </div>
+                                            <div className="flex justify-between items-center flex-row-reverse text-xs">
+                                                <span className="text-white/40">בתוקף עד:</span>
+                                                <span className="font-bold">{new Date(subscription.expiry).toLocaleDateString('he-IL')}</span>
+                                            </div>
+                                            <Link href="/subscription" className="block w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-center text-xs font-black uppercase tracking-widest transition-all">
+                                                ניהול מנוי
+                                            </Link>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            <p className="text-sm text-white/60 text-right leading-relaxed">
+                                                עדיין לא הצטרפת למועדון המנויים החכם שלנו? חסוך עד 20% בכל הזמנה.
+                                            </p>
+                                            <Link href="/subscription" className="block w-full py-4 bg-[#C37D46] hover:bg-[#A66330] rounded-2xl text-center text-sm font-black uppercase tracking-widest transition-all shadow-lg shadow-amber-900/40">
+                                                לצפייה בתוכניות
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
