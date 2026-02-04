@@ -243,121 +243,178 @@ export default function Navbar() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 top-16 z-40 bg-black/60 backdrop-blur-xl lg:hidden h-[calc(100vh-4rem)] overflow-y-auto"
+                        className="fixed inset-0 z-[60] lg:hidden"
                     >
+                        {/* Backdrop with Blur */}
                         <motion.div
-                            initial={{ y: -20, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            className="p-6 pb-24 space-y-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        />
+
+                        {/* Slide-out Menu Panel */}
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="absolute right-0 top-0 bottom-0 w-[85%] max-w-sm bg-[#1A100C]/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl flex flex-col"
                             dir="rtl"
                         >
-                            {/* Main Navigation */}
-                            <div className="space-y-4">
-                                <h3 className="text-xs font-bold text-[#C37D46] uppercase tracking-widest opacity-80 mb-4 px-2">תפריט ראשי</h3>
-                                <div className="grid gap-2">
-                                    {[
-                                        { name: 'דף הבית', href: '/', icon: Home },
-                                        { name: 'חנות', href: '/shop', icon: Store },
-                                        { name: 'הסניפים שלנו', href: '/stores', icon: Store },
-                                        { name: 'מועדון החברים', href: '/subscription', icon: Crown },
-                                        { name: 'מיקסר אווירה', href: '/ambience', icon: Headphones },
-                                        { name: 'גלריה', href: '/gallery', icon: ImageIcon },
-                                    ].map((link, i) => (
-                                        <motion.div
-                                            key={link.name}
-                                            initial={{ x: 20, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            transition={{ delay: 0.1 + i * 0.05 }}
-                                        >
-                                            <Link
-                                                href={link.href}
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all group"
-                                            >
-                                                <div className="p-2 bg-[#2D1B14] rounded-lg text-[#C37D46] group-hover:bg-[#C37D46] group-hover:text-white transition-colors">
-                                                    <link.icon size={20} />
-                                                </div>
-                                                <span className="font-serif text-lg text-white font-medium">{link.name}</span>
-                                            </Link>
-                                        </motion.div>
-                                    ))}
+                            {/* Mobile Header with Close */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/5">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-2 bg-[#C37D46] rounded-lg">
+                                        <Coffee className="w-5 h-5 text-white" />
+                                    </div>
+                                    <span className="text-xl font-serif font-black text-white">Cyber Barista</span>
                                 </div>
+                                <button
+                                    aria-label="סגור תפריט"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-2 rounded-full bg-white/5 text-white/70 hover:bg-white/10"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
                             </div>
 
-                            {/* AI Tools & Extras */}
-                            <div className="space-y-4">
-                                <h3 className="text-xs font-bold text-[#C37D46] uppercase tracking-widest opacity-80 mb-4 px-2">כלים וחוויות AI</h3>
-                                <div className="grid gap-2">
-                                    {[
-                                        { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
-                                        { name: 'אורקל הקפה', href: '/fortune', icon: Sparkles },
-                                        { name: 'מעקב קפאין', href: '/tracker', icon: Activity },
-                                        { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
-                                        { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', icon: FlaskConical },
-                                        { name: 'מדרג הפולים', href: '/expert/bean-rater', icon: Gavel },
-                                        { name: 'מחשבון חליטה', href: '/expert/brew-calculator', icon: Scale },
-                                    ].map((link, i) => (
-                                        <motion.div
-                                            key={link.name}
-                                            initial={{ x: 20, opacity: 0 }}
-                                            animate={{ x: 0, opacity: 1 }}
-                                            transition={{ delay: 0.3 + i * 0.05 }}
-                                            className="relative flex items-center"
-                                        >
-                                            <Link
-                                                href={link.href}
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="flex-grow flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-white/80 hover:text-white"
+                            <div className="flex-grow overflow-y-auto p-6 space-y-8 pb-32">
+                                {/* Main Navigation Section */}
+                                <div className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-[#C37D46] uppercase tracking-[0.2em] opacity-80 mb-2 px-2">מסע וגילוי</h3>
+                                    <div className="grid gap-2">
+                                        {[
+                                            { name: 'דף הבית', href: '/', icon: Home },
+                                            { name: 'החנות הדיגיטלית', href: '/shop', icon: ShoppingBag },
+                                            { name: 'הסניפים שלנו', href: '/stores', icon: Store },
+                                            { name: 'מועדון הקרמה', href: '/subscription', icon: Crown },
+                                            { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones },
+                                            { name: 'גלריית קהילה', href: '/gallery', icon: ImageIcon },
+                                        ].map((link, i) => (
+                                            <motion.div
+                                                key={link.name}
+                                                initial={{ x: 50, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.1 + i * 0.05 }}
                                             >
-                                                <link.icon size={18} className="text-[#C37D46]" />
-                                                <span className="font-medium">{link.name}</span>
-                                            </Link>
-
-                                            {link.action && (
                                                 <Link
-                                                    href={link.action.href}
+                                                    href={link.href}
                                                     onClick={() => setMobileMenuOpen(false)}
-                                                    className="p-3 bg-[#C37D46]/20 text-[#C37D46] rounded-xl ml-2 hover:bg-[#C37D46] hover:text-white transition-all"
+                                                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all group ${isActive(link.href)
+                                                            ? 'bg-[#C37D46] text-white shadow-lg shadow-[#C37D46]/20'
+                                                            : 'bg-white/5 hover:bg-white/10 text-white/90 border border-white/5'
+                                                        }`}
                                                 >
-                                                    <link.action.icon size={18} />
+                                                    <div className={`p-2 rounded-lg transition-colors ${isActive(link.href) ? 'bg-white/20' : 'bg-[#2D1B14] text-[#C37D46] group-hover:bg-[#C37D46] group-hover:text-white'
+                                                        }`}>
+                                                        <link.icon size={20} />
+                                                    </div>
+                                                    <span className="font-serif text-lg font-bold">{link.name}</span>
                                                 </Link>
-                                            )}
-                                        </motion.div>
-                                    ))}
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* AI Laboratory Section */}
+                                <div className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-[#C37D46] uppercase tracking-[0.2em] opacity-80 mb-2 px-2">מעבדת ה-AI</h3>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {[
+                                            { name: 'הבריסטה החכם', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
+                                            { name: 'אורקל המזל', href: '/fortune', icon: Sparkles },
+                                            { name: 'יומן קפאין', href: '/tracker', icon: Activity },
+                                            { name: 'אלגוריתם התאמה', href: '/match', icon: BrainCircuit },
+                                            { name: 'מעבדת הבלנדים', href: '/expert/custom-blend-lab', icon: FlaskConical },
+                                        ].map((link, i) => (
+                                            <motion.div
+                                                key={link.name}
+                                                initial={{ x: 50, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.3 + i * 0.05 }}
+                                                className="relative group"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <Link
+                                                        href={link.href}
+                                                        onClick={() => setMobileMenuOpen(false)}
+                                                        className="flex-grow flex items-center gap-3 px-4 py-4 rounded-2xl bg-white/5 border border-white/5 hover:border-[#C37D46]/30 transition-all"
+                                                    >
+                                                        <div className="w-8 h-8 rounded-full bg-[#C37D46]/10 flex items-center justify-center">
+                                                            <link.icon size={16} className="text-[#C37D46]" />
+                                                        </div>
+                                                        <span className="text-white/80 font-medium">{link.name}</span>
+                                                    </Link>
+
+                                                    {link.action && (
+                                                        <Link
+                                                            aria-label="פעולה קולית"
+                                                            href={link.action.href}
+                                                            onClick={() => setMobileMenuOpen(false)}
+                                                            className="p-4 bg-[#C37D46]/20 text-[#C37D46] rounded-2xl hover:bg-[#C37D46] hover:text-white transition-all shadow-lg"
+                                                        >
+                                                            <link.action.icon size={20} />
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* User Section */}
+                            {/* Sticky User Profile Bottom Section */}
                             <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.6 }}
-                                className="pt-4 border-t border-white/10"
+                                initial={{ y: 50, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.5 }}
+                                className="p-6 bg-[#1A100C] border-t border-white/10"
                             >
                                 {!session ? (
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Link href="/auth?mode=login" onClick={() => setMobileMenuOpen(false)} className="py-3.5 text-center border border-white/20 rounded-xl text-white font-bold text-sm hover:bg-white/5 transition-colors">
-                                            התחברות
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Link
+                                            href="/auth?mode=login"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="py-4 text-center border border-white/10 rounded-2xl text-white/90 font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all"
+                                        >
+                                            כניסה
                                         </Link>
-                                        <Link href="/auth?mode=signup" onClick={() => setMobileMenuOpen(false)} className="py-3.5 text-center bg-[#C37D46] rounded-xl text-white font-bold text-sm shadow-lg shadow-orange-900/20">
+                                        <Link
+                                            href="/auth?mode=signup"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="py-4 text-center bg-white text-[#1A100C] rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/20 hover:bg-[#C37D46] hover:text-white transition-all"
+                                        >
                                             הרשמה
                                         </Link>
                                     </div>
                                 ) : (
-                                    <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-4 p-4 bg-[#2D1B14]/50 border border-white/10 rounded-2xl">
-                                        <div className="w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] to-transparent">
-                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center text-white font-bold text-lg">
-                                                {session.user?.name?.[0]}
+                                    <Link
+                                        href="/dashboard"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
+                                    >
+                                        <div className="relative w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] to-amber-200">
+                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center overflow-hidden">
+                                                {session.user?.image ? (
+                                                    <img src={session.user.image} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <span className="text-white font-black text-lg">{session.user?.name?.[0]}</span>
+                                                )}
+                                            </div>
+                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#C37D46] rounded-full flex items-center justify-center border-2 border-[#1A100C]">
+                                                <Activity size={10} className="text-white" />
                                             </div>
                                         </div>
-                                        <div>
-                                            <div className="text-white font-bold text-lg">האיזור האישי</div>
-                                            <div className="text-white/50 text-xs">מחובר כ-{session.user?.name?.split(' ')[0]}</div>
+                                        <div className="flex-grow">
+                                            <div className="text-white font-bold text-lg leading-tight group-hover:text-[#C37D46] transition-colors">{session.user?.name?.split(' ')[0]}</div>
+                                            <div className="text-white/40 text-[10px] font-black uppercase tracking-widest">ניהול חשבון</div>
                                         </div>
+                                        <ChevronDown className="w-5 h-5 text-white/20 -rotate-90 group-hover:text-white/50 transition-colors" />
                                     </Link>
                                 )}
                             </motion.div>
-
                         </motion.div>
                     </motion.div>
                 )}
