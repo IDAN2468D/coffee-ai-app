@@ -52,11 +52,11 @@ export default function Navbar() {
     const navBackgroundClass = 'bg-[linear-gradient(to_bottom,rgba(20,10,5,0.8),rgba(20,10,5,0.9)),url("/images/navbar-bg-texture.png")] bg-cover bg-center border-white/5 py-4 shadow-lg';
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${navBackgroundClass}`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b flex items-center justify-between px-4 lg:px-8 ${navBackgroundClass}`}>
             {/* ==================== DESKTOP LAYOUT (lg:flex) ==================== */}
 
             {/* 1. Desktop Branding (Left) */}
-            <div className="hidden lg:flex items-center gap-4 sm:gap-6 order-1 relative z-50 group">
+            <div className="hidden lg:flex items-center gap-4 sm:gap-6 relative z-50 group">
                 {/* Holographic Background Aura (Hover Only) */}
                 <div
                     className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl pointer-events-none"
@@ -163,10 +163,9 @@ export default function Navbar() {
                 </Link>
             </div>
 
-
-            {/* 2. Desktop Central Navigation Pill (Center) */}
-            <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-1.5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md transition-all z-[40]">
-                <div className="flex items-center gap-1">
+            {/* 2. Desktop Navigation (Center) */}
+            <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 z-40">
+                <div className="flex items-center bg-[#1A100C]/80 backdrop-blur-md rounded-full px-6 py-2 border border-white/5 shadow-xl">
                     {[
                         { name: 'חנות', href: '/shop' },
                         { name: 'סניפים', href: '/stores', icon: Store },
@@ -176,31 +175,31 @@ export default function Navbar() {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${isActive(link.href)
-                                ? 'text-white bg-white/10 shadow-inner'
-                                : 'text-white/80 hover:bg-white/10'
+                            className={`px-4 py-1.5 text-sm font-bold transition-all flex items-center gap-2 rounded-full hover:bg-white/5 ${isActive(link.href)
+                                ? 'text-[#C37D46] bg-white/5'
+                                : 'text-white/70 hover:text-white'
                                 }`}
                         >
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-[#C37D46]" />}
+                            {link.icon && <link.icon className="w-4 h-4" />}
                             {link.name}
                         </Link>
                     ))}
 
-                    <div className="w-px h-4 mx-2 bg-white/20" />
+                    <div className="w-px h-4 mx-3 bg-white/10" />
 
-                    {/* Dropdown Trigger */}
+                    {/* Simple Dropdown */}
                     <div
                         className="relative"
                         onMouseEnter={() => setFeaturesOpen(true)}
                         onMouseLeave={() => setFeaturesOpen(false)}
                     >
-                        <button className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${['/expert', '/fortune', '/match'].includes(pathname || '')
+                        <button className={`flex items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full hover:bg-white/5 transition-all ${['/expert', '/fortune', '/match'].includes(pathname || '')
                             ? 'text-[#C37D46]'
-                            : 'text-white/80 hover:bg-white/10'
+                            : 'text-white/70 hover:text-white'
                             }`}>
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>חוויות AI</span>
-                            <ChevronDown className={`w-3 h-3 transition-transform ${featuresOpen ? 'rotate-180' : ''}`} />
+                            <Sparkles className="w-4 h-4" />
+                            <span>AI Zone</span>
+                            <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${featuresOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         <AnimatePresence>
@@ -209,21 +208,20 @@ export default function Navbar() {
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-[#2D1B14] border border-white/10 rounded-2xl shadow-xl overflow-hidden p-1 z-[60]"
+                                    className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-56 bg-[#1A100C] border border-white/10 rounded-xl shadow-2xl overflow-hidden p-1.5"
                                 >
                                     {[
-                                        { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה' },
-                                        { name: 'התאמת קפה', href: '/match', desc: 'מצא את הטעם שלך' },
-                                        { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', desc: 'צור בעצמך' },
-                                        { name: 'גלריה', href: '/gallery', desc: 'אומנות הקהילה' },
+                                        { name: 'בריסטה AI', href: '/expert' },
+                                        { name: 'התאמת קפה', href: '/match' },
+                                        { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab' },
+                                        { name: 'גלריה', href: '/gallery' },
                                     ].map((item) => (
                                         <Link
                                             key={item.href}
                                             href={item.href}
-                                            className="block p-3 rounded-xl hover:bg-white/5 transition-colors text-right group"
+                                            className="block px-4 py-2.5 rounded-lg hover:bg-white/5 text-right text-sm font-medium text-white/80 hover:text-[#C37D46] transition-colors"
                                         >
-                                            <div className="font-bold text-white text-sm group-hover:text-[#C37D46]">{item.name}</div>
-                                            <div className="text-[10px] text-white/40 uppercase font-bold">{item.desc}</div>
+                                            {item.name}
                                         </Link>
                                     ))}
                                 </motion.div>
@@ -234,34 +232,35 @@ export default function Navbar() {
             </div>
 
             {/* 3. Desktop Actions Group (Right) */}
-            <div className="hidden lg:flex items-center gap-2 pl-6 border-l border-white/10 order-3 z-50">
+            <div className="hidden lg:flex items-center gap-2 pl-6 border-l border-white/10 z-50">
                 <ThemeToggle />
                 <NotificationBell />
 
+                <div className="w-px h-6 bg-white/10 mx-1" />
+
                 {session ? (
-                    <Link href="/dashboard" className="flex items-center gap-3 p-1 rounded-full bg-white/5 border border-white/10 hover:border-[#C37D46]/40 transition-all shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-[#C37D46] flex items-center justify-center overflow-hidden">
+                    <Link href="/dashboard" className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/5 border border-white/10 hover:border-[#C37D46]/50 transition-all">
+                        <span className="text-sm font-bold text-white capitalize pl-2">{session.user?.name?.split(' ')[0]}</span>
+                        <div className="w-8 h-8 rounded-full bg-[#C37D46] p-0.5">
                             {session.user?.image ? (
-                                <img src={session.user.image} alt="" className="w-full h-full object-cover" />
+                                <img src={session.user.image} alt="" className="w-full h-full rounded-full object-cover" />
                             ) : (
-                                <span className="text-xs font-bold text-white">{session.user?.name?.[0]}</span>
+                                <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center">
+                                    <User className="w-4 h-4 text-white" />
+                                </div>
                             )}
-                        </div>
-                        <div className="text-right mx-1">
-                            <div className="text-[10px] font-black text-white leading-none capitalize">{session.user?.name?.split(' ')[0]}</div>
-                            <div className="text-[8px] font-bold text-[#C37D46] tracking-widest uppercase">Member</div>
                         </div>
                     </Link>
                 ) : (
-                    <Link href="/auth?mode=login" className="px-5 py-2 rounded-full text-xs font-bold text-[#C37D46] border border-[#C37D46]/30 hover:bg-[#C37D46] hover:text-white transition-all">
-                        SIGN IN
+                    <Link href="/auth?mode=login" className="px-6 py-2 rounded-full bg-[#C37D46] hover:bg-[#a66a3a] text-white text-sm font-bold transition-all shadow-lg shadow-[#C37D46]/20">
+                        התחברות
                     </Link>
                 )}
 
-                <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] transition-colors">
+                <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
                     <ShoppingBag className="w-5 h-5" />
                     {cartCount > 0 && (
-                        <div className="absolute top-0 right-0 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg">
+                        <div className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#0F0806]">
                             {cartCount}
                         </div>
                     )}
@@ -270,52 +269,122 @@ export default function Navbar() {
 
 
             {/* ==================== MOBILE LAYOUT (lg:hidden) ==================== */}
+            <div className="flex lg:hidden items-center justify-between w-full px-4 h-full relative z-50">
+                {/* Mobile Branding (Left - Rich Cyber Style) */}
+                <div className="flex items-center gap-2 relative z-50 group">
+                    {/* Holographic Background Aura (Hover Only) */}
+                    <div
+                        className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl pointer-events-none"
+                        style={{ backgroundImage: 'radial-gradient(circle, rgba(195,125,70,0.15) 0%, transparent 70%)' }}
+                    />
 
-            {/* Mobile LEFT: Menu, Theme, Bell, Bag */}
-            <div className="flex lg:hidden items-center gap-1 sm:gap-2 order-1 z-50">
-                {/* Mobile Menu Trigger */}
-                <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white"
-                >
-                    <Menu className="w-5 h-5 stroke-[2]" />
-                </motion.button>
+                    {/* Cyber Coffee Icon Block */}
+                    <Link href="/" className="relative">
+                        <motion.div
+                            whileHover={{ scale: 1.05, rotate: [0, -5, 5, 0] }}
+                            className="relative"
+                        >
+                            {/* The "Cyber" Squircle */}
+                            <div className="relative p-2.5 rounded-[1rem] bg-[#1A100C] border border-white/10 shadow-[0_0_30px_rgba(195,125,70,0.15)] overflow-hidden">
+                                {/* Digital Grid Overlay */}
+                                <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:4px_4px]" />
 
-                <ThemeToggle />
-                <NotificationBell />
+                                <div className="relative z-10 flex items-center justify-center">
+                                    <Coffee className="w-5 h-5 text-white stroke-[1.5] group-hover:text-amber-400 transition-colors" />
 
-                <Link href="/checkout" className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-white">
-                    <ShoppingBag className="w-5 h-5" />
-                    {cartCount > 0 && (
-                        <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-[#C37D46] text-white text-[9px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full shadow-lg">
-                            {cartCount}
+                                    {/* Digital Steam Effect */}
+                                    <div className="absolute -top-1 flex space-x-0.5">
+                                        {[0, 1, 2].map((i) => (
+                                            <motion.div
+                                                key={i}
+                                                animate={{
+                                                    y: [0, -8, -12],
+                                                    opacity: [0, 1, 0],
+                                                    scale: [0.5, 1, 0.8]
+                                                }}
+                                                transition={{
+                                                    duration: 1.5,
+                                                    repeat: Infinity,
+                                                    delay: i * 0.4,
+                                                    ease: "easeOut"
+                                                }}
+                                                className="w-0.5 h-2 bg-amber-400/60 rounded-full blur-[1px]"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Luxury Reflection Sweep */}
+                                <motion.div
+                                    animate={{ x: ['-100%', '200%'] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "linear", repeatDelay: 3 }}
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                                />
+                            </div>
+
+                            {/* Outer Glow Ring */}
+                            <div className="absolute inset-0 rounded-[1rem] border border-amber-500/0 group-hover:border-amber-500/30 transition-colors duration-500 ring-1 ring-white/5" />
+                        </motion.div>
+                    </Link>
+
+                    {/* Signature Typography */}
+                    <Link href="/" className="flex flex-col text-left relative z-10">
+                        <div className="flex items-center gap-1.5">
+                            <div className="flex flex-col leading-[0.8]">
+                                <span className="text-[8px] font-black text-amber-500/80 tracking-[0.4em] uppercase mb-1 transition-all group-hover:tracking-[0.5em] duration-500">
+                                    Cyber
+                                </span>
+                                <div className="relative">
+                                    <motion.span
+                                        animate={{
+                                            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                                        }}
+                                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                                        className="text-xl font-serif font-black italic bg-gradient-to-r from-white via-amber-200 to-white bg-[length:200%_auto] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(255,255,255,0.2)]"
+                                    >
+                                        Barista
+                                    </motion.span>
+
+                                    {/* Decorative Underline */}
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: '100%' }}
+                                        className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-amber-500/0 via-amber-500/40 to-amber-500/0"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Floating AI Glass Badge (Simplified for Mobile) */}
+                            <motion.div
+                                animate={{ y: [0, -2, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="flex self-start mt-0 items-center justify-center px-1 py-0.5 rounded bg-white/5 border border-white/10 backdrop-blur-md shadow-sm"
+                            >
+                                <span className="text-[6px] font-black text-white/60 tracking-tighter">AI 2.0</span>
+                            </motion.div>
                         </div>
-                    )}
-                </Link>
-            </div>
-
-            {/* Mobile CENTER: Branding Text */}
-            <div className="flex lg:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center z-40 w-full pointer-events-none">
-                <div className="flex items-center gap-2 pointer-events-auto">
-                    <div className="flex items-center justify-center px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 backdrop-blur-md">
-                        <span className="text-[8px] font-black text-white/80 tracking-normal">AI 2.0</span>
-                    </div>
-                    <div className="flex flex-col items-start leading-none">
-                        <span className="text-[9px] font-black text-[#C37D46] tracking-[0.3em] uppercase ml-0.5">CYBER</span>
-                        <span className="text-2xl font-serif font-black italic text-white leading-[0.8]">Barista</span>
-                    </div>
+                    </Link>
                 </div>
-            </div>
 
-            {/* Mobile RIGHT: Branding Icon (Home Link) */}
-            <div className="flex lg:hidden order-3 z-50">
-                <Link href="/" className="relative">
-                    <div className="relative p-2.5 rounded-xl bg-[#1A100C] border border-white/10 shadow-lg overflow-hidden group">
-                        <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:3px_3px]" />
-                        <Coffee className="w-5 h-5 text-white group-hover:text-[#C37D46] transition-colors relative z-10" />
-                    </div>
-                </Link>
+                {/* Mobile Actions (Right) */}
+                <div className="flex items-center gap-3">
+                    <Link href="/checkout" className="relative p-2 text-white hover:text-[#C37D46] transition-colors">
+                        <ShoppingBag className="w-5 h-5" />
+                        {cartCount > 0 && (
+                            <div className="absolute top-0 right-0 bg-[#C37D46] text-white text-[9px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full shadow-lg">
+                                {cartCount}
+                            </div>
+                        )}
+                    </Link>
+
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="p-2 rounded-lg bg-white/5 border border-white/10 text-white"
+                    >
+                        <Menu className="w-5 h-5" />
+                    </motion.button>
+                </div>
             </div>
 
             {/* Mobile Menu - Premium Glass Design */}
