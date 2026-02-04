@@ -30,7 +30,13 @@ export default function StoresClient({ branches }: StoresClientProps) {
             </div>
 
             <div className="mb-12">
-                <StoreMap branches={branches} />
+                {branches && branches.length > 0 ? (
+                    <StoreMap branches={branches} />
+                ) : (
+                    <div className="h-[200px] w-full bg-stone-50 rounded-2xl flex items-center justify-center border border-stone-100 text-stone-400">
+                        אין סניפים להצגה על המפה
+                    </div>
+                )}
             </div>
 
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto text-right">
