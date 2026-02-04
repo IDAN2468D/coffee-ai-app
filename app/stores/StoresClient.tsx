@@ -21,7 +21,9 @@ interface StoresClientProps {
     branches: IProcessedBranch[];
 }
 
-export default function StoresClient({ branches }: StoresClientProps) {
+export default function StoresClient({ branches = [] }: StoresClientProps) {
+    const safeBranches = Array.isArray(branches) ? branches : [];
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -74,13 +76,13 @@ export default function StoresClient({ branches }: StoresClientProps) {
                     transition={{ delay: 0.4, duration: 0.6 }}
                     className="p-2 bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-2xl shadow-black/50"
                 >
-                    {branches && branches.length > 0 ? (
-                        <StoreMap branches={branches} />
+                    {safeBranches.length > 0 ? (
+                        <StoreMap branches={safeBranches} />
                     ) : (
                         <div className="h-[400px] flex items-center justify-center text-stone-500">
                             <div className="text-center">
                                 <Search className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                <p>לא נמצאו סניפים לעדכון...</p>
+                                <p>לא נמצאו סניפים...</p>
                             </div>
                         </div>
                     )}
@@ -100,7 +102,7 @@ export default function StoresClient({ branches }: StoresClientProps) {
                         </div>
                     </div>
                     <div className="text-stone-600 text-sm font-medium">
-                        סה"כ: {branches.length} מיקומים
+                        סה"כ: {safeBranches.length} מיקומים
                     </div>
                 </div>
 
@@ -111,9 +113,9 @@ export default function StoresClient({ branches }: StoresClientProps) {
                     viewport={{ once: true }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                 >
-                    {branches.map((branch) => (
+                    {safeBranches.map((branch) => (
                         <motion.div
-                            key={branch._id}
+                            key={branch._id || Math.random()}
                             variants={itemVariants}
                             className="group relative bg-white/5 rounded-3xl p-8 border border-white/5 hover:border-amber-500/50 hover:bg-white/10 transition-all duration-500"
                         >

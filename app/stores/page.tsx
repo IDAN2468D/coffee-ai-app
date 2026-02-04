@@ -18,7 +18,10 @@ export interface IProcessedBranch {
 
 async function getBranches(): Promise<IProcessedBranch[]> {
     try {
-        if (!process.env.MONGODB_URI && !process.env.DATABASE_URL) {
+        console.log('STORES_DEBUG: Starting getBranches...');
+
+        const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL;
+        if (!MONGODB_URI) {
             console.error('STORES_DEBUG: Database environment variables are missing');
             return [];
         }
@@ -27,7 +30,12 @@ async function getBranches(): Promise<IProcessedBranch[]> {
         await dbConnect();
 
         console.log('STORES_DEBUG: Fetching branches from MongoDB...');
-        // Explicitly selecting fields and using .lean()
+        // Ensure model exists and find
+        if (!Branch) {
+            console.error('STORES_DEBUG: Branch model is not registered');
+            return [];
+        }
+
         const rawBranches = await Branch.find({}).select('name address lat lng phoneNumber createdAt updatedAt').lean();
 
         console.log(`STORES_DEBUG: Found ${rawBranches?.length || 0} branches`);
@@ -37,25 +45,31 @@ async function getBranches(): Promise<IProcessedBranch[]> {
         }
 
         const serializedBranches = rawBranches.map((branch: any) => ({
-            _id: branch._id?.toString() || Math.random().toString(),
-            name: branch.name || 'Unknown Store',
-            address: branch.address || 'No Address Provided',
-            lat: branch.lat || 32.0853,
-            lng: branch.lng || 34.7818,
-            phoneNumber: branch.phoneNumber || '',
-            createdAt: branch.createdAt?.toISOString() || '',
-            updatedAt: branch.updatedAt?.toISOString() || ''
+            _id: String(branch._id || Math.random()),
+            name: String(branch.name || 'Unknown Store'),
+            address: String(branch.address || 'No Address Provided'),
+            lat: Number(branch.lat || 32.0853),
+            lng: Number(branch.lng || 34.7818),
+            phoneNumber: String(branch.phoneNumber || ''),
+            createdAt: branch.createdAt ? new Date(branch.createdAt).toISOString() : '',
+            updatedAt: branch.updatedAt ? new Date(branch.updatedAt).toISOString() : ''
         }));
 
-        // Final deep clone to ensure pure objects for Next.js serialization
+        // Deep clone for safety
         return JSON.parse(JSON.stringify(serializedBranches));
     } catch (error: any) {
-        console.error('STORES_DEBUG_ERROR: Full error object:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        console.error('STORES_DEBUG_ERROR: Full error:', error?.message || error);
         return [];
     }
 }
 
 export default async function StoresPage() {
-    const branches = await getBranches();
-    return <StoresClient branches={branches} />;
+    try {
+        const branches = await getBranches();
+        return <StoresClient branches={branches} />;
+    } catch (err: any) {
+        console.error('STORES_PAGE_CRITICAL_ERROR:', err?.message || err);
+        // Fallback to empty branches if everything fails
+        return <StoresClient branches={[]} />;
+    }
 }
