@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useState, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
 
 interface Branch {
@@ -18,17 +17,31 @@ interface StoreMapProps {
 }
 
 export default function StoreMap({ branches = [] }: StoreMapProps) {
-    const [isMounted, setIsMounted] = useState(false);
-    const [leafletIcon, setLeafletIcon] = useState<any>(null);
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const mapInstanceRef = useRef<any>(null);
+    const [isLeafletReady, setIsLeafletReady] = useState(false);
 
     useEffect(() => {
-        // Only run on client
-        const initMap = async () => {
-            try {
-                const L = await import('leaflet');
+        let L: any;
 
-                // Fix for default Leaflet icons
-                const icon = new L.Icon({
+        const initMap = async () => {
+            if (!mapContainerRef.current || mapInstanceRef.current) return;
+
+            try {
+                // Import Leaflet only on the client
+                L = await import('leaflet');
+
+                // Initialize map
+                const map = L.map(mapContainerRef.current).setView([32.0853, 34.7818], 12);
+                mapInstanceRef.current = map;
+
+                // Add TileLayer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // Custom Icon
+                const defaultIcon = L.icon({
                     iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
                     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
                     iconSize: [25, 41],
@@ -37,67 +50,59 @@ export default function StoreMap({ branches = [] }: StoreMapProps) {
                     shadowSize: [41, 41]
                 });
 
-                setLeafletIcon(icon);
-                setIsMounted(true);
+                // Add Markers
+                branches.forEach(branch => {
+                    const marker = L.marker([branch.lat, branch.lng], { icon: defaultIcon }).addTo(map);
+
+                    const popupContent = `
+                        <div style="text-align: right; direction: rtl; font-family: sans-serif; padding: 5px;">
+                            <h3 style="margin: 0 0 5px 0; color: #78350f; font-weight: bold; font-size: 14px;">${branch.name}</h3>
+                            <p style="margin: 0 0 8px 0; font-size: 11px; color: #4b5563;">${branch.address}</p>
+                            ${branch.phoneNumber ? `<p style="margin: 0 0 8px 0; font-size: 11px; color: #6b7280;">📞 ${branch.phoneNumber}</p>` : ''}
+                            <a href="https://waze.com/ul?ll=${branch.lat},${branch.lng}&navigate=yes" 
+                               target="_blank" 
+                               style="display: block; text-align: center; background: #C37D46; color: white; padding: 5px 10px; border-radius: 6px; text-decoration: none; font-size: 10px; font-weight: bold;">
+                               ניווט עם Waze
+                            </a>
+                        </div>
+                    `;
+
+                    marker.bindPopup(popupContent);
+                });
+
+                // Fit bounds if branches exist
+                if (branches.length > 0) {
+                    const group = new L.featureGroup(branches.map((b: any) => L.marker([b.lat, b.lng])));
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+
+                setIsLeafletReady(true);
             } catch (err) {
-                console.error('Failed to initialize Leaflet:', err);
+                console.error('Error initializing Vanilla Leaflet:', err);
             }
         };
 
         if (typeof window !== 'undefined') {
             initMap();
         }
-    }, []);
 
-    if (!isMounted || !leafletIcon) {
-        return (
-            <div className="h-[500px] w-full bg-stone-50 animate-pulse rounded-2xl flex items-center justify-center border border-stone-200">
-                <div className="text-stone-400 font-medium">טוען מפה...</div>
-            </div>
-        );
-    }
-
-    // Default center (Tel Aviv)
-    const defaultCenter: [number, number] = [32.0853, 34.7818];
+        // Cleanup
+        return () => {
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.remove();
+                mapInstanceRef.current = null;
+            }
+        };
+    }, [branches]);
 
     return (
-        <div className="h-[500px] w-full rounded-2xl overflow-hidden shadow-xl border border-stone-200 z-0 relative">
-            <MapContainer
-                center={defaultCenter}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-                scrollWheelZoom={false}
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {branches && branches.length > 0 && branches.map((branch) => (
-                    <Marker
-                        key={branch._id}
-                        position={[branch.lat, branch.lng]}
-                        icon={leafletIcon}
-                    >
-                        <Popup className="custom-popup">
-                            <div className="text-right p-1" dir="rtl">
-                                <h3 className="font-bold text-amber-900 mb-1">{branch.name}</h3>
-                                <p className="text-xs text-stone-600 mb-2">{branch.address}</p>
-                                {branch.phoneNumber && (
-                                    <p className="text-xs text-stone-500 mb-2">📞 {branch.phoneNumber}</p>
-                                )}
-                                <a
-                                    href={`https://waze.com/ul?ll=${branch.lat},${branch.lng}&navigate=yes`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-block w-full text-center py-1.5 px-3 bg-[#C37D46] text-white text-[10px] font-bold rounded-lg hover:bg-amber-700 transition-colors"
-                                >
-                                    ניווט עם Waze
-                                </a>
-                            </div>
-                        </Popup>
-                    </Marker>
-                ))}
-            </MapContainer>
+        <div className="relative w-full h-[500px] rounded-2xl overflow-hidden shadow-xl border border-stone-200 bg-stone-50">
+            {!isLeafletReady && (
+                <div className="absolute inset-0 z-10 bg-stone-50/80 backdrop-blur-sm flex items-center justify-center">
+                    <div className="text-stone-400 font-medium animate-pulse">טוען מפת סניפים...</div>
+                </div>
+            )}
+            <div ref={mapContainerRef} className="w-full h-full z-0" />
         </div>
     );
 }
