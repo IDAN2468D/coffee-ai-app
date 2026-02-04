@@ -55,27 +55,28 @@ export default function Navbar() {
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${navBackgroundClass}`}>
             <div className="max-w-[1440px] mx-auto px-6 h-12 flex items-center justify-between">
 
-                {/* Header Actions - Left Side (Image-inspired) */}
-                <div className="flex lg:hidden items-center gap-2">
-                    {/* Mobile Toggle */}
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="p-3 bg-white/5 rounded-full text-white hover:bg-white/10 transition-colors"
-                        aria-label="פתח תפריט"
-                    >
-                        {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                    </button>
+                {/* Header Actions - Left & Center Layout (Pixel-Perfect Match) */}
+                <div className="flex lg:hidden items-center gap-1 sm:gap-4">
+                    {/* 1. Theme Toggle */}
+                    <div className="opacity-70">
+                        <ThemeToggle />
+                    </div>
 
-                    {/* Cart */}
-                    <Link href="/checkout" className="relative p-2 text-white/70 hover:text-white transition-colors">
-                        <ShoppingBag className="w-5 h-5" />
+                    {/* 2. Notification Bell */}
+                    <div className="opacity-70">
+                        <NotificationBell />
+                    </div>
+
+                    {/* 3. Shopping Bag (Cart) */}
+                    <Link href="/checkout" className="relative p-2 text-white/70">
+                        <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
                         <AnimatePresence>
                             {cartCount > 0 && (
                                 <motion.div
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
                                     exit={{ scale: 0 }}
-                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-[#1A100C]"
+                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full"
                                 >
                                     {cartCount}
                                 </motion.div>
@@ -83,57 +84,33 @@ export default function Navbar() {
                         </AnimatePresence>
                     </Link>
 
-                    {/* Notification Bell */}
-                    <div className="opacity-70 hover:opacity-100 transition-opacity">
-                        <NotificationBell />
-                    </div>
+                    {/* 4. Menu Button (Circular) */}
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="p-4 bg-white/5 rounded-full text-white mx-1"
+                        aria-label="פתח תפריט"
+                    >
+                        {mobileMenuOpen ? <X className="w-6 h-6 stroke-[1.5]" /> : <Menu className="w-6 h-6 stroke-[1.5]" />}
+                    </button>
 
-                    {/* Theme Toggle */}
-                    <div className="opacity-70 hover:opacity-100 transition-opacity">
-                        <ThemeToggle />
-                    </div>
+                    {/* 5. Coffee Box (Rounded Square) */}
+                    <Link href="/" className="relative p-4 rounded-[2rem] bg-stone-900/40 border border-white/5 backdrop-blur-sm group">
+                        <div className="relative">
+                            <Coffee className="w-8 h-8 text-white stroke-[1.5]" />
+                            <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-amber-500" />
+                        </div>
+                    </Link>
                 </div>
 
-                {/* Logo & Brand - Right Side (Image-inspired & Refined) */}
-                <Link href="/" className="flex items-center gap-4 group relative z-50 ml-auto lg:ml-0 order-first lg:order-none">
-                    <div className="flex flex-col text-right">
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="font-serif font-black flex flex-col tracking-tight leading-[0.85]"
-                        >
-                            <span className="text-2xl bg-gradient-to-l from-white via-white to-white/60 bg-clip-text text-transparent">Cyber</span>
-                            <span className="text-2xl bg-gradient-to-l from-[#C37D46] via-[#C37D46] to-[#C37D46]/60 bg-clip-text text-transparent">Barista</span>
-                        </motion.div>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                            className="text-[10px] font-bold text-[#C37D46]/60 tracking-[0.1em] mt-1 uppercase"
-                        >
-                            בית הקפה הדיגיטלי
-                        </motion.span>
+                {/* Logo Branding - Far Right (Pixel-Perfect Match) */}
+                <Link href="/" className="flex flex-col text-right lg:hidden">
+                    <div className="font-serif font-black flex flex-col tracking-tight leading-[0.8] mb-1">
+                        <span className="text-3xl text-white">Cyber</span>
+                        <span className="text-3xl text-[#C37D46]">Barista</span>
                     </div>
-
-                    <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        animate={{
-                            boxShadow: ["0 0 0px rgba(195, 125, 70, 0)", "0 0 15px rgba(195, 125, 70, 0.3)", "0 0 0px rgba(195, 125, 70, 0)"]
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        className="relative p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:border-[#C37D46]/40 transition-all duration-300"
-                    >
-                        <div className="relative z-10">
-                            <Coffee className="w-6 h-6 text-white group-hover:text-[#C37D46] transition-colors" />
-                            <Sparkles className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 text-amber-400 animate-pulse" />
-                        </div>
-                        {/* Inner Glow */}
-                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C37D46]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </motion.div>
-
-                    {/* Background Soft Glow */}
-                    <div className="absolute -right-4 -top-8 w-32 h-32 bg-[#C37D46]/10 blur-[50px] -z-10 rounded-full" />
+                    <span className="text-[11px] font-bold text-white/40 tracking-wider">
+                        בית הקפה הדיגיטלי
+                    </span>
                 </Link>
 
                 {/* Desktop Navigation */}
