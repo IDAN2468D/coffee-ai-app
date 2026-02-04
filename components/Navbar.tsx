@@ -55,69 +55,49 @@ export default function Navbar() {
         <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b ${navBackgroundClass}`}>
             <div className="max-w-[1440px] mx-auto px-6 h-12 flex items-center justify-between">
 
-                {/* Header Actions - Left & Center Layout (Pixel-Perfect Match) */}
+                {/* 1. Desktop Branding (Far Left) */}
+                <Link href="/" className="hidden lg:flex items-center gap-4 group relative z-50">
+                    <div className="flex flex-col text-left">
+                        <div className="font-serif font-black flex flex-col tracking-tight leading-[0.85]">
+                            <span className="text-2xl text-white">Cyber</span>
+                            <span className="text-2xl text-[#C37D46]">Barista</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-[#C37D46]/60 tracking-[0.1em] mt-1 uppercase">
+                            בית הקפה הדיגיטלי
+                        </span>
+                    </div>
+                    <div className="relative p-2.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md group-hover:border-[#C37D46]/40 transition-all duration-300">
+                        <Coffee className="w-5 h-5 text-white" />
+                        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-amber-500 animate-pulse" />
+                    </div>
+                </Link>
+
+                {/* 2. Mobile Actions (Left/Center) - Keep as per user image */}
                 <div className="flex lg:hidden items-center gap-1 sm:gap-4">
-                    {/* 1. Theme Toggle */}
-                    <div className="opacity-70">
-                        <ThemeToggle />
-                    </div>
-
-                    {/* 2. Notification Bell */}
-                    <div className="opacity-70">
-                        <NotificationBell />
-                    </div>
-
-                    {/* 3. Shopping Bag (Cart) */}
+                    <ThemeToggle />
+                    <NotificationBell />
                     <Link href="/checkout" className="relative p-2 text-white/70">
                         <ShoppingBag className="w-5 h-5 stroke-[1.5]" />
-                        <AnimatePresence>
-                            {cartCount > 0 && (
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    exit={{ scale: 0 }}
-                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full"
-                                >
-                                    {cartCount}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {cartCount > 0 && (
+                            <div className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full">
+                                {cartCount}
+                            </div>
+                        )}
                     </Link>
-
-                    {/* 4. Menu Button (Circular) */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-4 bg-white/5 rounded-full text-white mx-1"
-                        aria-label="פתח תפריט"
                     >
-                        {mobileMenuOpen ? <X className="w-6 h-6 stroke-[1.5]" /> : <Menu className="w-6 h-6 stroke-[1.5]" />}
+                        {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
-
-                    {/* 5. Coffee Box (Rounded Square) */}
                     <Link href="/" className="relative p-4 rounded-[2rem] bg-stone-900/40 border border-white/5 backdrop-blur-sm group">
-                        <div className="relative">
-                            <Coffee className="w-8 h-8 text-white stroke-[1.5]" />
-                            <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-amber-500" />
-                        </div>
+                        <Coffee className="w-8 h-8 text-white stroke-[1.5]" />
+                        <Sparkles className="absolute -top-2 -right-2 w-4 h-4 text-amber-500" />
                     </Link>
                 </div>
 
-                {/* Logo Branding - Far Right (Pixel-Perfect Match) */}
-                <Link href="/" className="flex flex-col text-right lg:hidden">
-                    <div className="font-serif font-black flex flex-col tracking-tight leading-[0.8] mb-1">
-                        <span className="text-3xl text-white">Cyber</span>
-                        <span className="text-3xl text-[#C37D46]">Barista</span>
-                    </div>
-                    <span className="text-[11px] font-bold text-white/40 tracking-wider">
-                        בית הקפה הדיגיטלי
-                    </span>
-                </Link>
-
-                {/* Desktop Navigation */}
-                <div className={`hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-1.5 border transition-all ${useDarkText
-                    ? 'bg-stone-100/80 border-stone-200 shadow-xl shadow-stone-200/50'
-                    : 'bg-white/5 border-white/10 shadow-2xl shadow-black/20 backdrop-blur-md'
-                    }`}>
+                {/* 3. Central Navigation Pill (Desktop) */}
+                <div className="hidden lg:flex items-center absolute left-1/2 -translate-x-1/2 rounded-full px-2 py-1.5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md transition-all">
                     <div className="flex items-center gap-1">
                         {[
                             { name: 'חנות', href: '/shop' },
@@ -128,17 +108,17 @@ export default function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`px-5 py-2 rounded-full text-sm font-medium tracking-normal transition-all flex items-center gap-2 ${isActive(link.href)
-                                    ? (useDarkText ? 'bg-[#2D1B14] text-white shadow-lg' : 'text-white bg-white/10 shadow-inner')
-                                    : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/80 hover:bg-white/10')
+                                className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${isActive(link.href)
+                                    ? 'text-white bg-white/10 shadow-inner'
+                                    : 'text-white/80 hover:bg-white/10'
                                     }`}
                             >
-                                {link.icon && <link.icon className={`w-3 h-3 ${isActive(link.href) && useDarkText ? 'text-[#C37D46]' : 'text-[#C37D46]'}`} />}
+                                {link.icon && <link.icon className="w-3.5 h-3.5 text-[#C37D46]" />}
                                 {link.name}
                             </Link>
                         ))}
 
-                        <div className={`w-px h-4 mx-2 ${useDarkText ? 'bg-[#2D1B14]/10' : 'bg-white/20'}`} />
+                        <div className="w-px h-4 mx-2 bg-white/20" />
 
                         {/* Dropdown Trigger */}
                         <div
@@ -146,53 +126,37 @@ export default function Navbar() {
                             onMouseEnter={() => setFeaturesOpen(true)}
                             onMouseLeave={() => setFeaturesOpen(false)}
                         >
-                            <button className={`px-5 py-2 rounded-full text-sm font-medium tracking-normal transition-all flex items-center gap-1.5 ${['/expert', '/fortune', '/match'].includes(pathname || '')
+                            <button className={`px-5 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${['/expert', '/fortune', '/match'].includes(pathname || '')
                                 ? 'text-[#C37D46]'
-                                : (useDarkText ? 'text-[#2D1B14]/70 hover:bg-[#2D1B14]/5' : 'text-white/80 hover:bg-white/10')
+                                : 'text-white/80 hover:bg-white/10'
                                 }`}>
-                                <Sparkles className="w-3 h-3" />
+                                <Sparkles className="w-3.5 h-3.5" />
                                 <span>חוויות AI</span>
                                 <ChevronDown className={`w-3 h-3 transition-transform ${featuresOpen ? 'rotate-180' : ''}`} />
                             </button>
 
-                            {/* Dropdown Menu */}
                             <AnimatePresence>
                                 {featuresOpen && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                                        transition={{ duration: 0.2 }}
                                         className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-64 bg-[#2D1B14] border border-white/10 rounded-2xl shadow-xl overflow-hidden p-1 z-[60]"
                                     >
                                         {[
-                                            { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה', action: { icon: Mic, href: '/expert?autoMic=true' } },
+                                            { name: 'בריסטה AI', href: '/expert', desc: 'צ\'אט והזמנה' },
                                             { name: 'התאמת קפה', href: '/match', desc: 'מצא את הטעם שלך' },
                                             { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab', desc: 'צור בעצמך' },
-                                            { name: 'מדרג פולים', href: '/expert/bean-rater', desc: 'בדיקת איכות' },
-                                            { name: 'מחשבון חליטה', href: '/expert/brew-calculator', desc: 'כלים למקצוענים' },
-                                            { name: 'אורקל הקפה', href: '/fortune', desc: 'קריאה יומית' },
-                                            { name: 'מעקב קפאין', href: '/tracker', desc: 'בריאות ושינה' },
                                             { name: 'גלריה', href: '/gallery', desc: 'אומנות הקהילה' },
                                         ].map((item) => (
-                                            <div key={item.href} className="relative group">
-                                                <Link
-                                                    href={item.href}
-                                                    className="block p-3 rounded-xl hover:bg-white/5 transition-colors text-right relative z-10"
-                                                >
-                                                    <div className="font-bold text-white text-sm group-hover:text-[#C37D46] transition-colors">{item.name}</div>
-                                                    <div className="text-[10px] text-white/40 font-medium uppercase tracking-wider">{item.desc}</div>
-                                                </Link>
-                                                {item.action && (
-                                                    <Link
-                                                        href={item.action.href}
-                                                        className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/10 text-[#C37D46] hover:bg-[#C37D46] hover:text-white transition-all z-20 opacity-0 group-hover:opacity-100"
-                                                        title="דיבור"
-                                                    >
-                                                        <item.action.icon className="w-4 h-4" />
-                                                    </Link>
-                                                )}
-                                            </div>
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                className="block p-3 rounded-xl hover:bg-white/5 transition-colors text-right group"
+                                            >
+                                                <div className="font-bold text-white text-sm group-hover:text-[#C37D46]">{item.name}</div>
+                                                <div className="text-[10px] text-white/40 uppercase font-bold">{item.desc}</div>
+                                            </Link>
                                         ))}
                                     </motion.div>
                                 )}
@@ -201,64 +165,55 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Desktop and Mobile User Section Wrapper */}
-                <div className="flex items-center gap-4">
-                    <div className="hidden lg:flex items-center gap-4">
+                {/* 4. Desktop Actions (Far Right) & Mobile Logo (Match image) */}
+                <div className="flex items-center gap-6">
+                    {/* Mobile Branding (Match latest image spec) */}
+                    <Link href="/" className="flex flex-col text-right lg:hidden">
+                        <div className="font-serif font-black flex flex-col tracking-tight leading-[0.8]">
+                            <span className="text-3xl text-white">Cyber</span>
+                            <span className="text-3xl text-[#C37D46]">Barista</span>
+                        </div>
+                        <span className="text-[11px] font-bold text-white/40 tracking-wider mt-1">
+                            בית הקפה הדיגיטלי
+                        </span>
+                    </Link>
+
+                    {/* Desktop Actions Group */}
+                    <div className="hidden lg:flex items-center gap-2 pr-2 border-r border-white/10">
                         <ThemeToggle />
                         <NotificationBell />
+
                         {session ? (
-                            <div className="flex items-center gap-3 pl-4 border-l border-white/10">
-                                <Link
-                                    href="/dashboard"
-                                    className="flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
-                                >
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#C37D46] to-[#E8CBAD] p-0.5">
-                                        <div className="w-full h-full rounded-full bg-[#2D1B14] flex items-center justify-center overflow-hidden">
-                                            {session.user?.image ? (
-                                                <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <span className="text-xs font-bold text-white">{session.user?.name?.[0]}</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="hidden xl:block">
-                                        <div className="text-xs font-bold leading-none">{session.user?.name?.split(' ')[0]}</div>
-                                        <div className="flex items-center gap-1">
-                                            <div className="text-[9px] uppercase tracking-wider font-medium text-white/50">Dashboard</div>
-                                            {(session.user as any).points > 0 && (
-                                                <div className="flex items-center gap-0.5 bg-yellow-500/20 px-1 py-0.5 rounded text-[9px] font-bold text-yellow-500">
-                                                    <Crown size={8} />
-                                                    <span>{(session.user as any).points}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </Link>
-                            </div>
+                            <Link href="/dashboard" className="flex items-center gap-3 p-1 rounded-full bg-white/5 border border-white/10 hover:border-[#C37D46]/40 transition-all shrink-0">
+                                <div className="w-8 h-8 rounded-full bg-[#C37D46] flex items-center justify-center overflow-hidden">
+                                    {session.user?.image ? (
+                                        <img src={session.user.image} alt="" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-xs font-bold text-white">{session.user?.name?.[0]}</span>
+                                    )}
+                                </div>
+                                <div className="text-right ml-1">
+                                    <div className="text-[10px] font-black text-white leading-none capitalize">{session.user?.name?.split(' ')[0]}</div>
+                                    <div className="text-[8px] font-bold text-[#C37D46] tracking-widest uppercase">Member</div>
+                                </div>
+                            </Link>
                         ) : (
-                            <div className="flex items-center gap-4">
-                                <Link href="/auth?mode=login" className="text-sm font-bold text-white/70 hover:text-white transition-colors">
-                                    Login
-                                </Link>
-                                <Link href="/auth?mode=signup" className="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-white text-[#2D1B14] hover:bg-[#C37D46] hover:text-white transition-all">
-                                    Sign Up
-                                </Link>
-                            </div>
+                            <Link href="/auth?mode=login" className="px-5 py-2 rounded-full text-xs font-bold text-[#C37D46] border border-[#C37D46]/30 hover:bg-[#C37D46] hover:text-white transition-all">
+                                SIGN IN
+                            </Link>
                         )}
-                        <Link href="/checkout" className="relative p-2 text-white hover:text-[#C37D46] transition-colors">
+
+                        <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] transition-colors">
                             <ShoppingBag className="w-5 h-5" />
-                            <AnimatePresence>
-                                {cartCount > 0 && (
-                                    <motion.div
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        exit={{ scale: 0 }}
-                                        className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-[#2D1B14]"
-                                    >
-                                        {cartCount}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            {cartCount > 0 && (
+                                <motion.div
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full"
+                                >
+                                    {cartCount}
+                                </motion.div>
+                            )}
                         </Link>
                     </div>
                 </div>
