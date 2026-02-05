@@ -103,28 +103,28 @@ export default function AmbienceMixer() {
             <SoundTrack
                 name="ניאון ריין"
                 icon={<CloudLightning size={24} />}
-                src="https://raw.githubusercontent.com/isyuricunha/rain-for-relax/main/audio/rain.mp3"
+                src="https://assets.mixkit.co/active_storage/sfx/2433/2433-preview.mp3"
                 initialVolume={40}
                 neonColor="#60A5FA" // Blue
             />
             <SoundTrack
                 name="סינת'-האם"
                 icon={<Cpu size={24} />}
-                src="https://cdn.pixabay.com/audio/2021/08/09/audio_88447e769f.mp3"
+                src="https://www.soundjay.com/ambient/sounds/mechanical-hum-01.mp3"
                 initialVolume={20}
                 neonColor="#C37D46" // Amber
             />
             <SoundTrack
                 name="דאטה צ'אטר"
                 icon={<Radio size={24} />}
-                src="https://cdn.pixabay.com/audio/2022/03/23/audio_03d9774643.mp3"
+                src="https://assets.mixkit.co/active_storage/sfx/158/158-preview.mp3"
                 initialVolume={30}
                 neonColor="#F472B6" // Pink
             />
             <SoundTrack
                 name="סייבר-ספייס"
                 icon={<Activity size={24} />}
-                src="https://cdn.pixabay.com/audio/2022/10/25/audio_55a2991879.mp3"
+                src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
                 initialVolume={50}
                 neonColor="#34D399" // Emerald
             />
