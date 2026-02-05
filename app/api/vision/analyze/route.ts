@@ -1,6 +1,6 @@
 
-import { NextRequest, NextResponse } from 'next/server';
 import { modelFlash } from '@/lib/gemini';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
     try {
@@ -13,16 +13,64 @@ export async function POST(req: NextRequest) {
         let prompt = "";
         if (type === 'beans') {
             prompt = `
-            Analyze this image of coffee beans. You are a Q-Grader expert.
-            Provide a short JSON report:
+            Analyze the coffee image. You are a Senior Barista and Q-Grader expert.
+            
+            1. Identify basic info (Name, Roast, Brand).
+            2. **Food Pairing:** Suggest 2 specific foods that pair perfectly with this coffee's flavor profile.
+            3. **Health:** Estimate caffeine content (mg) and best time of day to drink.
+            4. **Timer Data:** If it's beans, provide precise timing for each brewing step.
+
+            Provide a strictly valid JSON response in the following format:
             {
-                "roastLevel": "Light/Medium/Dark",
-                "qualityScore": 85 (0-100),
-                "defects": ["broken beans", "quakers", etc or "none"],
-                "tastingNotes": "predicted notes based on color/texture",
-                "advice": "brewing or buying advice in 1 sentence (Hebrew)"
+                "type": "bean",
+                "name": "string",
+                "roast": "Light/Medium/Dark",
+                "origin": "string",
+                "flavorNotes": ["string", "string"],
+                "foodPairing": ["string", "string"],
+                "caffeineEstimate": "string (e.g. ~100mg)",
+                "bestTimeOfDay": "Morning | Afternoon | Evening",
+                "recipe": {
+                    "method": "V60 | French Press | Espresso",
+                    "ratio": "1:15",
+                    "steps": [
+                        { "time": "0:00-0:30", "action": "Bloom with 50g water" },
+                        { "time": "0:30-2:00", "action": "Pour remaining water slowly" }
+                    ]
+                }
             }
-            Return ONLY the valid JSON Report. No markdown.
+            Return ONLY the valid JSON Report. No markdown or extra text.
+            `;
+        } else if (type === 'capsule') {
+            prompt = `
+            Analyze this coffee capsule image. You are a Senior Barista and Nespresso Expert.
+            
+            1. Identify basic info (Name, Brand, Intensity).
+            2. **Food Pairing:** Suggest 2 specific foods that pair perfectly with this capsule's flavor profile.
+            3. **Health:** Estimate caffeine content (mg) and best time of day to drink.
+            4. Provide brew recommendations (Espresso/Lungo) and a short guide.
+
+            Provide a strictly valid JSON response in the following format:
+            {
+                "type": "capsule",
+                "name": "string",
+                "brand": "string",
+                "intensity": "number/12",
+                "flavorNotes": ["string", "string"],
+                "foodPairing": ["string", "string"],
+                "caffeineEstimate": "string",
+                "bestTimeOfDay": "Morning | Afternoon | Evening",
+                "qualityScore": 90,
+                "recommendations": [
+                    { "type": "Espresso", "volume": "40ml" },
+                    { "type": "Lungo", "volume": "110ml" }
+                ],
+                "guide": [
+                    "Step 1...",
+                    "Step 2..."
+                ]
+            }
+            Return ONLY the valid JSON Report. No markdown or extra text.
             `;
         } else if (type === 'pastry') {
             prompt = `
