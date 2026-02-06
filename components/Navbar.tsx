@@ -42,8 +42,19 @@ export default function Navbar() {
             setScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+
+        // Add class to body when mobile menu is open to allow widgets to hide
+        if (mobileMenuOpen) {
+            document.body.classList.add('mobile-menu-open');
+        } else {
+            document.body.classList.remove('mobile-menu-open');
+        }
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            document.body.classList.remove('mobile-menu-open');
+        };
+    }, [mobileMenuOpen]);
 
     const isActive = (path: string) => pathname === path;
 
@@ -52,7 +63,7 @@ export default function Navbar() {
     const navBackgroundClass = 'bg-[linear-gradient(to_bottom,rgba(20,10,5,0.8),rgba(20,10,5,0.9)),url("/images/navbar-bg-texture.png")] bg-cover bg-center border-white/5 py-4 shadow-lg';
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b flex items-center justify-between px-4 lg:px-8 ${navBackgroundClass}`}>
+        <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-in-out border-b flex items-center justify-between px-4 lg:px-8 ${navBackgroundClass}`}>
             {/* ==================== DESKTOP LAYOUT (lg:flex) ==================== */}
 
             {/* 1. Desktop Branding (Left) */}
@@ -231,40 +242,61 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* 3. Desktop Actions Group (Right) */}
-            <div className="hidden lg:flex items-center gap-2 pl-6 border-l border-white/10 z-50">
-                <ThemeToggle />
-                <NotificationBell />
-
-                <div className="w-px h-6 bg-white/10 mx-1" />
-
-                {session ? (
-                    <Link href="/dashboard" className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/5 border border-white/10 hover:border-[#C37D46]/50 transition-all">
-                        <span className="text-sm font-bold text-white capitalize pl-2">{session.user?.name?.split(' ')[0]}</span>
-                        <div className="w-8 h-8 rounded-full bg-[#C37D46] p-0.5">
-                            {session.user?.image ? (
-                                <img src={session.user.image} alt="" className="w-full h-full rounded-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center">
-                                    <User className="w-4 h-4 text-white" />
-                                </div>
-                            )}
-                        </div>
-                    </Link>
-                ) : (
-                    <Link href="/auth?mode=login" className="px-6 py-2 rounded-full bg-[#C37D46] hover:bg-[#a66a3a] text-white text-sm font-bold transition-all shadow-lg shadow-[#C37D46]/20">
-                        התחברות
-                    </Link>
-                )}
-
-                <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] hover:bg-white/10 transition-all border border-transparent hover:border-white/10">
+            {/* 3. Desktop Actions Group (Right) - Refined Layout */}
+            <div className="hidden lg:flex items-center gap-4 pl-6 border-l border-white/10 z-50">
+                {/* 3.1. Shopping Bag */}
+                <Link href="/checkout" className="relative p-2.5 rounded-full bg-white/5 text-white hover:text-[#C37D46] hover:bg-white/10 transition-all border border-white/5 hover:border-[#C37D46]/30">
                     <ShoppingBag className="w-5 h-5" />
                     {cartCount > 0 && (
-                        <div className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#0F0806]">
+                        <div className="absolute -top-1 -right-1 bg-[#C37D46] text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#0F0806] shadow-lg">
                             {cartCount}
                         </div>
                     )}
                 </Link>
+
+                {/* 3.2. User Profile / Session - Premium Redesign */}
+                {session ? (
+                    <Link href="/dashboard" className="relative group/profile">
+                        {/* Dynamic Background Glow */}
+                        <div className="absolute inset-0 bg-[#C37D46]/0 group-hover/profile:bg-[#C37D46]/10 blur-xl transition-all duration-500 rounded-full" />
+
+                        <div className="relative flex items-center gap-3 pl-4 pr-1.5 py-1.5 rounded-full bg-white/[0.03] backdrop-blur-md border border-white/10 group-hover/profile:border-[#C37D46]/40 transition-all duration-300 shadow-2xl overflow-hidden group/pill">
+                            {/* Glass Shimmer Reflection */}
+                            <motion.div
+                                animate={{ x: ['-200%', '200%'] }}
+                                transition={{ duration: 3, repeat: Infinity, ease: "linear", repeatDelay: 5 }}
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 pointer-events-none"
+                            />
+
+                            <span className="text-sm font-serif font-black tracking-wider text-white uppercase group-hover/profile:text-[#C37D46] transition-colors relative z-10">
+                                {session.user?.name?.split(' ')[0]}
+                            </span>
+
+                            <div className="relative z-10 w-9 h-9 rounded-full ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105 overflow-hidden">
+                                {session.user?.image ? (
+                                    <img src={session.user.image} alt="" className="w-full h-full rounded-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center">
+                                        <User className="w-5 h-5 text-white" />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </Link>
+                ) : (
+                    <Link href="/auth?mode=login" className="px-6 py-2 rounded-full bg-[#C37D46] hover:bg-[#a66a3a] text-white text-sm font-bold transition-all shadow-lg shadow-[#C37D46]/20 border border-white/10">
+                        התחברות
+                    </Link>
+                )}
+
+                {/* Vertical Divider */}
+                <div className="w-px h-6 bg-white/10" />
+
+                {/* 3.3. Utilities */}
+                <div className="flex items-center gap-1">
+                    <NotificationBell />
+                    <ThemeToggle />
+                </div>
             </div>
 
 
@@ -414,28 +446,32 @@ export default function Navbar() {
                             className="absolute right-0 top-0 bottom-0 w-[85%] max-w-sm bg-[#1A100C]/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl flex flex-col"
                             dir="rtl"
                         >
-                            {/* Mobile Header with Close */}
-                            <div className="flex items-center justify-between p-6 border-b border-white/5">
-                                <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-[#C37D46] rounded-lg">
-                                        <Coffee className="w-5 h-5 text-white" />
-                                    </div>
-                                    <span className="text-xl font-serif font-black text-white">Cyber Barista</span>
-                                </div>
+                            {/* Mobile Header with Close and Centered Logo */}
+                            <div className="flex items-center justify-between p-6 border-b border-white/5 relative">
                                 <button
                                     aria-label="סגור תפריט"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className="p-2 rounded-full bg-white/5 text-white/70 hover:bg-white/10"
+                                    className="p-2.5 rounded-full bg-white/5 text-white/70 hover:bg-white/10 border border-white/10"
                                 >
                                     <X className="w-6 h-6" />
                                 </button>
+
+                                <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+                                    <span className="text-xl font-serif font-black text-white">Cyber Barista</span>
+                                    <div className="p-2 bg-[#C37D46] rounded-lg">
+                                        <Coffee className="w-4 h-4 text-white" />
+                                    </div>
+                                </div>
+
+                                {/* Empty div for flex spacing balance */}
+                                <div className="w-10" />
                             </div>
 
                             <div className="flex-grow overflow-y-auto p-6 space-y-8 pb-32">
                                 {/* Main Navigation Section */}
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-[#C37D46] uppercase tracking-[0.2em] opacity-80 mb-2 px-2">מסע וגילוי</h3>
-                                    <div className="grid gap-2">
+                                    <h3 className="text-[10px] font-black text-[#C37D46]/80 uppercase tracking-[0.4em] mb-4 text-center">מסע וגילוי</h3>
+                                    <div className="grid gap-3">
                                         {[
                                             { name: 'דף הבית', href: '/', icon: Home },
                                             { name: 'החנות הדיגיטלית', href: '/shop', icon: ShoppingBag },
@@ -453,16 +489,26 @@ export default function Navbar() {
                                                 <Link
                                                     href={link.href}
                                                     onClick={() => setMobileMenuOpen(false)}
-                                                    className={`flex items-center gap-4 p-4 rounded-2xl transition-all group ${isActive(link.href)
-                                                        ? 'bg-[#C37D46] text-white shadow-lg shadow-[#C37D46]/20'
+                                                    className={`relative flex items-center justify-between p-5 rounded-2xl transition-all group overflow-hidden ${isActive(link.href)
+                                                        ? 'bg-gradient-to-r from-[#C37D46] to-[#a66a3a] text-white shadow-xl shadow-[#C37D46]/20'
                                                         : 'bg-white/5 hover:bg-white/10 text-white/90 border border-white/5'
                                                         }`}
                                                 >
-                                                    <div className={`p-2 rounded-lg transition-colors ${isActive(link.href) ? 'bg-white/20' : 'bg-[#2D1B14] text-[#C37D46] group-hover:bg-[#C37D46] group-hover:text-white'
+                                                    <span className="font-serif text-xl font-bold relative z-10">{link.name}</span>
+
+                                                    <div className={`p-2.5 rounded-xl transition-colors relative z-10 ${isActive(link.href)
+                                                        ? 'bg-white/20'
+                                                        : 'bg-[#2D1B14] text-[#C37D46]'
                                                         }`}>
-                                                        <link.icon size={20} />
+                                                        <link.icon size={22} strokeWidth={1.5} />
                                                     </div>
-                                                    <span className="font-serif text-lg font-bold">{link.name}</span>
+
+                                                    {isActive(link.href) && (
+                                                        <motion.div
+                                                            layoutId="activeGlow"
+                                                            className="absolute inset-0 bg-[radial-gradient(circle_at_30%,rgba(255,255,255,0.2),transparent)]"
+                                                        />
+                                                    )}
                                                 </Link>
                                             </motion.div>
                                         ))}
@@ -471,8 +517,8 @@ export default function Navbar() {
 
                                 {/* AI Laboratory Section */}
                                 <div className="space-y-4">
-                                    <h3 className="text-[10px] font-black text-[#C37D46] uppercase tracking-[0.2em] opacity-80 mb-2 px-2">מעבדת ה-AI</h3>
-                                    <div className="grid grid-cols-1 gap-2">
+                                    <h3 className="text-[10px] font-black text-[#C37D46]/80 uppercase tracking-[0.4em] mb-4 text-center">מעבדת ה-AI</h3>
+                                    <div className="grid grid-cols-1 gap-3">
                                         {[
                                             { name: 'הבריסטה החכם', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
                                             { name: 'אורקל המזל', href: '/fortune', icon: Sparkles },
@@ -487,16 +533,16 @@ export default function Navbar() {
                                                 transition={{ delay: 0.3 + i * 0.05 }}
                                                 className="relative group"
                                             >
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-3">
                                                     <Link
                                                         href={link.href}
                                                         onClick={() => setMobileMenuOpen(false)}
-                                                        className="flex-grow flex items-center gap-3 px-4 py-4 rounded-2xl bg-white/5 border border-white/5 hover:border-[#C37D46]/30 transition-all"
+                                                        className="flex-grow flex items-center gap-4 px-5 py-4 rounded-2xl bg-white/5 border border-white/10 hover:border-[#C37D46]/30 transition-all group/item"
                                                     >
-                                                        <div className="w-8 h-8 rounded-full bg-[#C37D46]/10 flex items-center justify-center">
-                                                            <link.icon size={16} className="text-[#C37D46]" />
+                                                        <div className="w-10 h-10 rounded-full bg-[#C37D46]/10 flex items-center justify-center transition-colors group-hover/item:bg-[#C37D46]/20">
+                                                            <link.icon size={18} className="text-[#C37D46]" />
                                                         </div>
-                                                        <span className="text-white/80 font-medium">{link.name}</span>
+                                                        <span className="text-white font-medium text-lg leading-none">{link.name}</span>
                                                     </Link>
 
                                                     {link.action && (
@@ -504,9 +550,9 @@ export default function Navbar() {
                                                             aria-label="פעולה קולית"
                                                             href={link.action.href}
                                                             onClick={() => setMobileMenuOpen(false)}
-                                                            className="p-4 bg-[#C37D46]/20 text-[#C37D46] rounded-2xl hover:bg-[#C37D46] hover:text-white transition-all shadow-lg"
+                                                            className="p-4 bg-[#C37D46]/10 text-[#C37D46] border border-[#C37D46]/20 rounded-2xl hover:bg-[#C37D46] hover:text-white transition-all shadow-lg"
                                                         >
-                                                            <link.action.icon size={20} />
+                                                            <link.action.icon size={22} />
                                                         </Link>
                                                     )}
                                                 </div>
@@ -544,25 +590,44 @@ export default function Navbar() {
                                     <Link
                                         href="/dashboard"
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all group"
+                                        className="relative flex items-center gap-4 p-5 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[2rem] hover:bg-white/[0.08] transition-all group shadow-2xl"
                                     >
-                                        <div className="relative w-12 h-12 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] to-amber-200">
-                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center overflow-hidden">
+                                        {/* Luxury Gradient Glow behind avatar */}
+                                        <div className="absolute top-1/2 left-6 -translate-y-1/2 w-24 h-24 bg-[#C37D46]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                        <div className="relative z-10 w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] via-amber-200 to-[#C37D46] shadow-[0_0_20px_rgba(195,125,70,0.4)]">
+                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center overflow-hidden p-0.5">
                                                 {session?.user?.image ? (
-                                                    <img src={session?.user?.image || ''} alt="" className="w-full h-full object-cover" />
+                                                    <img src={session?.user?.image || ''} alt="" className="w-full h-full object-cover rounded-full" />
                                                 ) : (
-                                                    <span className="text-white font-black text-lg">{session?.user?.name?.[0]}</span>
+                                                    <span className="text-white font-serif font-black text-2xl">{session?.user?.name?.[0]}</span>
                                                 )}
                                             </div>
-                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#C37D46] rounded-full flex items-center justify-center border-2 border-[#1A100C]">
-                                                <Activity size={10} className="text-white" />
+                                            <motion.div
+                                                animate={{ scale: [1, 1.2, 1] }}
+                                                transition={{ duration: 2, repeat: Infinity }}
+                                                className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#C37D46] rounded-full flex items-center justify-center border-2 border-[#1A100C] shadow-lg"
+                                            >
+                                                <Activity size={12} className="text-white" />
+                                            </motion.div>
+                                        </div>
+
+                                        <div className="flex-grow z-10">
+                                            <h4 className="text-white font-serif font-black text-2xl tracking-tight mb-1 group-hover:text-[#C37D46] transition-colors">
+                                                {session?.user?.name?.split(' ')[0]}
+                                            </h4>
+                                            <div className="flex items-center gap-1.5 opacity-60">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                                <span className="text-white text-[10px] font-black uppercase tracking-[0.2em]">ניהול חשבון</span>
                                             </div>
                                         </div>
-                                        <div className="flex-grow">
-                                            <div className="text-white font-bold text-lg leading-tight group-hover:text-[#C37D46] transition-colors">{session?.user?.name?.split(' ')[0]}</div>
-                                            <div className="text-white/40 text-[10px] font-black uppercase tracking-widest">ניהול חשבון</div>
-                                        </div>
-                                        <ChevronDown className="w-5 h-5 text-white/20 -rotate-90 group-hover:text-white/50 transition-colors" />
+
+                                        <motion.div
+                                            whileHover={{ x: -3 }}
+                                            className="w-11 h-11 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-[#C37D46] group-hover:text-white transition-all shadow-inner"
+                                        >
+                                            <ChevronDown className="w-6 h-6 text-white/40 -rotate-90 group-hover:text-white transition-colors" />
+                                        </motion.div>
                                     </Link>
                                 )}
                             </motion.div>

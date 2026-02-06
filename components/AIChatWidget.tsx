@@ -14,7 +14,29 @@ export default function AIChatWidget() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkMobileMenu = () => {
+            setIsMobileMenuOpen(document.body.classList.contains('mobile-menu-open'));
+        };
+
+        // Initial check
+        checkMobileMenu();
+
+        // Observe class changes on body
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    checkMobileMenu();
+                }
+            });
+        });
+
+        observer.observe(document.body, { attributes: true });
+        return () => observer.disconnect();
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,9 +90,15 @@ export default function AIChatWidget() {
             {/* Toggle Button */}
             <motion.button
                 onClick={() => setIsOpen(!isOpen)}
+                initial={false}
+                animate={{
+                    scale: isMobileMenuOpen ? 0 : 1,
+                    opacity: isMobileMenuOpen ? 0 : 1,
+                    display: isMobileMenuOpen ? 'none' : 'flex'
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="fixed bottom-6 right-6 z-50 bg-[#2D1B14] text-[#FDFCF0] p-4 rounded-full shadow-xl border-2 border-[#C37D46] flex items-center gap-2 group"
+                className="fixed bottom-6 right-6 z-[45] bg-[#2D1B14] text-[#FDFCF0] p-4 rounded-full shadow-xl border-2 border-[#C37D46] flex items-center gap-2 group"
             >
                 {isOpen ? <X /> : <MessageSquare className="group-hover:animate-bounce" />}
                 {!isOpen && <span className="hidden md:inline font-bold">הבריסטה החכם</span>}
@@ -83,7 +111,7 @@ export default function AIChatWidget() {
                         initial={{ opacity: 0, y: 50, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                        className="fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:w-[400px] h-[60vh] md:h-[500px] bg-[#FDFCF0] rounded-2xl shadow-2xl border border-[#E8CBAD] flex flex-col overflow-hidden font-sans z-[60]"
+                        className="fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:w-[400px] h-[60vh] md:h-[500px] bg-[#FDFCF0] rounded-2xl shadow-2xl border border-[#E8CBAD] flex flex-col overflow-hidden font-sans z-[110]"
                         dir="rtl"
                     >
                         {/* Header */}
