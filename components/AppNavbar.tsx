@@ -7,7 +7,7 @@ import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { ThemeToggle } from './ThemeToggle';
+
 import { NotificationBell } from './NotificationBell';
 
 
@@ -296,7 +296,6 @@ export default function Navbar() {
                 {/* 3.3. Utilities */}
                 <div className="flex items-center gap-1">
                     <NotificationBell />
-                    <ThemeToggle />
                 </div>
             </div>
 

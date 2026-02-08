@@ -76,12 +76,12 @@ export function NotificationBell() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                className="relative p-2 rounded-full hover:bg-stone-100 transition-colors"
                 title="Notifications"
             >
-                <Bell className="w-5 h-5 text-stone-600 dark:text-stone-400" />
+                <Bell className="w-5 h-5 text-stone-600" />
                 {notifications.length > 0 && (
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-[#2D1B14]" />
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
                 )}
             </button>
 
@@ -91,10 +91,10 @@ export function NotificationBell() {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute left-0 mt-2 w-80 bg-white dark:bg-[#2D1B14] rounded-2xl shadow-xl ring-1 ring-black/5 z-50 overflow-hidden"
+                        className="absolute left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl ring-1 ring-black/5 z-50 overflow-hidden"
                     >
-                        <div className="p-4 border-b border-stone-100 dark:border-stone-800 flex justify-between items-center">
-                            <h3 className="font-bold text-sm text-[#2D1B14] dark:text-white">התראות</h3>
+                        <div className="p-4 border-b border-stone-100 flex justify-between items-center">
+                            <h3 className="font-bold text-sm text-[#2D1B14]">התראות</h3>
                             {notifications.length > 0 && (
                                 <button
                                     onClick={() => markAsRead()}
@@ -111,10 +111,10 @@ export function NotificationBell() {
                                     אין התראות חדשות
                                 </div>
                             ) : (
-                                <ul className="divide-y divide-stone-100 dark:divide-stone-800">
+                                <ul className="divide-y divide-stone-100">
                                     {notifications.map((notification) => (
-                                        <li key={notification.id} className="p-4 hover:bg-stone-50 dark:hover:bg-white/5 transition-colors relative group">
-                                            <div className="text-sm text-stone-600 dark:text-stone-300 pr-6">
+                                        <li key={notification.id} className="p-4 hover:bg-stone-50 transition-colors relative group">
+                                            <div className="text-sm text-stone-600 pr-6">
                                                 {notification.message}
                                             </div>
                                             <span className="text-[10px] text-stone-400 mt-1 block">
