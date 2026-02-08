@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/AppNavbar';
-import Footer from '@/components/AppFooter';
+import Navbar from '../../components/AppNavbar';
+import Footer from '../../components/AppFooter';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {

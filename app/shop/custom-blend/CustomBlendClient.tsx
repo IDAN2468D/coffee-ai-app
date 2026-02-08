@@ -220,8 +220,8 @@ export default function CustomBlendClient() {
                                             key={tag.id}
                                             onClick={() => toggleFlavor(tag.id)}
                                             className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all flex items-center gap-2 ${isSelected
-                                                    ? 'bg-[#2D1B14] text-white border-[#2D1B14]'
-                                                    : 'bg-white text-stone-500 border-stone-200 hover:border-[#C37D46]'
+                                                ? 'bg-[#2D1B14] text-white border-[#2D1B14]'
+                                                : 'bg-white text-stone-500 border-stone-200 hover:border-[#C37D46]'
                                                 }`}
                                         >
                                             {isSelected && <Check className="w-3 h-3" />}

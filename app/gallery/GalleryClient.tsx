@@ -130,8 +130,8 @@ export default function GalleryPage() {
                         <button
                             onClick={() => setActiveTab('community')}
                             className={`px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2 ${activeTab === 'community'
-                                    ? 'bg-[#C37D46] text-white shadow-lg scale-105'
-                                    : 'bg-white/10 text-white hover:bg-white/20'
+                                ? 'bg-[#C37D46] text-white shadow-lg scale-105'
+                                : 'bg-white/10 text-white hover:bg-white/20'
                                 }`}
                         >
                             <Globe size={18} />
@@ -141,8 +141,8 @@ export default function GalleryPage() {
                             <button
                                 onClick={() => setActiveTab('mine')}
                                 className={`px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2 ${activeTab === 'mine'
-                                        ? 'bg-[#C37D46] text-white shadow-lg scale-105'
-                                        : 'bg-white/10 text-white hover:bg-white/20'
+                                    ? 'bg-[#C37D46] text-white shadow-lg scale-105'
+                                    : 'bg-white/10 text-white hover:bg-white/20'
                                     }`}
                             >
                                 <User size={18} />
@@ -232,8 +232,8 @@ export default function GalleryPage() {
                                                     handleTogglePrivacy(img.id, img.isPublic);
                                                 }}
                                                 className={`p-3 backdrop-blur-md rounded-xl transition-all flex items-center gap-2 ${img.isPublic
-                                                        ? 'bg-green-500/20 text-green-300 hover:bg-green-500 hover:text-white'
-                                                        : 'bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white'
+                                                    ? 'bg-green-500/20 text-green-300 hover:bg-green-500 hover:text-white'
+                                                    : 'bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white'
                                                     }`}
                                                 title={img.isPublic ? "ציבורי - לחץ לשינוי לפרטי" : "פרטי - לחץ לשינוי לציבורי"}
                                             >

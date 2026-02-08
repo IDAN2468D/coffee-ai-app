@@ -128,8 +128,8 @@ export default function BrewCalculatorClient() {
                                     resetTimer();
                                 }}
                                 className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 text-center text-sm ${selectedMethod.id === method.id
-                                        ? 'border-[#2D1B14] bg-[#2D1B14] text-white shadow-xl'
-                                        : 'border-stone-200 bg-white text-stone-600 hover:border-[#C37D46]'
+                                    ? 'border-[#2D1B14] bg-[#2D1B14] text-white shadow-xl'
+                                    : 'border-stone-200 bg-white text-stone-600 hover:border-[#C37D46]'
                                     }`}
                             >
                                 <span className="text-2xl">{method.icon}</span>
@@ -251,8 +251,8 @@ export default function BrewCalculatorClient() {
                             <button
                                 onClick={toggleTimer}
                                 className={`flex-1 py-4 rounded-xl font-black text-xl flex items-center justify-center gap-3 transition-all ${timerActive
-                                        ? 'bg-stone-100 text-[#2D1B14] hover:bg-stone-200'
-                                        : 'bg-[#2D1B14] text-white hover:bg-[#000] shadow-xl hover:scale-105'
+                                    ? 'bg-stone-100 text-[#2D1B14] hover:bg-stone-200'
+                                    : 'bg-[#2D1B14] text-white hover:bg-[#000] shadow-xl hover:scale-105'
                                     }`}
                             >
                                 {timerActive ? <><Pause className="w-5 h-5" /> השהה</> : <><Play className="w-5 h-5" /> התחל טיימר</>}
