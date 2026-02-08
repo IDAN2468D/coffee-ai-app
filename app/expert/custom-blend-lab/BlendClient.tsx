@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "../../../components/AppNavbar";
 import { Plus, X, Coffee, Beaker, Flame, ArrowRight, ShoppingBag, Info, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '@/lib/cartStore';
+import { useCart } from '../../../lib/cartStore';
 
 // Types
 type Origin = {
