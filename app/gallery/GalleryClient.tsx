@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, Globe, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import useCartStore from '@/lib/store';
+import useCartStore from '../../lib/store';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
-import AppNavbar from '@/components/AppNavbar';
+import AppNavbar from '../../components/AppNavbar';
 
 export default function GalleryPage() {
     const { data: session } = useSession();

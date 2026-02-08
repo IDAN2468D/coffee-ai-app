@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import AppNavbar from "@/components/AppNavbar";
+import AppNavbar from "../../components/AppNavbar";
 import { Upload, Camera, Sparkles, Share2, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

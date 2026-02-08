@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Product } from '@/lib/products'; // Note: using the interface from lib/products or prisma client type
 import { Star, Trash2, ShoppingBag, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import useCartStore from '@/lib/store';
+import useCartStore from '../../lib/store';
 import { useRouter } from 'next/navigation';
 
 interface FavoritesClientProps {
