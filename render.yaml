@@ -6,7 +6,9 @@ services:
     name: coffee-ai-app
     runtime: node
     plan: free
-    branch: main
+
+    # התיקון: שינינו מ-main ל-master
+    branch: master
 
     buildCommand: npm install && npm run build
     startCommand: npm start
@@ -28,16 +30,16 @@ services:
         sync: false
 
   # -----------------------------------------------------------------------
-  # 2. שרת ה-MCP (התיקון כאן!)
+  # 2. שרת ה-MCP
   # -----------------------------------------------------------------------
   - type: web
     name: coffee-mcp-server
     runtime: node
     plan: free
 
-    # מחקנו את השורה של rootDirectory שגרמה לבעיות
-    # ובמקום זה, אנחנו נכנסים לתיקייה ידנית בפקודות:
+    # כאן אין צורך להגדיר branch, הוא יקח את הדיפולט (master)
 
+    # הפתרון שעשינו קודם כדי לעקוף את בעיית התיקייה:
     buildCommand: cd mcp-server && npm install && npm run build
     startCommand: cd mcp-server && npm start
 
