@@ -1,5 +1,7 @@
+import express from "express";
+import cors from "cors";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
@@ -738,13 +740,36 @@ Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
     }
 });
 
-async function main() {
-    const transport = new StdioServerTransport();
-    await server.connect(transport);
-    console.error("Coffee Prisma MCP server running on stdio");
-}
+const app = express();
+app.use(cors());
 
-main().catch((error) => {
-    console.error("Server error:", error);
-    process.exit(1);
+const transports = new Map<string, SSEServerTransport>();
+
+app.get("/sse", async (req, res) => {
+    const transport = new SSEServerTransport("/messages", res);
+    transports.set(transport.sessionId, transport);
+
+    transport.onclose = () => {
+        transports.delete(transport.sessionId);
+    };
+
+    await server.connect(transport);
+});
+
+app.post("/messages", async (req, res) => {
+    const sessionId = req.query.sessionId as string;
+    const transport = transports.get(sessionId);
+
+    if (!transport) {
+        res.status(404).send("Session not found");
+        return;
+    }
+
+    await transport.handlePostMessage(req, res);
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Coffee Prisma MCP server running on port ${PORT}`);
 });
