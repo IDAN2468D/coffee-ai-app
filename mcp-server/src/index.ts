@@ -478,7 +478,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 where: { id: { in: productIds } }
             });
 
-            const productMap = new Map(products.map(p => [p.id, p]));
+            const productMap = new Map<string, any>(products.map((p: any) => [p.id, p]));
             const missingProductIds = productIds.filter(id => !productMap.has(id));
 
             if (missingProductIds.length > 0) {
@@ -500,7 +500,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
 
             // 3. Create the order and items in a transaction
-            const newOrder = await prisma.$transaction(async (tx) => {
+            const newOrder = await prisma.$transaction(async (tx: any) => {
                 return await tx.order.create({
                     data: {
                         userId,
@@ -576,14 +576,14 @@ Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
                 take: limit,
             });
 
-            const userIds = topUsers.map(u => u.userId);
+            const userIds = topUsers.map((u: any) => u.userId);
             const users = await prisma.user.findMany({
                 where: { id: { in: userIds } },
                 select: { id: true, name: true, email: true }
             });
 
-            const result = topUsers.map(u => {
-                const userInfo = users.find(usr => usr.id === u.userId);
+            const result = topUsers.map((u: any) => {
+                const userInfo = users.find((usr: any) => usr.id === u.userId);
                 return {
                     userId: u.userId,
                     name: userInfo?.name || 'Unknown',
@@ -692,8 +692,8 @@ Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
             });
 
             const productCounts: Record<string, number> = {};
-            users.forEach(u => {
-                u.favoriteIds.forEach(pid => {
+            users.forEach((u: any) => {
+                u.favoriteIds.forEach((pid: any) => {
                     productCounts[pid] = (productCounts[pid] || 0) + 1;
                 });
             });
