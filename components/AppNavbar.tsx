@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -224,7 +224,8 @@ export default function Navbar() {
                                     {[
                                         { name: 'בריסטה AI', href: '/expert' },
                                         { name: 'התאמת קפה', href: '/match' },
-                                        { name: 'מעבדת בלנדים', href: '/expert/custom-blend-lab' },
+                                        { name: 'MyBlend Creator', href: '/my-blend' },
+                                        { name: 'Coffee Passport', href: '/passport' },
                                         { name: 'גלריה', href: '/gallery' },
                                     ].map((item) => (
                                         <Link
@@ -524,7 +525,8 @@ export default function Navbar() {
                                             { name: 'אורקל המזל', href: '/fortune', icon: Sparkles },
                                             { name: 'יומן קפאין', href: '/tracker', icon: Activity },
                                             { name: 'אלגוריתם התאמה', href: '/match', icon: BrainCircuit },
-                                            { name: 'מעבדת הבלנדים', href: '/expert/custom-blend-lab', icon: FlaskConical },
+                                            { name: 'MyBlend Creator', href: '/my-blend', icon: FlaskConical },
+                                            { name: 'Coffee Passport', href: '/passport', icon: Globe },
                                         ].map((link, i) => (
                                             <motion.div
                                                 key={link.name}
