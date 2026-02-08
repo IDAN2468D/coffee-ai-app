@@ -22,7 +22,7 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PRODUCTS, Product } from '../../lib/products';
-import { useCart } from '../../lib/cartStore';
+import { useCart } from '../../lib/store';
 
 export default function Dashboard({
     initialPoints,

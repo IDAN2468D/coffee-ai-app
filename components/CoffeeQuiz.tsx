@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Thermometer, Zap, Droplets, Sparkles, ShoppingBag, ArrowRight, RotateCcw, Heart, CheckCircle2 } from 'lucide-react';
 import { PRODUCTS, Product } from '@/lib/products';
-import { useCart } from '@/lib/cartStore';
+import { useCart } from '@/lib/store';
 
 type QuizStep = 'welcome' | 'temp' | 'intensity' | 'milk' | 'result';
 

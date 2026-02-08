@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Heart, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { Product, Category } from '@prisma/client';
-import { useCart } from '@/lib/cartStore';
+import { useCart } from '@/lib/store';
 import { PRODUCTS } from '@/lib/products';
 
 type ProductWithCategory = Product & {

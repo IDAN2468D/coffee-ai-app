@@ -75,3 +75,4 @@ export const useCart = create<CartStore>()(
         }
     )
 );
+export default useCart;

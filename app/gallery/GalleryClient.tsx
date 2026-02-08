@@ -4,10 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, Globe, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useCart as useCartStore } from '@/lib/cartStore';
+import useCartStore from '@/lib/store';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
-import Navbar from '@/components/AppNavbar';
+import AppNavbar from '@/components/AppNavbar';
 
 export default function GalleryPage() {
     const { data: session } = useSession();
@@ -108,7 +108,7 @@ export default function GalleryPage() {
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] pb-24" dir="rtl">
-            <Navbar />
+            <AppNavbar />
             <header className="bg-[#2D1B14] py-32 px-6 text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <img src="https://www.transparenttextures.com/patterns/coffee-beans.png" alt="Pattern" />

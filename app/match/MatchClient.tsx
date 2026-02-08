@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/AppNavbar";
+import AppNavbar from "@/components/AppNavbar";
 import { Coffee, ArrowLeft, Check, Sparkles, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PRODUCTS } from '@/lib/products';
-import { useCart } from '@/lib/cartStore';
+import { useCart } from '@/lib/store';
 import Link from 'next/link';
 
 const QUESTIONS = [
@@ -114,7 +114,7 @@ export default function MatchClient() {
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] font-sans flex flex-col" dir="rtl">
-            <Navbar />
+            <AppNavbar />
 
             <div className="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
                 {/* Background Decor */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "../../components/AppNavbar";
+import AppNavbar from "../../components/AppNavbar";
 import { Package, Coffee, Users, BarChart3, Search, Edit, Trash2, CheckCircle, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -30,7 +30,7 @@ export default function AdminClient({ orders, products }: { orders: any[], produ
 
     return (
         <main className="min-h-screen bg-gray-50 flex flex-col font-sans mb-10">
-            <Navbar />
+            <AppNavbar />
 
             <div className="flex-1 flex pt-20">
                 {/* Sidebar */}

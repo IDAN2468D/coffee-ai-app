@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic } from 'lucide-react';
 import Link from 'next/link';
-import { useCart } from '@/lib/cartStore';
+import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from '../../components/AppNavbar';
+import AppNavbar from '../../components/AppNavbar';
 import { Phone, Mail, MapPin, Clock, Send, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -55,7 +55,7 @@ export default function ContactClient() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-[#FDFCF0] to-stone-100" dir="rtl">
-            <Navbar />
+            <AppNavbar />
 
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-[#2D1B14] via-[#3E2723] to-[#2D1B14] py-24 px-6 overflow-hidden">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import Navbar from "@/components/AppNavbar";
+import AppNavbar from "@/components/AppNavbar";
 import { Upload, Camera, Sparkles, Share2, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,7 +46,7 @@ export default function FortunePage() {
 
     return (
         <main className="min-h-screen bg-[#2D1B14] text-[#FDFCF0] font-sans overflow-x-hidden selection:bg-[#C37D46] selection:text-white" dir="rtl">
-            <Navbar />
+            <AppNavbar />
 
             <div className="max-w-xl mx-auto px-6 py-12 md:py-24 text-center">
 

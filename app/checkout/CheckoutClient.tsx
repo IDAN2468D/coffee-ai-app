@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCart as useCartStore } from '@/lib/cartStore'; import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
-import { Autocomplete } from '../../components/ui/Autocomplete';
+import useCartStore from '@/lib/store';
+import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
+import { Autocomplete } from '@/components/ui/Autocomplete';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
