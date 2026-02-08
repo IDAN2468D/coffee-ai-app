@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/AppNavbar";
 import { Coffee, Timer, Droplets, Scale, Flame, ArrowLeft, Play, Pause, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

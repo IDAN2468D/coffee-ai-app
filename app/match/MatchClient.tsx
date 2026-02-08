@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/AppNavbar";
 import { Coffee, ArrowLeft, Check, Sparkles, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PRODUCTS } from '@/lib/products';
-import { useCart } from '@/lib/store';
+import { useCart } from '@/lib/cartStore';
 import Link from 'next/link';
 
 const QUESTIONS = [

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useCart } from '@/lib/store';
+import { useCart } from '@/lib/cartStore';
 import { getAIPairing } from '@/lib/pairing-logic';
 import { Product } from '@/lib/products';
 import { AnimatePresence, motion } from 'framer-motion';

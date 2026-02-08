@@ -2,10 +2,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/AppNavbar";
 import { Coffee, RotateCcw, ShoppingBag, Star, Sparkles, Tag, Check, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '@/lib/store';
+import { useCart } from '@/lib/cartStore';
 import { Product } from '@/lib/products';
 
 const FLAVOR_TAGS = [

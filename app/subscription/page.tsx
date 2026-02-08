@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/AppNavbar";
 import Footer from "@/components/Footer";
 import { Check, Sparkles, Star, Crown, Zap, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';

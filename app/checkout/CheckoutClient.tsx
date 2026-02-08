@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCart } from '@/lib/store';
+import { useCart } from '@/lib/cartStore';
 import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
 import { Autocomplete } from '@/components/ui/Autocomplete';
 import Link from 'next/link';

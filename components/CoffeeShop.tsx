@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { ShoppingBag, Star, Plus, Minus } from 'lucide-react';
-import { useCart } from '@/lib/store';
+import { useCart } from '@/lib/cartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 

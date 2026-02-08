@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/AppNavbar";
 import Footer from "@/components/Footer";
 import AmbienceMixer from "@/components/AmbienceMixer";
 import { Sparkles, Headphones } from 'lucide-react';

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/AppNavbar';
 import Footer from '@/components/Footer';
 import { Coffee, Mail, Linkedin, Github, Award, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
