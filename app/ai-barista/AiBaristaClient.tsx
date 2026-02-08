@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Coffee, Sparkles, Wand2, Download, Share2, Loader2, ArrowRight, Heart, Mail, RefreshCw, Zap, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
-import CoffeeQuiz from '@/components/CoffeeQuiz';
+import CoffeeQuiz from '../../components/CoffeeQuiz';
 
 const SUGGESTIONS = [
     "לאטה בסגנון גלקסיה עם ערפילית סגולה וכחולה",

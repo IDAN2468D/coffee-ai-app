@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "../../components/AppNavbar";
 import { Package, Coffee, Users, BarChart3, Search, Edit, Trash2, CheckCircle, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
