@@ -287,6 +287,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     },
                     required: ["orderId", "status"]
                 }
+            },
+            {
+                name: "create_order",
+                description: "Create a new order based on product IDs and quantities. Calculates total price on server side.",
+                inputSchema: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        items: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    productId: { type: "string" },
+                                    quantity: { type: "integer" },
+                                    size: { type: "string" }
+                                },
+                                required: ["productId", "quantity"]
+                            }
+                        }
+                    },
+                    required: ["userId", "items"]
+                }
             }
         ]
     };
@@ -438,6 +461,69 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             });
             return {
                 content: [{ type: "text", text: `Order ${orderId} status updated to ${status}` }]
+            };
+        }
+
+        if (name === "create_order") {
+            const { userId, items } = args as {
+                userId: string;
+                items: { productId: string; quantity: number; size?: string }[];
+            };
+
+            // 1. Validate that all products exist and get their prices
+            const productIds = items.map(item => item.productId);
+            const products = await prisma.product.findMany({
+                where: { id: { in: productIds } }
+            });
+
+            const productMap = new Map(products.map(p => [p.id, p]));
+            const missingProductIds = productIds.filter(id => !productMap.has(id));
+
+            if (missingProductIds.length > 0) {
+                throw new Error(`One or more products not found: ${missingProductIds.join(", ")}`);
+            }
+
+            // 2. Calculate total amount and prepare order items data
+            let totalAmount = 0;
+            const orderItemsData = items.map(item => {
+                const product = productMap.get(item.productId)!;
+                const itemTotal = product.price * item.quantity;
+                totalAmount += itemTotal;
+
+                return {
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    size: item.size || "M" // Default size if not provided
+                };
+            });
+
+            // 3. Create the order and items in a transaction
+            const newOrder = await prisma.$transaction(async (tx) => {
+                return await tx.order.create({
+                    data: {
+                        userId,
+                        total: totalAmount,
+                        status: "pending",
+                        items: {
+                            create: orderItemsData
+                        }
+                    },
+                    include: {
+                        items: true
+                    }
+                });
+            });
+
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify({
+                        message: "Order created successfully",
+                        orderId: newOrder.id,
+                        totalAmount: newOrder.total,
+                        itemCount: newOrder.items.length
+                    }, null, 2)
+                }]
             };
         }
 
