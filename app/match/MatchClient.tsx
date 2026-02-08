@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import AppNavbar from "@/components/AppNavbar";
+import Navbar from "@/components/AppNavbar";
 import { Coffee, ArrowLeft, Check, Sparkles, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PRODUCTS } from '@/lib/products';
@@ -114,7 +114,7 @@ export default function MatchClient() {
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] font-sans flex flex-col" dir="rtl">
-            <AppNavbar />
+            <Navbar />
 
             <div className="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
                 {/* Background Decor */}
