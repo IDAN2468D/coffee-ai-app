@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma generate && next build",
+    "build": "npx prisma@5.22.0 generate && next build",
     "build:staging": "set APP_ENV=staging&& next build",
     "start": "next start",
     "start:staging": "set APP_ENV=staging&& next start",
