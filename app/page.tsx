@@ -5,7 +5,7 @@ import CoffeeShop from "@/components/CoffeeShop";
 import PopularTaste from "@/components/PopularTaste";
 import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
-import Footer from "@/components/Footer";
+import Footer from "@/components/AppFooter";
 import Highlights from "@/components/Highlights";
 import Subscription from "@/components/Subscription";
 

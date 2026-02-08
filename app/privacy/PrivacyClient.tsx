@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from '@/components/AppNavbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/AppFooter';
 import { Shield, Lock, Eye, UserCheck, Cookie, Mail, FileText, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from '@/components/AppNavbar';
-import Footer from '@/components/Footer';
+import Footer from '@/components/AppFooter';
 import { Coffee, Mail, Linkedin, Github, Award, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 

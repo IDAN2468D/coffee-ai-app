@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from "@/components/AppNavbar";
-import Footer from "@/components/Footer";
+import Footer from "@/components/AppFooter";
 import CoffeeShop from "@/components/CoffeeShop";
 import ShopHeader from "@/components/ShopHeader";
 import { prisma } from "@/lib/prisma";
