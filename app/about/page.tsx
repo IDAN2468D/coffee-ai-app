@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import AppNavbar from '../../components/AppNavbar';
-import AppFooter from '../../components/AppFooter';
+import Navbar from '@/components/TempNavbar';
+import Footer from '@/components/AppFooter';
 import { motion } from 'framer-motion';
 
 export default function AboutPage() {
     return (
         <main className="min-h-screen bg-white font-sans text-right" dir="rtl">
-            <AppNavbar />
+            <Navbar />
 
             <div className="pt-32 pb-24 px-6 max-w-5xl mx-auto space-y-16">
 
@@ -86,7 +86,7 @@ export default function AboutPage() {
 
             </div>
 
-            <AppFooter />
+            <Footer />
         </main>
     );
 }

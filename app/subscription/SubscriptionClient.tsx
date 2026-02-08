@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "@/components/TempNavbar";
 import { Check, Sparkles, Coffee, Package, Star, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 

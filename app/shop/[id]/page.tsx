@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "@/components/TempNavbar";
 import Footer from "@/components/AppFooter";
 import { prisma } from "@/lib/prisma";
 import Link from 'next/link';

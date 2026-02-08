@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "@/components/TempNavbar";
 import { Plus, Clock, TrendingDown, Info, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 

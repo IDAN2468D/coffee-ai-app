@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Navbar from "@/components/AppNavbar";
+import Navbar from "@/components/TempNavbar";
 import { Coffee, RotateCcw, ShoppingBag, Star, Sparkles, Tag, Check, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/lib/store';

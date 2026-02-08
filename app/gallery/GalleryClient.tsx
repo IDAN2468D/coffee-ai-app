@@ -7,7 +7,7 @@ import Link from 'next/link';
 import useCartStore from '../../lib/store';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
-import AppNavbar from '../../components/AppNavbar';
+import Navbar from '../../components/TempNavbar';
 
 interface Comment {
     id: string;
@@ -201,7 +201,7 @@ export default function GalleryPage() {
 
     return (
         <main className="min-h-screen bg-[#FDFCF0] pb-24" dir="rtl">
-            <AppNavbar />
+            <Navbar />
             <header className="bg-[#2D1B14] py-32 px-6 text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
                     <img src="https://www.transparenttextures.com/patterns/coffee-beans.png" alt="Pattern" />

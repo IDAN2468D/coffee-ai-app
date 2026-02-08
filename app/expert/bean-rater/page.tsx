@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import Navbar from '../../../components/AppNavbar';
+import Navbar from '../../../components/TempNavbar';
 import { Camera, Upload, Loader2, CheckCircle, AlertCircle, Coffee, Sparkles, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 
