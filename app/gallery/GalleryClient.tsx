@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, Globe, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useCart } from '@/lib/cartStore';
+import { useCart as useCartStore } from '@/lib/cartStore';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
 import Navbar from '@/components/AppNavbar';
 
 export default function GalleryPage() {
     const { data: session } = useSession();
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
     const [images, setImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
