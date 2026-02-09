@@ -23,7 +23,7 @@ export default function PassportPage() {
 
             <Navbar />
 
-            <div className="relative z-10 max-w-6xl mx-auto px-6 py-24">
+            <div className="relative z-10 max-w-6xl mx-auto px-6 pt-40 pb-24">
 
                 {/* Header */}
                 <div className="text-center mb-16 space-y-4">
