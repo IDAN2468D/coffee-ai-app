@@ -153,6 +153,11 @@ export default function DailyScratchCard() {
 
     if (!mounted) return null;
 
+    // Hide on auth pages and dashboard
+    if (pathname?.startsWith('/auth/') || pathname === '/dashboard') {
+        return null;
+    }
+
     return (
         <>
             {/* Floating Trigger - Gift Box */}
