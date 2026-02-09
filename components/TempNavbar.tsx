@@ -33,7 +33,7 @@ const FEATURES: Feature[] = [
     { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
     { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
     { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
-    { name: 'דרכון הקפה', href: '/passport', icon: Globe },
+    { name: 'דרכון הקפה', href: '/passport', icon: Globe, minTier: 'Platinum' },
     { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'Silver' },
     { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'Gold' },
     { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'Platinum' },
