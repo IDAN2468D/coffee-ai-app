@@ -75,11 +75,11 @@ export default function MyBlendPage() {
                                     onChange={(e) => setMilk(e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-[#C37D46] focus:outline-none transition-colors"
                                 >
-                                    <option value="Regular">חלב רגיל</option>
-                                    <option value="Oat">חלב שיבולת שועל</option>
-                                    <option value="Almond">חלב שקדים</option>
-                                    <option value="Soy">חלב סויה</option>
-                                    <option value="None">ללא חלב</option>
+                                    <option value="Regular" className="bg-[#1a1a1a] text-white">חלב רגיל</option>
+                                    <option value="Oat" className="bg-[#1a1a1a] text-white">חלב שיבולת שועל</option>
+                                    <option value="Almond" className="bg-[#1a1a1a] text-white">חלב שקדים</option>
+                                    <option value="Soy" className="bg-[#1a1a1a] text-white">חלב סויה</option>
+                                    <option value="None" className="bg-[#1a1a1a] text-white">ללא חלב</option>
                                 </select>
                             </div>
 
