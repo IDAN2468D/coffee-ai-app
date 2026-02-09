@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { analyzeImage } from '@/lib/gemini';
 
 export async function POST(req: Request) {
     try {
-        if (!process.env.GEMINI_API_KEY) {
-            return NextResponse.json({ error: "Gemini API Key is missing" }, { status: 500 });
-        }
-
         const formData = await req.formData();
         const file = formData.get('image') as File;
 
@@ -20,49 +14,45 @@ export async function POST(req: Request) {
         const buffer = Buffer.from(arrayBuffer);
         const base64Image = buffer.toString('base64');
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        // Check if image is valid (basic check)
+        if (base64Image.length < 100) {
+            return NextResponse.json({ error: "Invalid image data" }, { status: 400 });
+        }
 
         const prompt = `
         Act as a mystical Coffee Fortune Teller. 
-        Analyze this image of coffee cup dregs/foam/remains.
+        Analyze the shapes, bubbles, and patterns in this coffee cup image (or coffee grounds).
         
-        1. Identify a shape, symbol, or pattern in the cup (even if abstract).
-        2. Provide a humorous, positive, and inspiring "fortune reading" based on that shape for the user.
-        3. Keep the tone magical, fun, and warm.
-        4. Write the response in Hebrew (fluently).
+        Provide a response in JSON format with the following fields:
+        1. "symbol": What shape do you see? (e.g., "A flying dragon", "A heart", "A cloud").
+        2. "prediction": A short, mystical, and humorous prediction for the user's day based on that symbol.
+        3. "luckyNumber": A lucky number between 1-100.
         
-        Output format (JSON):
-        {
-            "shape": "Brief description of the shape found (in Hebrew)",
-            "fortune": "The full fortune reading (in Hebrew)"
-        }
+        Keep the tone fun, slightly esoteric, and encouraging. 
+        Write the response in Hebrew (fluently and naturally).
+        Return ONLY raw JSON, no markdown formatting.
         `;
 
-        const result = await model.generateContent([
-            prompt,
-            {
-                inlineData: {
-                    data: base64Image,
-                    mimeType: file.type || 'image/jpeg',
-                },
-            },
-        ]);
+        try {
+            const responseText = await analyzeImage(`data:${file.type};base64,${base64Image}`, prompt);
 
-        const responseText = result.response.text();
+            // Clean up markdown if Gemini returns it
+            const jsonStr = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+            const data = JSON.parse(jsonStr);
 
-        // Cleanup JSON if needed
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("Failed to parse AI response");
-
-        const data = JSON.parse(jsonMatch[0]);
-
-        return NextResponse.json(data);
+            return NextResponse.json(data);
+        } catch (aiError) {
+            console.error("AI Error:", aiError);
+            throw new Error("Failed to analyze image");
+        }
 
     } catch (error) {
         console.error("Fortune API Error:", error);
+        // Fallback mock response for demo/error cases
         return NextResponse.json({
-            shape: "ענן מסתורי",
-            fortune: "הערפל בקפה שלך מסתיר הפתעה גדולה שתגיע בקרוב. המתן בסבלנות, הדברים הטובים בדרך!"
-        }, { status: 200 }); // Fallback with 200 OK so UI doesn't break
+            symbol: "ערפל מסתורי",
+            prediction: "הערפל בקפה שלך מסתיר הפתעה גדולה שתגיע בקרוב. המתן בסבלנות, הדברים הטובים בדרך!",
+            luckyNumber: 42
+        });
     }
 }
