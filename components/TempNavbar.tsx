@@ -96,6 +96,12 @@ export default function Navbar() {
         if (!session?.user) return false; // Must be logged in
 
         const userTier = session.user.subscriptionTier as Tier;
+
+        // Debugging Log
+        if (minTier) {
+            console.log(`Checking Access for ${minTier}: User Tier = ${userTier}, Access = ${TIERS[userTier] >= TIERS[minTier]}`);
+        }
+
         if (!userTier || !TIERS[userTier]) return false; // User has no valid tier
 
         return TIERS[userTier] >= TIERS[minTier];
