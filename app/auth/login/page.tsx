@@ -52,8 +52,10 @@ function LoginForm() {
                 // Show coffee animation before redirect
                 setShowCoffeeAnimation(true);
             }
-        } catch (err) {
-            setFeedback({ type: 'error', message: "משהו השתבש. אנא נסה שוב מאוחר יותר." });
+        } catch (err: any) {
+            console.error("Login error:", err);
+            const errorMessage = err?.message || "משהו השתבש. אנא נסה שוב מאוחר יותר.";
+            setFeedback({ type: 'error', message: errorMessage });
         } finally {
             setIsLoading(false);
         }

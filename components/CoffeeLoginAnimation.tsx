@@ -18,11 +18,14 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
     React.useEffect(() => {
         setMounted(true);
 
+        const winWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
+        const winHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+
         // Generate random values only on client side
         setParticleData(Array.from({ length: 40 }, () => ({
-            initialX: Math.random() * (window.innerWidth || 1000),
-            initialY: (window.innerHeight || 800) + 50,
-            animateX: Math.random() * (window.innerWidth || 1000),
+            initialX: Math.random() * winWidth,
+            initialY: winHeight + 50,
+            animateX: Math.random() * winWidth,
             duration: 2 + Math.random() * 2,
             delay: Math.random() * 0.5,
         })));

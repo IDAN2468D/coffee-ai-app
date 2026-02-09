@@ -100,7 +100,10 @@ export const authOptions: NextAuthOptions = {
     events: {
         async signIn({ user }) {
             if (user?.email && user?.name) {
-                await sendLoginEmail(user.email, user.name);
+                // Don't await the email sending to prevent blocking the login response
+                sendLoginEmail(user.email, user.name).catch(err => {
+                    console.error("Failed to send login email:", err);
+                });
             }
         }
     },
