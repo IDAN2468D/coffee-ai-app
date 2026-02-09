@@ -278,6 +278,15 @@ export default function Navbar() {
                                                 >
                                                     <span className="flex items-center gap-2">
                                                         {item.name}
+                                                        {item.minTier && (
+                                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider
+                                                                ${item.minTier === 'Silver' ? 'bg-stone-400/20 text-stone-300' : ''}
+                                                                ${item.minTier === 'Gold' ? 'bg-amber-400/20 text-amber-300' : ''}
+                                                                ${item.minTier === 'Platinum' ? 'bg-purple-400/20 text-purple-300' : ''}
+                                                            `}>
+                                                                {item.minTier}
+                                                            </span>
+                                                        )}
                                                     </span>
                                                     {!hasAccess && <Lock className="w-3 h-3 text-white/30" />}
                                                 </Link>
@@ -598,8 +607,17 @@ export default function Navbar() {
                                                                     <Lock size={18} className="text-white/20" />
                                                                 )}
                                                             </div>
-                                                            <span className={`font-medium text-lg leading-none ${hasAccess ? 'text-white' : 'text-white/40'}`}>
+                                                            <span className={`font-medium text-lg leading-none ${hasAccess ? 'text-white' : 'text-white/40'} flex items-center gap-2`}>
                                                                 {link.name}
+                                                                {link.minTier && (
+                                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border
+                                                                        ${link.minTier === 'Silver' ? 'bg-stone-400/10 text-stone-400 border-stone-400/20' : ''}
+                                                                        ${link.minTier === 'Gold' ? 'bg-amber-400/10 text-amber-400 border-amber-400/20' : ''}
+                                                                        ${link.minTier === 'Platinum' ? 'bg-purple-400/10 text-purple-400 border-purple-400/20' : ''}
+                                                                    `}>
+                                                                        {link.minTier}
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </Link>
 
