@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic, Globe } from 'lucide-react';
+import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic, Globe, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '@/lib/store';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +11,34 @@ import { usePathname } from 'next/navigation';
 import { NotificationBell } from './NotificationBell';
 
 
+
+// Tier hierarchy for checking access
+const TIERS = {
+    'Silver': 1,
+    'Gold': 2,
+    'Platinum': 3
+};
+
+type Tier = keyof typeof TIERS;
+
+interface Feature {
+    name: string;
+    href: string;
+    icon?: any;
+    minTier?: Tier; // Minimum tier required to access
+    action?: any;
+}
+
+const FEATURES: Feature[] = [
+    { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
+    { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
+    { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
+    { name: 'דרכון הקפה', href: '/passport', icon: Globe },
+    { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'Silver' },
+    { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'Gold' },
+    { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'Platinum' },
+    { name: 'גלריה', href: '/gallery', icon: ImageIcon },
+];
 
 export default function Navbar() {
     // ...
@@ -62,6 +90,16 @@ export default function Navbar() {
     if (!mounted) return null;
 
     const isActive = (path: string) => pathname === path;
+
+    const checkAccess = (minTier?: Tier) => {
+        if (!minTier) return true; // No tier required
+        if (!session?.user) return false; // Must be logged in
+
+        const userTier = session.user.subscriptionTier as Tier;
+        if (!userTier || !TIERS[userTier]) return false; // User has no valid tier
+
+        return TIERS[userTier] >= TIERS[minTier];
+    };
 
     // Background logic
     // Always use the Coffee Texture Image
@@ -226,24 +264,26 @@ export default function Navbar() {
                                     exit={{ opacity: 0, y: 5, scale: 0.95 }}
                                     className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-56 bg-[#1A100C] border border-white/10 rounded-xl shadow-2xl overflow-hidden p-1.5"
                                 >
-                                    {[
-                                        { name: 'בריסטה AI', href: '/expert' },
-                                        { name: 'התאמת קפה', href: '/match' },
-                                        { name: 'יוצר הבלנדים', href: '/my-blend' },
-                                        { name: 'דרכון הקפה', href: '/passport' },
-                                        { name: 'מיקסר סאונד', href: '/ambience' },
-                                        { name: 'אורקל המזל', href: '/fortune' },
-                                        { name: 'יומן קפאין', href: '/tracker' },
-                                        { name: 'גלריה', href: '/gallery' },
-                                    ].map((item) => (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href}
-                                            className="block px-4 py-2.5 rounded-lg hover:bg-white/5 text-right text-sm font-medium text-white/80 hover:text-[#C37D46] transition-colors"
-                                        >
-                                            {item.name}
-                                        </Link>
-                                    ))}
+                                    {FEATURES.map((item) => {
+                                        const hasAccess = checkAccess(item.minTier);
+                                        return (
+                                            <div key={item.href} className="relative group">
+                                                <Link
+                                                    href={hasAccess ? item.href : '/subscription'}
+                                                    className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors text-sm font-medium
+                                                        ${hasAccess
+                                                            ? 'text-white/80 hover:text-[#C37D46] hover:bg-white/5'
+                                                            : 'text-white/30 cursor-not-allowed hover:bg-red-900/10'
+                                                        }`}
+                                                >
+                                                    <span className="flex items-center gap-2">
+                                                        {item.name}
+                                                    </span>
+                                                    {!hasAccess && <Lock className="w-3 h-3 text-white/30" />}
+                                                </Link>
+                                            </div>
+                                        );
+                                    })}
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -527,46 +567,56 @@ export default function Navbar() {
                                 <div className="space-y-4">
                                     <h3 className="text-[10px] font-black text-[#C37D46]/80 uppercase tracking-[0.4em] mb-4 text-center">מעבדת ה-AI</h3>
                                     <div className="grid grid-cols-1 gap-3">
-                                        {[
-                                            { name: 'הבריסטה החכם', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
-                                            { name: 'אורקל המזל', href: '/fortune', icon: Sparkles },
-                                            { name: 'יומן קפאין', href: '/tracker', icon: Activity },
-                                            { name: 'אלגוריתם התאמה', href: '/match', icon: BrainCircuit },
-                                            { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
-                                            { name: 'דרכון הקפה', href: '/passport', icon: Globe },
-                                        ].map((link, i) => (
-                                            <motion.div
-                                                key={link.name}
-                                                initial={{ x: 50, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.3 + i * 0.05 }}
-                                                className="relative group"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <Link
-                                                        href={link.href}
-                                                        onClick={() => setMobileMenuOpen(false)}
-                                                        className="flex-grow flex items-center gap-4 px-5 py-4 rounded-2xl bg-white/5 border border-white/10 hover:border-[#C37D46]/30 transition-all group/item"
-                                                    >
-                                                        <div className="w-10 h-10 rounded-full bg-[#C37D46]/10 flex items-center justify-center transition-colors group-hover/item:bg-[#C37D46]/20">
-                                                            <link.icon size={18} className="text-[#C37D46]" />
-                                                        </div>
-                                                        <span className="text-white font-medium text-lg leading-none">{link.name}</span>
-                                                    </Link>
-
-                                                    {link.action && (
+                                        {FEATURES.map((link, i) => {
+                                            const hasAccess = checkAccess(link.minTier);
+                                            return (
+                                                <motion.div
+                                                    key={link.name}
+                                                    initial={{ x: 50, opacity: 0 }}
+                                                    animate={{ x: 0, opacity: 1 }}
+                                                    transition={{ delay: 0.3 + i * 0.05 }}
+                                                    className="relative group"
+                                                >
+                                                    <div className="flex items-center gap-3">
                                                         <Link
-                                                            aria-label="פעולה קולית"
-                                                            href={link.action.href}
-                                                            onClick={() => setMobileMenuOpen(false)}
-                                                            className="p-4 bg-[#C37D46]/10 text-[#C37D46] border border-[#C37D46]/20 rounded-2xl hover:bg-[#C37D46] hover:text-white transition-all shadow-lg"
+                                                            href={hasAccess ? link.href : '/subscription'}
+                                                            onClick={hasAccess ? () => setMobileMenuOpen(false) : undefined}
+                                                            className={`flex-grow flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all group/item
+                                                                ${hasAccess
+                                                                    ? 'bg-white/5 border-white/10 hover:border-[#C37D46]/30'
+                                                                    : 'bg-white/[0.02] border-white/5 cursor-not-allowed'
+                                                                }`}
                                                         >
-                                                            <link.action.icon size={22} />
+                                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors 
+                                                                ${hasAccess
+                                                                    ? 'bg-[#C37D46]/10 group-hover/item:bg-[#C37D46]/20'
+                                                                    : 'bg-white/5'
+                                                                }`}>
+                                                                {hasAccess ? (
+                                                                    <link.icon size={18} className="text-[#C37D46]" />
+                                                                ) : (
+                                                                    <Lock size={18} className="text-white/20" />
+                                                                )}
+                                                            </div>
+                                                            <span className={`font-medium text-lg leading-none ${hasAccess ? 'text-white' : 'text-white/40'}`}>
+                                                                {link.name}
+                                                            </span>
                                                         </Link>
-                                                    )}
-                                                </div>
-                                            </motion.div>
-                                        ))}
+
+                                                        {link.action && hasAccess && (
+                                                            <Link
+                                                                aria-label="פעולה קולית"
+                                                                href={link.action.href}
+                                                                onClick={() => setMobileMenuOpen(false)}
+                                                                className="p-4 bg-[#C37D46]/10 text-[#C37D46] border border-[#C37D46]/20 rounded-2xl hover:bg-[#C37D46] hover:text-white transition-all shadow-lg"
+                                                            >
+                                                                <link.action.icon size={22} />
+                                                            </Link>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
