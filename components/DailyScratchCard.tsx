@@ -10,15 +10,12 @@ export default function DailyScratchCard() {
     const [isOpen, setIsOpen] = useState(false);
     const [isScratched, setIsScratched] = useState(false);
     const [prize, setPrize] = useState<{ text: string, code?: string, type: 'coupon' | 'fact' } | null>(null);
+    const [mounted, setMounted] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Hide on auth pages
-    if (pathname?.startsWith('/auth/')) {
-        return null;
-    }
-
     useEffect(() => {
+        setMounted(true);
         // Check cooldown (24 hours)
         const lastPlay = localStorage.getItem('lastDailyPlay');
         const now = new Date().getTime();
@@ -153,6 +150,8 @@ export default function DailyScratchCard() {
             canvas.classList.add('opacity-0', 'pointer-events-none');
         }
     };
+
+    if (!mounted) return null;
 
     return (
         <>

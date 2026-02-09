@@ -14,11 +14,13 @@ export default function VirtualCafe() {
     const [isMuted, setIsMuted] = useState(false);
     const [isCafeMode, setIsCafeMode] = useState(false); // Cafe noise toggle
     const [isExpanded, setIsExpanded] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement>(null);
     const noiseRef = useRef<HTMLAudioElement>(null);
 
     React.useEffect(() => {
+        setMounted(true);
         if (noiseRef.current) {
             noiseRef.current.volume = 0.3;
         }
@@ -53,6 +55,8 @@ export default function VirtualCafe() {
         if (noiseRef.current) noiseRef.current.muted = !isMuted;
         setIsMuted(!isMuted);
     };
+
+    if (!mounted) return null;
 
     return (
         <div className="fixed bottom-4 left-4 z-40 font-sans" dir="ltr">

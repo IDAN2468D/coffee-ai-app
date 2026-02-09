@@ -15,9 +15,11 @@ export default function AIChatWidget() {
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        setMounted(true);
         const checkMobileMenu = () => {
             setIsMobileMenuOpen(document.body.classList.contains('mobile-menu-open'));
         };
@@ -84,6 +86,8 @@ export default function AIChatWidget() {
             setIsLoading(false);
         }
     };
+
+    if (!mounted) return null;
 
     return (
         <>
