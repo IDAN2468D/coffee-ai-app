@@ -10,30 +10,33 @@ interface CoffeeLoginAnimationProps {
 }
 
 export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLoginAnimationProps) {
-    // Generate random values on mount to avoid hydration mismatch
-    const particleData = React.useMemo(() => {
-        return Array.from({ length: 40 }, () => ({
-            initialX: Math.random() * 1000,
-            initialY: 800 + 50,
-            animateX: Math.random() * 1000,
+    const [mounted, setMounted] = React.useState(false);
+    const [particleData, setParticleData] = React.useState<any[]>([]);
+    const [beanData, setBeanData] = React.useState<any[]>([]);
+    const [confettiData, setConfettiData] = React.useState<any[]>([]);
+
+    React.useEffect(() => {
+        setMounted(true);
+
+        // Generate random values only on client side
+        setParticleData(Array.from({ length: 40 }, () => ({
+            initialX: Math.random() * (window.innerWidth || 1000),
+            initialY: (window.innerHeight || 800) + 50,
+            animateX: Math.random() * (window.innerWidth || 1000),
             duration: 2 + Math.random() * 2,
             delay: Math.random() * 0.5,
-        }));
-    }, []);
+        })));
 
-    const beanData = React.useMemo(() => {
-        return Array.from({ length: 20 }, (_, i) => ({
+        setBeanData(Array.from({ length: 20 }, (_, i) => ({
             animateX: 50 + (Math.cos((i / 20) * Math.PI * 2) * 40),
             animateY: 50 + (Math.sin((i / 20) * Math.PI * 2) * 40),
             delay: 1.8 + (i * 0.02),
-        }));
-    }, []);
+        })));
 
-    const confettiData = React.useMemo(() => {
         const shapes = ['circle', 'square', 'star', 'heart'];
         const colors = ['#8B4513', '#C37D46', '#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4'];
 
-        return Array.from({ length: 80 }, (_, i) => ({
+        setConfettiData(Array.from({ length: 80 }, (_, i) => ({
             shape: shapes[i % 4],
             color: colors[i % colors.length],
             animateX: Math.random() * 100,
@@ -41,7 +44,8 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
             rotate1: 360 * (Math.random() > 0.5 ? 1 : -1),
             rotate2: 720 * (Math.random() > 0.5 ? 1 : -1),
             delay: 2 + Math.random() * 0.8,
-        }));
+        })));
+
     }, []);
 
     React.useEffect(() => {
@@ -50,6 +54,8 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
             return () => clearTimeout(timer);
         }
     }, [isVisible, onComplete]);
+
+    if (!mounted) return null;
 
     return (
         <AnimatePresence>
