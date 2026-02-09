@@ -71,6 +71,13 @@ export default function MyBlendPage() {
                     <p className="text-xl text-white/40 max-w-lg mx-auto leading-relaxed font-light">
                         המעבדה פתוחה. בחרו את המרכיבים, תנו שם ליצירה, ואנחנו נדאג לשאר.
                     </p>
+
+                    <div className="pt-4">
+                        <a href="/my-blend/list" className="inline-flex items-center gap-2 text-[#C37D46] hover:text-[#A66330] transition-colors font-bold border-b border-transparent hover:border-[#C37D46]">
+                            לצפייה בבלנדים השמורים שלי
+                            <ArrowRight className="w-4 h-4" />
+                        </a>
+                    </div>
                 </div>
 
                 {/* Creator UI */}
