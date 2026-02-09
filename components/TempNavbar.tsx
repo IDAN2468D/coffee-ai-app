@@ -229,8 +229,8 @@ export default function Navbar() {
                                     {[
                                         { name: 'בריסטה AI', href: '/expert' },
                                         { name: 'התאמת קפה', href: '/match' },
-                                        { name: 'MyBlend Creator', href: '/my-blend' },
-                                        { name: 'Coffee Passport', href: '/passport' },
+                                        { name: 'יוצר הבלנדים', href: '/my-blend' },
+                                        { name: 'דרכון הקפה', href: '/passport' },
                                         { name: 'גלריה', href: '/gallery' },
                                     ].map((item) => (
                                         <Link
@@ -529,8 +529,8 @@ export default function Navbar() {
                                             { name: 'אורקל המזל', href: '/fortune', icon: Sparkles },
                                             { name: 'יומן קפאין', href: '/tracker', icon: Activity },
                                             { name: 'אלגוריתם התאמה', href: '/match', icon: BrainCircuit },
-                                            { name: 'MyBlend Creator', href: '/my-blend', icon: FlaskConical },
-                                            { name: 'Coffee Passport', href: '/passport', icon: Globe },
+                                            { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
+                                            { name: 'דרכון הקפה', href: '/passport', icon: Globe },
                                         ].map((link, i) => (
                                             <motion.div
                                                 key={link.name}
