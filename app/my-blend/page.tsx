@@ -109,7 +109,7 @@ export default function MyBlendPage() {
                                     <div className="absolute inset-0 border-4 border-[#C37D46]/20 rounded-full border-t-[#C37D46] animate-spin p-2"></div>
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-serif text-white">{blendName || 'הבלנד שלך'}</h3>
+                                    <h3 className="text-2xl font-serif text-white">{blendName || 'הבלנד האישי שלך'}</h3>
                                     <p className="text-white/40 text-sm mt-2">
                                         {base} + {milk === 'None' ? 'No Milk' : milk + ' Milk'}
                                         {flavor !== 'None' && ` + ${flavor}`}
