@@ -3,13 +3,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Gift, Sparkles, Trophy, Lightbulb } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function DailyScratchCard() {
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [isScratched, setIsScratched] = useState(false);
     const [prize, setPrize] = useState<{ text: string, code?: string, type: 'coupon' | 'fact' } | null>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Hide on auth pages
+    if (pathname?.startsWith('/auth/')) {
+        return null;
+    }
 
     useEffect(() => {
         // Check cooldown (24 hours)
