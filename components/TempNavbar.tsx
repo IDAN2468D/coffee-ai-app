@@ -275,7 +275,7 @@ export default function Navbar() {
                                         return (
                                             <div key={item.href} className="relative group">
                                                 <Link
-                                                    href={hasAccess ? item.href : '/subscription'}
+                                                    href={hasAccess ? item.href : `/subscription?tier=${item.minTier}`}
                                                     className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors text-sm font-medium
                                                         ${hasAccess
                                                             ? 'text-white/80 hover:text-[#C37D46] hover:bg-white/5'
@@ -594,7 +594,7 @@ export default function Navbar() {
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <Link
-                                                            href={hasAccess ? link.href : '/subscription'}
+                                                            href={hasAccess ? link.href : `/subscription?tier=${link.minTier}`}
                                                             onClick={hasAccess ? () => setMobileMenuOpen(false) : undefined}
                                                             className={`flex-grow flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all group/item
                                                                 ${hasAccess
