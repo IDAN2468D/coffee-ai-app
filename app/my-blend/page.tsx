@@ -36,7 +36,7 @@ export default function MyBlendPage() {
                 <div className="text-center mb-16 space-y-4">
                     <div className="inline-flex items-center gap-2 bg-[#C37D46]/10 px-4 py-2 rounded-full border border-[#C37D46]/30 backdrop-blur-md shadow-[0_0_15px_rgba(195,125,70,0.3)]">
                         <Sparkles className="w-4 h-4 text-[#C37D46]" />
-                        <span className="text-xs font-black tracking-[0.2em] uppercase text-[#C37D46]">My Blend Creator</span>
+                        <span className="text-xs font-black tracking-[0.2em] uppercase text-[#C37D46]">יוצר הבלנדים</span>
                     </div>
                     <h1 className="text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-b from-[#C37D46] to-[#8B4513] drop-shadow-sm pb-2">
                         צור את הקפה שלך
