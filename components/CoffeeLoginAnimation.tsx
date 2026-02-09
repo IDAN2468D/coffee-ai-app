@@ -10,9 +10,43 @@ interface CoffeeLoginAnimationProps {
 }
 
 export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLoginAnimationProps) {
+    // Generate random values on mount to avoid hydration mismatch
+    const particleData = React.useMemo(() => {
+        return Array.from({ length: 40 }, () => ({
+            initialX: Math.random() * 1000,
+            initialY: 800 + 50,
+            animateX: Math.random() * 1000,
+            duration: 2 + Math.random() * 2,
+            delay: Math.random() * 0.5,
+        }));
+    }, []);
+
+    const beanData = React.useMemo(() => {
+        return Array.from({ length: 20 }, (_, i) => ({
+            animateX: 50 + (Math.cos((i / 20) * Math.PI * 2) * 40),
+            animateY: 50 + (Math.sin((i / 20) * Math.PI * 2) * 40),
+            delay: 1.8 + (i * 0.02),
+        }));
+    }, []);
+
+    const confettiData = React.useMemo(() => {
+        const shapes = ['circle', 'square', 'star', 'heart'];
+        const colors = ['#8B4513', '#C37D46', '#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4'];
+
+        return Array.from({ length: 80 }, (_, i) => ({
+            shape: shapes[i % 4],
+            color: colors[i % colors.length],
+            animateX: Math.random() * 100,
+            animateY: Math.random() * 100,
+            rotate1: 360 * (Math.random() > 0.5 ? 1 : -1),
+            rotate2: 720 * (Math.random() > 0.5 ? 1 : -1),
+            delay: 2 + Math.random() * 0.8,
+        }));
+    }, []);
+
     React.useEffect(() => {
         if (isVisible) {
-            const timer = setTimeout(onComplete, 4000); // Extended animation duration
+            const timer = setTimeout(onComplete, 4000);
             return () => clearTimeout(timer);
         }
     }, [isVisible, onComplete]);
@@ -28,22 +62,22 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
                 >
                     {/* Animated Background Particles */}
                     <div className="absolute inset-0 overflow-hidden">
-                        {[...Array(40)].map((_, i) => (
+                        {particleData.map((particle, i) => (
                             <motion.div
                                 key={i}
                                 initial={{
                                     opacity: 0,
-                                    x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
-                                    y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 50
+                                    x: particle.initialX,
+                                    y: particle.initialY
                                 }}
                                 animate={{
                                     opacity: [0, 1, 0],
                                     y: -100,
-                                    x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+                                    x: particle.animateX,
                                 }}
                                 transition={{
-                                    duration: 2 + Math.random() * 2,
-                                    delay: Math.random() * 0.5,
+                                    duration: particle.duration,
+                                    delay: particle.delay,
                                     repeat: Infinity,
                                 }}
                                 className="absolute w-2 h-2 bg-amber-400 rounded-full"
@@ -56,7 +90,7 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
 
                     {/* Coffee Bean Explosions */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        {[...Array(20)].map((_, i) => (
+                        {beanData.map((bean, i) => (
                             <motion.div
                                 key={`bean-${i}`}
                                 initial={{
@@ -67,15 +101,15 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
                                     rotate: 0,
                                 }}
                                 animate={{
-                                    x: `${50 + (Math.cos((i / 20) * Math.PI * 2) * 40)}vw`,
-                                    y: `${50 + (Math.sin((i / 20) * Math.PI * 2) * 40)}vh`,
+                                    x: `${bean.animateX}vw`,
+                                    y: `${bean.animateY}vh`,
                                     opacity: [0, 1, 1, 0],
                                     scale: [0, 1.5, 1, 0],
                                     rotate: [0, 360],
                                 }}
                                 transition={{
                                     duration: 2,
-                                    delay: 1.8 + (i * 0.02),
+                                    delay: bean.delay,
                                     ease: "easeOut"
                                 }}
                                 className="absolute"
@@ -393,60 +427,53 @@ export default function CoffeeLoginAnimation({ isVisible, onComplete }: CoffeeLo
                     </div>
 
                     {/* Enhanced Confetti Effect */}
-                    {[...Array(80)].map((_, i) => {
-                        const shapes = ['circle', 'square', 'star', 'heart'];
-                        const shape = shapes[i % 4];
-                        const colors = ['#8B4513', '#C37D46', '#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4'];
-                        const color = colors[i % colors.length];
-
-                        return (
-                            <motion.div
-                                key={`confetti-${i}`}
-                                initial={{
-                                    x: '50vw',
-                                    y: '50vh',
-                                    opacity: 0,
-                                    scale: 0,
-                                }}
-                                animate={{
-                                    x: `${Math.random() * 100}vw`,
-                                    y: `${Math.random() * 100}vh`,
-                                    opacity: [0, 1, 1, 0],
-                                    scale: [0, 1.2, 1, 0],
-                                    rotate: [0, 360 * (Math.random() > 0.5 ? 1 : -1), 720 * (Math.random() > 0.5 ? 1 : -1)],
-                                }}
-                                transition={{
-                                    duration: 2.5,
-                                    delay: 2 + Math.random() * 0.8,
-                                    ease: "easeOut"
-                                }}
-                                className="absolute"
-                                style={{
-                                    width: shape === 'star' || shape === 'heart' ? '16px' : '12px',
-                                    height: shape === 'star' || shape === 'heart' ? '16px' : '12px',
-                                }}
-                            >
-                                {shape === 'circle' && (
-                                    <div
-                                        className="w-full h-full rounded-full"
-                                        style={{ backgroundColor: color }}
-                                    />
-                                )}
-                                {shape === 'square' && (
-                                    <div
-                                        className="w-full h-full"
-                                        style={{ backgroundColor: color, transform: 'rotate(45deg)' }}
-                                    />
-                                )}
-                                {shape === 'star' && (
-                                    <Star className="w-full h-full" style={{ color: color, fill: color }} />
-                                )}
-                                {shape === 'heart' && (
-                                    <Heart className="w-full h-full" style={{ color: color, fill: color }} />
-                                )}
-                            </motion.div>
-                        );
-                    })}
+                    {confettiData.map((confetti, i) => (
+                        <motion.div
+                            key={`confetti-${i}`}
+                            initial={{
+                                x: '50vw',
+                                y: '50vh',
+                                opacity: 0,
+                                scale: 0,
+                            }}
+                            animate={{
+                                x: `${confetti.animateX}vw`,
+                                y: `${confetti.animateY}vh`,
+                                opacity: [0, 1, 1, 0],
+                                scale: [0, 1.2, 1, 0],
+                                rotate: [0, confetti.rotate1, confetti.rotate2],
+                            }}
+                            transition={{
+                                duration: 2.5,
+                                delay: confetti.delay,
+                                ease: "easeOut"
+                            }}
+                            className="absolute"
+                            style={{
+                                width: confetti.shape === 'star' || confetti.shape === 'heart' ? '16px' : '12px',
+                                height: confetti.shape === 'star' || confetti.shape === 'heart' ? '16px' : '12px',
+                            }}
+                        >
+                            {confetti.shape === 'circle' && (
+                                <div
+                                    className="w-full h-full rounded-full"
+                                    style={{ backgroundColor: confetti.color }}
+                                />
+                            )}
+                            {confetti.shape === 'square' && (
+                                <div
+                                    className="w-full h-full"
+                                    style={{ backgroundColor: confetti.color, transform: 'rotate(45deg)' }}
+                                />
+                            )}
+                            {confetti.shape === 'star' && (
+                                <Star className="w-full h-full" style={{ color: confetti.color, fill: confetti.color }} />
+                            )}
+                            {confetti.shape === 'heart' && (
+                                <Heart className="w-full h-full" style={{ color: confetti.color, fill: confetti.color }} />
+                            )}
+                        </motion.div>
+                    ))}
                 </motion.div>
             )}
         </AnimatePresence>
