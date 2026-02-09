@@ -231,6 +231,9 @@ export default function Navbar() {
                                         { name: 'התאמת קפה', href: '/match' },
                                         { name: 'יוצר הבלנדים', href: '/my-blend' },
                                         { name: 'דרכון הקפה', href: '/passport' },
+                                        { name: 'מיקסר סאונד', href: '/ambience' },
+                                        { name: 'אורקל המזל', href: '/fortune' },
+                                        { name: 'יומן קפאין', href: '/tracker' },
                                         { name: 'גלריה', href: '/gallery' },
                                     ].map((item) => (
                                         <Link
