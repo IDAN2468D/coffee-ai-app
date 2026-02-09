@@ -37,7 +37,10 @@ export default function Navbar() {
 
     const useDarkText = false; // Always white text on the dark texture background
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
+        setMounted(true);
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
@@ -55,6 +58,8 @@ export default function Navbar() {
             document.body.classList.remove('mobile-menu-open');
         };
     }, [mobileMenuOpen]);
+
+    if (!mounted) return null;
 
     const isActive = (path: string) => pathname === path;
 
