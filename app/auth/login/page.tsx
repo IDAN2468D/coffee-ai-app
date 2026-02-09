@@ -28,6 +28,12 @@ function LoginForm() {
         if (searchParams?.get('registered') === 'true') {
             setFeedback({ type: 'success', message: 'החשבון נוצר בהצלחה! אנא התחבר.' });
         }
+
+        // Handle Google Login Return
+        if (searchParams?.get('google_auth') === 'true') {
+            setFeedback({ type: 'success', message: 'התחברת בהצלחה! מעביר אותך...' });
+            setShowCoffeeAnimation(true);
+        }
     }, [searchParams]);
 
     const { register, handleSubmit, formState: { errors } } = useForm<any>({
@@ -155,7 +161,7 @@ function LoginForm() {
 
                     <button
                         type="button"
-                        onClick={() => signIn('google', { callbackUrl: '/' })}
+                        onClick={() => signIn('google', { callbackUrl: '/auth/login?google_auth=true' })}
                         className="w-full bg-white border-2 border-stone-100 text-[#2D1B14] py-4 rounded-2xl font-bold hover:bg-stone-50 hover:border-stone-200 transition-all flex items-center justify-center gap-3 relative overflow-hidden group mb-6"
                     >
                         <div className="w-6 h-6 relative flex items-center justify-center">
