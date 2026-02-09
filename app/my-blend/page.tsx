@@ -14,12 +14,39 @@ export default function MyBlendPage() {
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = async () => {
+        if (!blendName) return;
         setIsSaving(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/my-blend/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: blendName,
+                    base,
+                    milk,
+                    flavor,
+                }),
+            });
+
+            if (res.ok) {
+                alert('הבלנד שלך נשמר בהצלחה!');
+                setBlendName('');
+            } else {
+                const data = await res.json();
+                if (res.status === 401) {
+                    alert('נא להתחבר כדי לשמור את הבלנד');
+                } else {
+                    alert(`שגיאה בשמירה: ${data.error || 'נסה שנית'}`);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            alert('אירעה שגיאה בעת השמירה');
+        } finally {
             setIsSaving(false);
-            alert('הבלנד שלך נשמר בהצלחה! (Simulation)');
-        }, 1500);
+        }
     };
 
     return (
