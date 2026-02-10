@@ -19,7 +19,8 @@ import {
     LogOut,
     Crown,
     Settings,
-    User
+    User,
+    Home
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -130,6 +131,11 @@ export default function Dashboard({
 
                         {/* Quick Action Stats */}
                         <div className="flex items-center gap-6 w-full md:w-auto justify-end">
+                            <Link href="/" className="group flex items-center gap-2 px-4 py-3 bg-[#4b3621] hover:bg-[#5e442b] text-[#E8CBAD] rounded-2xl transition-all shadow-lg hover:shadow-[#4b3621]/20">
+                                <Home className="w-5 h-5" />
+                                <span className="font-bold hidden sm:inline">דף הבית</span>
+                            </Link>
+
                             <div className="text-right bg-white/5 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/10 flex flex-col items-end">
                                 <span className="text-[10px] font-black uppercase text-white/40 tracking-widest mb-1">נקודות Roast</span>
                                 <div className="flex items-center gap-2 text-[#C37D46]">
