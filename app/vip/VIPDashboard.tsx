@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Crown, Sparkles, Coffee, ShieldCheck } from "lucide-react";
 import { Plan, Subscription } from "@/src/types";
 import PlanCard from "@/components/vip/PlanCard";
-import { updateSubscription } from "@/app/actions/subscription.ts";
+import { updateSubscription } from "@/app/actions/subscription";
 
 interface VIPPageProps {
     initialSubscription: Subscription | null;
