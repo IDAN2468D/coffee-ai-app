@@ -11,7 +11,11 @@ declare module "next-auth" {
         id: string;
         isAdmin: boolean;
         points: number;
-        subscriptionTier?: string | null;
+        subscription?: {
+            plan: "FREE" | "BASIC" | "PRO";
+            status: string;
+            nextBillingDate: Date | null;
+        } | null;
     }
     interface Session {
         user: User;
@@ -23,7 +27,11 @@ declare module "next-auth/jwt" {
         id: string;
         isAdmin: boolean;
         points: number;
-        subscriptionTier?: string | null;
+        subscription?: {
+            plan: "FREE" | "BASIC" | "PRO";
+            status: string;
+            nextBillingDate: Date | null;
+        } | null;
     }
 }
 
@@ -47,7 +55,8 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 const user = await prisma.user.findUnique({
-                    where: { email: credentials.email }
+                    where: { email: credentials.email },
+                    include: { subscription: true }
                 });
 
                 if (!user || !user.password) {
@@ -66,7 +75,11 @@ export const authOptions: NextAuthOptions = {
                     name: user.name,
                     isAdmin: user.isAdmin,
                     points: user.points,
-                    subscriptionTier: user.subscriptionTier,
+                    subscription: user.subscription ? {
+                        plan: user.subscription.plan as "FREE" | "BASIC" | "PRO",
+                        status: user.subscription.status,
+                        nextBillingDate: user.subscription.nextBillingDate,
+                    } : null,
                 };
             }
         })
@@ -83,7 +96,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.isAdmin = user.isAdmin;
                 token.points = user.points;
-                token.subscriptionTier = user.subscriptionTier;
+                token.subscription = (user as any).subscription;
             }
             return token;
         },
@@ -92,7 +105,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 (session.user as any).isAdmin = token.isAdmin as boolean;
                 (session.user as any).points = token.points as number;
-                (session.user as any).subscriptionTier = token.subscriptionTier as string | null;
+                (session.user as any).subscription = token.subscription as any;
             }
             return session;
         }

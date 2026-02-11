@@ -35,3 +35,7 @@ The Architect must outline DB changes first. The Frontend Engineer must wait for
 - If authorized by the user, run `git push origin main` (or the current branch) after the commit.
 - NEVER push if there are linting or TypeScript errors.
 - MANDATORY: Every task initiated in Planning Mode must conclude with a Git Push, provided all previous steps passed successfully.
+
+## 7. Mandatory Verification
+- Before claiming a task is "Complete", the Agent must run a global search (Grep/Search) for any deprecated field names or logic to ensure no remnants are left in the codebase.
+- The Critic agent MUST explicitly state: "Global search completed. No occurrences of [deprecated_field] found."

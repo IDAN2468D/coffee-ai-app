@@ -49,36 +49,29 @@ export default function DebugTierPage() {
                     <strong>אימייל:</strong> {session.user?.email}
                 </p>
                 <p className="text-lg">
-                    <strong>Tier נוכחי:</strong>{' '}
+                    <strong>Plan נוכחי:</strong>{' '}
                     <span className="text-yellow-400">
-                        {(session.user as any)?.subscriptionTier || 'אין'}
+                        {(session.user as any)?.subscription?.plan || 'FREE'}
                     </span>
                 </p>
             </div>
 
             <div className="bg-gray-800 p-6 rounded-lg">
-                <h2 className="text-xl mb-4">עדכן Tier:</h2>
+                <h2 className="text-xl mb-4">עדכן Plan:</h2>
                 <div className="flex gap-4">
                     <button
-                        onClick={() => updateTier('Silver')}
+                        onClick={() => updateTier('BASIC')}
                         disabled={updating}
-                        className="px-6 py-3 bg-stone-500 hover:bg-stone-600 rounded-lg disabled:opacity-50"
+                        className="px-6 py-3 bg-stone-500 hover:bg-stone-600 rounded-lg disabled:opacity-50 font-bold"
                     >
-                        Silver
+                        BASIC
                     </button>
                     <button
-                        onClick={() => updateTier('Gold')}
+                        onClick={() => updateTier('PRO')}
                         disabled={updating}
-                        className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 rounded-lg disabled:opacity-50"
+                        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg disabled:opacity-50 font-bold"
                     >
-                        Gold
-                    </button>
-                    <button
-                        onClick={() => updateTier('Platinum')}
-                        disabled={updating}
-                        className="px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg disabled:opacity-50"
-                    >
-                        Platinum
+                        PRO
                     </button>
                 </div>
             </div>

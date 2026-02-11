@@ -8,14 +8,13 @@ import { useSession } from 'next-auth/react';
  * higher number = higher privilege.
  */
 const TIER_LEVELS: Record<string, number> = {
-    'Silver': 1,
-    'Gold': 2,
-    'Platinum': 3,
+    'BASIC': 1,
+    'PRO': 2,
 };
 
 interface RenderIfTierProps {
     /** The minimum tier required to see the content */
-    minTier: 'Silver' | 'Gold' | 'Platinum';
+    minTier: 'BASIC' | 'PRO';
     /** Content to render if requirements are met */
     children: React.ReactNode;
     /** Optional fallback for unauthorized users (usually null per requirements) */
@@ -34,7 +33,7 @@ export default function RenderIfTier({ minTier, children, fallback = null }: Ren
         return <>{fallback}</>;
     }
 
-    const userTier = (session?.user as any)?.subscriptionTier || 'Silver';
+    const userTier = (session?.user as any)?.subscription?.plan || 'BASIC';
 
     // Get numeric levels
     const userLevel = TIER_LEVELS[userTier] || 0;

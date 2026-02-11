@@ -72,7 +72,7 @@ export default function SubscriptionClient() {
             const response = await fetch('/api/subscription/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tier: tierId.charAt(0).toUpperCase() + tierId.slice(1) })
+                body: JSON.stringify({ plan: tierId.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO' })
             });
 
             if (response.ok) {

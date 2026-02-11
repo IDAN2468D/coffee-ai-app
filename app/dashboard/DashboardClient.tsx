@@ -34,7 +34,7 @@ export default function Dashboard({
 }: {
     initialPoints: number,
     initialOrders: any[],
-    subscription: { tier: string | null, status: string | null, expiry: any | null } | null
+    subscription: { tier: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null
 }) {
     const { data: session, status } = useSession();
     const router = useRouter();

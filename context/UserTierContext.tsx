@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
-export type Tier = 'Silver' | 'Gold' | 'Platinum';
+export type Tier = 'FREE' | 'BASIC' | 'PRO';
 
 interface TierData {
     name: Tier;
@@ -11,9 +11,9 @@ interface TierData {
 }
 
 const TIER_MAP: Record<string, number> = {
-    'Silver': 1,
-    'Gold': 2,
-    'Platinum': 3,
+    'FREE': 1,
+    'BASIC': 2,
+    'PRO': 3,
 };
 
 interface UserTierContextType {
@@ -22,8 +22,8 @@ interface UserTierContextType {
     hasAccess: (minTier: Tier) => boolean;
 }
 
-// Default to Silver (Level 1) for guests/errors
-const DEFAULT_TIER: TierData = { name: 'Silver', level: 1 };
+// Default to FREE (Level 1) for guests/errors
+const DEFAULT_TIER: TierData = { name: 'FREE', level: 1 };
 
 const UserTierContext = createContext<UserTierContextType | undefined>(undefined);
 
@@ -36,18 +36,20 @@ export function UserTierProvider({ children }: { children: React.ReactNode }) {
         if (status === 'loading') return;
 
         if (status === 'authenticated' && session?.user) {
-            const userTier = (session.user as any).subscriptionTier || 'Silver';
-            // Normalize case if needed, though we assume consistency
+            const userSubscription = (session.user as any).subscription;
+            const userPlan = userSubscription?.plan || 'FREE';
+
+            // Normalize case if needed
             const matchedTier = Object.keys(TIER_MAP).find(
-                key => key.toLowerCase() === userTier.toLowerCase()
-            ) || 'Silver';
+                key => key.toUpperCase() === userPlan.toUpperCase()
+            ) || 'FREE';
 
             setTierData({
                 name: matchedTier as Tier,
                 level: TIER_MAP[matchedTier] || 1
             });
         } else {
-            // Guest -> Silver (or you could have a 'Guest' tier 0)
+            // Guest -> FREE
             setTierData(DEFAULT_TIER);
         }
         setIsLoading(false);

@@ -8,14 +8,13 @@ import { useSession } from 'next-auth/react';
  * Higher number = Higher privilege
  */
 const TIER_LEVELS: Record<string, number> = {
-    'Silver': 1,
-    'Gold': 2,
-    'Platinum': 3,
+    'BASIC': 1,
+    'PRO': 2,
 };
 
 interface RequireTierProps {
     /** The minimum tier required to see the content */
-    minTier: 'Silver' | 'Gold' | 'Platinum';
+    minTier: 'BASIC' | 'PRO';
     /** Content to render if requirements are met */
     children: React.ReactNode;
 }
@@ -35,8 +34,8 @@ export default function RequireTier({ minTier, children }: RequireTierProps) {
     }
 
     // 2. Data Retrieval:
-    // Get the user's tier from the session (defaults to level 0 if undefined)
-    const userTier = (session?.user as any)?.subscriptionTier;
+    // Get the user's plan from the session.user.subscription (defaults to level 0 if undefined)
+    const userTier = (session?.user as any)?.subscription?.plan;
     const userLevel = userTier ? (TIER_LEVELS[userTier] || 0) : 0;
 
     // 3. Hierarchy Check:

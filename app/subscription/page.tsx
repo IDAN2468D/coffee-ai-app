@@ -23,7 +23,7 @@ export default function SubscriptionPage() {
             const res = await fetch('/api/subscription/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tier })
+                body: JSON.stringify({ plan: tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO' })
             });
 
             if (!res.ok) throw new Error('Subscription failed');

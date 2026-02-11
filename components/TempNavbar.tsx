@@ -14,9 +14,8 @@ import { NotificationBell } from './NotificationBell';
 
 // Tier hierarchy for checking access
 const TIERS = {
-    'Silver': 1,
-    'Gold': 2,
-    'Platinum': 3
+    'BASIC': 1,
+    'PRO': 2
 };
 
 type Tier = keyof typeof TIERS;
@@ -33,10 +32,10 @@ const FEATURES: Feature[] = [
     { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
     { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
     { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
-    { name: 'דרכון הקפה', href: '/passport', icon: Globe, minTier: 'Platinum' },
-    { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'Silver' },
-    { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'Gold' },
-    { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'Platinum' },
+    { name: 'דרכון הקפה', href: '/passport', icon: Globe, minTier: 'PRO' },
+    { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'BASIC' },
+    { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'PRO' },
+    { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'PRO' },
     { name: 'גלריה', href: '/gallery', icon: ImageIcon },
 ];
 
@@ -95,7 +94,7 @@ export default function Navbar() {
         if (!minTier) return true; // No tier required
         if (!session?.user) return false; // Must be logged in
 
-        const userTier = session.user.subscriptionTier as Tier;
+        const userTier = (session.user as any).subscription?.plan as Tier;
 
         // Debugging Log
         if (minTier) {
@@ -291,9 +290,8 @@ export default function Navbar() {
                                                         {item.name}
                                                         {item.minTier && (
                                                             <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider
-                                                                ${item.minTier === 'Silver' ? 'bg-stone-400/20 text-stone-300' : ''}
-                                                                ${item.minTier === 'Gold' ? 'bg-amber-400/20 text-amber-300' : ''}
-                                                                ${item.minTier === 'Platinum' ? 'bg-purple-400/20 text-purple-300' : ''}
+                                                                ${item.minTier === 'BASIC' ? 'bg-stone-400/20 text-stone-300' : ''}
+                                                                ${item.minTier === 'PRO' ? 'bg-amber-400/20 text-amber-300' : ''}
                                                             `}>
                                                                 {item.minTier}
                                                             </span>
@@ -628,9 +626,8 @@ export default function Navbar() {
                                                                 {link.name}
                                                                 {link.minTier && (
                                                                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border
-                                                                        ${link.minTier === 'Silver' ? 'bg-stone-400/10 text-stone-400 border-stone-400/20' : ''}
-                                                                        ${link.minTier === 'Gold' ? 'bg-amber-400/10 text-amber-400 border-amber-400/20' : ''}
-                                                                        ${link.minTier === 'Platinum' ? 'bg-purple-400/10 text-purple-400 border-purple-400/20' : ''}
+                                                                        ${link.minTier === 'BASIC' ? 'bg-stone-400/10 text-stone-400 border-stone-400/20' : ''}
+                                                                        ${link.minTier === 'PRO' ? 'bg-amber-400/10 text-amber-400 border-amber-400/20' : ''}
                                                                     `}>
                                                                         {link.minTier}
                                                                     </span>

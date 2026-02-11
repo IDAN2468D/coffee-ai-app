@@ -16,9 +16,7 @@ export default async function DashboardPage() {
             where: { email: session.user.email },
             select: {
                 points: true,
-                subscriptionTier: true,
-                subscriptionStatus: true,
-                subscriptionExpiry: true
+                subscription: true
             }
         });
         if (userData) points = userData.points;
@@ -39,10 +37,10 @@ export default async function DashboardPage() {
     return <DashboardClient
         initialPoints={points}
         initialOrders={orders}
-        subscription={userData ? {
-            tier: userData.subscriptionTier,
-            status: userData.subscriptionStatus,
-            expiry: userData.subscriptionExpiry
+        subscription={userData?.subscription ? {
+            tier: userData.subscription.plan,
+            status: userData.subscription.status,
+            expiry: userData.subscription.nextBillingDate
         } : null}
     />;
 }

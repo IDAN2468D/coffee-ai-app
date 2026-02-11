@@ -22,27 +22,19 @@ export default function TierDemoPage() {
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Feature Visibility Tests</h2>
 
-                {/* Silver Feature */}
+                {/* BASIC Feature */}
                 <div className="p-4 border rounded relative">
-                    <span className="absolute top-2 right-2 text-xs bg-gray-200 px-2 py-1 rounded">Silver+</span>
-                    <ProtectFeature minTier="Silver">
-                        <div className="text-green-600 font-bold">✅ Visible to Silver, Gold, Platinum</div>
+                    <span className="absolute top-2 right-2 text-xs bg-gray-200 px-2 py-1 rounded">BASIC+</span>
+                    <ProtectFeature minTier="BASIC">
+                        <div className="text-green-600 font-bold">✅ Visible to BASIC & PRO</div>
                     </ProtectFeature>
                 </div>
 
-                {/* Gold Feature */}
+                {/* PRO Feature */}
                 <div className="p-4 border rounded relative">
-                    <span className="absolute top-2 right-2 text-xs bg-yellow-200 px-2 py-1 rounded">Gold+</span>
-                    <ProtectFeature minTier="Gold" fallback={<div className="text-red-400">⛔ Hidden (Requires Gold)</div>}>
-                        <div className="text-green-600 font-bold">✅ Visible to Gold & Platinum</div>
-                    </ProtectFeature>
-                </div>
-
-                {/* Platinum Feature */}
-                <div className="p-4 border rounded relative">
-                    <span className="absolute top-2 right-2 text-xs bg-purple-200 px-2 py-1 rounded">Platinum+</span>
-                    <ProtectFeature minTier="Platinum" fallback={<div className="text-red-400">⛔ Hidden (Requires Platinum)</div>}>
-                        <div className="text-green-600 font-bold">✅ Visible ONLY to Platinum</div>
+                    <span className="absolute top-2 right-2 text-xs bg-amber-200 px-2 py-1 rounded">PRO+</span>
+                    <ProtectFeature minTier="PRO" fallback={<div className="text-red-400">⛔ Hidden (Requires PRO)</div>}>
+                        <div className="text-green-600 font-bold">✅ Visible ONLY to PRO</div>
                     </ProtectFeature>
                 </div>
             </div>
