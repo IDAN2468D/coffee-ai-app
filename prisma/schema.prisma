@@ -8,6 +8,23 @@ datasource db {
 }
 
 
+enum Plan {
+  FREE
+  BASIC
+  PRO
+}
+
+model Subscription {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @unique @db.ObjectId
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            Plan     @default(FREE)
+  status          String   @default("active") // active, cancelled
+  nextBillingDate DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model User {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
@@ -23,13 +40,11 @@ model User {
   notifications Notification[]
   likes         Like[]
   comments      Comment[]
+  subscription  Subscription?
 
   favoriteIds   String[]  @db.ObjectId
   isAdmin       Boolean   @default(false)
   points        Int       @default(0)
-  subscriptionTier   String?   // 'Silver', 'Gold', 'Platinum'
-  subscriptionStatus String?   // 'active', 'expired', 'canceled'
-  subscriptionExpiry DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   blends        Blend[]

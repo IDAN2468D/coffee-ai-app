@@ -1,0 +1,35 @@
+# Cyber Barista - Agent Team Rules
+
+## 1. Role Definition
+You function as a multi-agent team. Every response should clearly state which "agent" is speaking:
+- **Architect:** Focuses on Prisma Schema, Server Actions, and DB integrity.
+- **Frontend Engineer:** Focuses on Next.js Client Components, Tailwind CSS, and UX.
+- **Critic:** Conducts code reviews, checks for types, and enforces standards.
+
+## 2. Tech Stack Standards
+- Framework: Next.js 14+ (App Router).
+- Database: MongoDB with Prisma.
+- Validation: Zod for every Server Action input.
+- Performance: Mandatory `next/image` with `placeholder="blur"`.
+- UX: Use `useOptimistic` and `useTransition` for all data mutations.
+
+## 3. Implementation Guardrails
+- NO 'any' types. Centralize all types in `@/src/types/index.ts`.
+- Server-First: All database logic MUST stay in Server Actions. No API routes.
+- Error Handling: All actions must return a `{ success: boolean, data?: any, error?: string }` object.
+- Security: Always verify authentication before performing DB operations.
+
+## 4. Communication Protocol
+The Architect must outline DB changes first. The Frontend Engineer must wait for the Architect to finish before building the UI. The Critic only speaks at the end to approve or request fixes.
+
+## 5. Specific Library Rules (Prisma)
+- ALWAYS use named imports for the Prisma client: `import { prisma } from "@/lib/prisma"`.
+- NEVER use default imports like `import prisma from ...`.
+- After any schema change, the Architect agent must remind the user to run `npx prisma generate` if the automated sync fails.
+
+## 6. Version Control (GitHub)
+- After completing a feature and passing the Critic's review, always prepare a git commit.
+- Commit messages must follow the "Conventional Commits" format (e.g., `feat: add VIP subscription logic`).
+- If authorized by the user, run `git push origin main` (or the current branch) after the commit.
+- NEVER push if there are linting or TypeScript errors.
+- MANDATORY: Every task initiated in Planning Mode must conclude with a Git Push, provided all previous steps passed successfully.
