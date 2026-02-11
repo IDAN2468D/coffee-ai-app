@@ -26,6 +26,8 @@ The Architect must outline DB changes first. The Frontend Engineer must wait for
 - ALWAYS use named imports for the Prisma client: `import { prisma } from "@/lib/prisma"`.
 - NEVER use default imports like `import prisma from ...`.
 - After any schema change, the Architect agent must remind the user to run `npx prisma generate` if the automated sync fails.
+- SCHEMA INTEGRITY: Whenever the Prisma schema is updated, the Critic must scan all existing Route Handlers (app/api) and Server Actions (app/actions) to ensure field names match the new schema.
+- API DEPRECATION: If a Server Action replaces an old API route, the old route must be deleted or updated to use the new Prisma models to prevent Build failures.
 
 ## 6. Version Control (GitHub)
 - After completing a feature and passing the Critic's review, always prepare a git commit.
