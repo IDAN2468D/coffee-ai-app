@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { Plan } from "@/src/types";
+import { Plan, Subscription } from "@/src/types";
 import { revalidatePath } from "next/cache";
 
 const updateSubscriptionSchema = z.object({
@@ -60,5 +60,5 @@ export async function updateSubscription(formData: FormData | { plan: Plan }) {
     revalidatePath("/vip");
     revalidatePath("/dashboard");
 
-    return { success: true, subscription };
+    return { success: true, subscription: subscription as Subscription };
 }
