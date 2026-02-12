@@ -7,11 +7,12 @@ import { Sparkles, ShoppingBag, ArrowLeft, RefreshCw } from "lucide-react"
 interface StepResultProps {
     product: any
     isLoading: boolean
+    isLoggedIn: boolean
     onRestart: () => void
     onAddToCart: () => void
 }
 
-export default function StepResult({ product, isLoading, onRestart, onAddToCart }: StepResultProps) {
+export default function StepResult({ product, isLoading, isLoggedIn, onRestart, onAddToCart }: StepResultProps) {
     if (isLoading) {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center space-y-6 text-center">
@@ -83,6 +84,19 @@ export default function StepResult({ product, isLoading, onRestart, onAddToCart 
                                 {product.description}
                             </p>
                             <div className="text-2xl font-black text-[#2D1B14]">₪{product.price.toFixed(2)}</div>
+
+                            {isLoggedIn && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="bg-green-50 border border-green-100 p-4 rounded-xl flex items-center gap-3 text-green-700 text-xs font-medium"
+                                >
+                                    <div className="bg-green-500 text-white p-1 rounded-full">
+                                        <Sparkles size={10} />
+                                    </div>
+                                    שלחנו לך את התוצאות וקופון 10% הנחה למייל!
+                                </motion.div>
+                            )}
                         </div>
 
                         <div className="space-y-4 pt-8">

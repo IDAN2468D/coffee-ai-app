@@ -266,3 +266,58 @@ export const sendAIImageEmail = async (userEmail: string, imageUrl: string, prom
     console.error("Error sending AI image email:", error);
   }
 };
+
+export const sendMatchmakerEmail = async (userEmail: string, userName: string, productName: string, productPrice: number, imageUrl: string) => {
+  if (!process.env.RESEND_API_KEY) return;
+
+  try {
+    await resend.emails.send({
+      from: 'The Digital Roast <onboarding@resend.dev>',
+      to: [userEmail],
+      subject: '☕ מצאנו את הקפה המושלם עבורך! | The Digital Roast',
+      html: `
+        <div dir="rtl" style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #FDFCF0; border-radius: 24px; overflow: hidden; border: 1px solid #E5E7EB; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+          <!-- Header -->
+          <div style="background: #2D1B14; padding: 40px; text-align: center;">
+            <div style="background: rgba(255,255,255,0.1); width: 60px; hieght: 60px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+               <span style="font-size: 30px; line-height: 60px;">🎯</span>
+            </div>
+            <h1 style="color: #FFFFFF; margin: 0; font-size: 24px;">התאמה מושלמת, ${userName}!</h1>
+          </div>
+
+          <!-- Result Content -->
+          <div style="padding: 40px; text-align: center; color: #2D1B14;">
+            <p style="font-size: 16px; margin-bottom: 30px;">הבריסטה הדיגיטלי שלנו ניתח את העדפות הטעם שלך והגיע למסקנה:</p>
+            
+            <div style="background: #FFFFFF; border-radius: 20px; overflow: hidden; border: 1px solid #E5E7EB; margin: 20px 0;">
+              <img src="${imageUrl}" style="width: 100%; height: auto;" alt="${productName}" />
+              <div style="padding: 25px;">
+                <h2 style="margin: 0; color: #8B4513; font-size: 22px;">${productName}</h2>
+                <p style="color: #6B7280; font-size: 18px; font-weight: bold; margin: 10px 0;">₪${productPrice.toFixed(2)}</p>
+              </div>
+            </div>
+
+            <!-- Coupon Box -->
+            <div style="margin: 30px 0; padding: 25px; background: linear-gradient(135deg, #C37D46 0%, #8B4513 100%); border-radius: 16px; color: #FFFFFF; text-align: center;">
+              <p style="margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">מתנה קטנה בשבילך</p>
+              <h3 style="margin: 10px 0; font-size: 28px; font-weight: 800; letter-spacing: 2px;">COFFEE10</h3>
+              <p style="margin: 0; font-size: 12px; opacity: 0.9;">10% הנחה על הרכישה הראשונה של הבלנד המנצח שלך!</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+              <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}/shop" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">רכשו עכשיו</a>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div style="background-color: #F9FAFB; padding: 25px; text-align: center; border-top: 1px solid #E5E7EB; font-size: 12px; color: #9CA3AF;">
+            © 2026 The Digital Roast AI. מצאת את הקפה שלך.
+          </div>
+        </div>
+      `,
+    });
+    console.log(`Matchmaker email sent to ${userEmail}`);
+  } catch (error) {
+    console.error("Error sending matchmaker email:", error);
+  }
+};

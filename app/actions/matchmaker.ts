@@ -5,6 +5,7 @@ import { z } from "zod"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
+import { sendMatchmakerEmail } from "@/lib/mailer"
 
 const MatchSchema = z.object({
     roastLevel: z.enum(["LIGHT", "MEDIUM", "DARK"]),
@@ -42,7 +43,7 @@ export async function matchCoffee(data: z.infer<typeof MatchSchema>) {
     }
 
     // 4. Save to TasteProfile if user is logged in
-    if (session?.user?.email) {
+    if (session?.user?.email && matchedProduct) {
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
         })
@@ -60,6 +61,15 @@ export async function matchCoffee(data: z.infer<typeof MatchSchema>) {
                     flavorNotes: validated.flavorNotes,
                 },
             })
+
+            // Send Email
+            await sendMatchmakerEmail(
+                user.email!,
+                user.name || "אורח",
+                matchedProduct.name,
+                matchedProduct.price,
+                matchedProduct.image || ""
+            )
         }
     }
 

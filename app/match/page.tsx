@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useSession } from "next-auth/react"
 import Navbar from "@/components/TempNavbar"
 import Footer from "@/components/AppFooter"
 import StepRoast from "@/components/match/StepRoast"
@@ -22,6 +23,7 @@ export default function MatchPage() {
     const [matchedProduct, setMatchedProduct] = useState<any>(null)
     const [isPending, startTransition] = useTransition()
     const { addItem } = useCart()
+    const { data: session } = useSession()
 
     const handleMatch = async (fLevel: FlavorNote) => {
         setFlavor(fLevel)
@@ -130,6 +132,7 @@ export default function MatchPage() {
                                 <StepResult
                                     product={matchedProduct}
                                     isLoading={isPending}
+                                    isLoggedIn={!!session?.user}
                                     onRestart={restart}
                                     onAddToCart={() => {
                                         if (matchedProduct) addItem(matchedProduct)
