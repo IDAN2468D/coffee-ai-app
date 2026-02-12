@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useOptimistic, useTransition } from 'react';
 import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, Globe, Lock, MessageCircle, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import useCartStore from '../../lib/store';
+import { useCart } from '../../lib/store';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
 import Navbar from '../../components/TempNavbar';
+import { toggleLike, addComment } from '../actions/gallery';
 
 interface Comment {
     id: string;
@@ -52,7 +53,28 @@ export default function GalleryPage() {
     const [activeTab, setActiveTab] = useState<'community' | 'mine'>('community');
     const [expandedImageId, setExpandedImageId] = useState<string | null>(null);
     const [commentText, setCommentText] = useState('');
-    const [submittingComment, setSubmittingComment] = useState(false);
+    const [isPending, startTransition] = useTransition();
+
+    const [optimisticImages, addOptimisticUpdate] = useOptimistic(
+        images,
+        (state: CoffeeImage[], update: { type: 'like'; imageId: string; userId: string } | { type: 'comment'; imageId: string; comment: Comment }) => {
+            return state.map(img => {
+                if (img.id === update.imageId) {
+                    if (update.type === 'like') {
+                        const hasLiked = img.likes?.some(like => like.userId === update.userId) ?? false;
+                        const newLikes = hasLiked
+                            ? img.likes?.filter(like => like.userId !== update.userId) ?? []
+                            : [...(img.likes ?? []), { userId: update.userId }];
+                        return { ...img, likes: newLikes };
+                    }
+                    if (update.type === 'comment') {
+                        return { ...img, comments: [update.comment, ...(img.comments ?? [])] };
+                    }
+                }
+                return img;
+            });
+        }
+    );
 
     useEffect(() => {
         fetchGallery();
@@ -136,58 +158,42 @@ export default function GalleryPage() {
             return;
         }
 
-        // Optimistic update
         const userId = (session.user as any).id;
-        setImages(prev => prev.map(img => {
-            if (img.id === imageId) {
-                const hasLiked = img.likes?.some(like => like.userId === userId) ?? false;
-                const newLikes = hasLiked
-                    ? img.likes.filter(like => like.userId !== userId)
-                    : [...img.likes, { userId }];
-                return { ...img, likes: newLikes };
-            }
-            return img;
-        }));
+        addOptimisticUpdate({ type: 'like', imageId, userId });
 
-        try {
-            await fetch('/api/gallery/like', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageId })
-            });
-        } catch (error) {
-            console.error('Like failed', error);
-            fetchGallery(); // Revert on error
+        const result = await toggleLike(imageId);
+        if (!result.success) {
+            console.error('Like failed', result.error);
+            fetchGallery(); // Sync back on error
         }
     };
 
     const handleComment = async (imageId: string) => {
         if (!session || !commentText.trim()) return;
 
-        setSubmittingComment(true);
-        try {
-            const res = await fetch('/api/gallery/comment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ imageId, text: commentText })
-            });
+        const dummyComment: Comment = {
+            id: `temp-${Date.now()}`,
+            text: commentText,
+            createdAt: new Date().toISOString(),
+            user: {
+                name: session.user?.name ?? 'אנונימי',
+                image: session.user?.image ?? null,
+            }
+        };
 
-            const newComment = await res.json();
+        const currentText = commentText;
+        setCommentText('');
 
-            setImages(prev => prev.map(img => {
-                if (img.id === imageId) {
-                    return { ...img, comments: [newComment, ...img.comments] };
-                }
-                return img;
-            }));
-
-            setCommentText('');
-        } catch (error) {
-            console.error('Comment failed', error);
-            alert('שגיאה בשליחת תגובה');
-        } finally {
-            setSubmittingComment(false);
-        }
+        startTransition(async () => {
+            addOptimisticUpdate({ type: 'comment', imageId, comment: dummyComment });
+            const result = await addComment(imageId, currentText);
+            if (!result.success) {
+                console.error('Comment failed', result.error);
+                alert('שגיאה בשליחת תגובה');
+                setCommentText(currentText); // Restore text
+                fetchGallery(); // Sync back
+            }
+        });
     };
 
     const handleDownload = (url: string, name: string) => {
@@ -289,7 +295,7 @@ export default function GalleryPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        {images.length > 0 ? images.map((img, idx) => {
+                        {optimisticImages.length > 0 ? optimisticImages.map((img, idx) => {
                             const isLiked = session ? img.likes?.some(like => like.userId === (session.user as any).id) ?? false : false;
 
                             return (
@@ -356,18 +362,19 @@ export default function GalleryPage() {
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 bg-white/40 backdrop-blur-md rounded-2xl p-2 border border-white/50 shadow-sm">
                                                 <button
                                                     onClick={() => handleLike(img.id)}
-                                                    className={`flex items-center gap-1 text-xs font-bold transition-colors ${isLiked ? 'text-red-500' : 'text-stone-400 hover:text-red-500'
+                                                    className={`flex items-center gap-1 text-xs font-bold transition-colors p-2 rounded-xl hover:bg-white/50 ${isLiked ? 'text-red-500' : 'text-stone-400 hover:text-red-500'
                                                         }`}
                                                 >
                                                     <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
                                                     <span>{img.likes?.length ?? 0}</span>
                                                 </button>
+                                                <div className="w-px h-4 bg-stone-200" />
                                                 <button
                                                     onClick={() => setExpandedImageId(expandedImageId === img.id ? null : img.id)}
-                                                    className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-[#C37D46] transition-colors"
+                                                    className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-[#C37D46] transition-colors p-2 rounded-xl hover:bg-white/50"
                                                 >
                                                     <MessageCircle className="w-5 h-5" />
                                                     <span>{img.comments?.length ?? 0}</span>
@@ -405,13 +412,13 @@ export default function GalleryPage() {
                                                     </div>
 
                                                     {session && (
-                                                        <div className="flex gap-2">
+                                                        <div className="flex gap-2 bg-stone-50/50 backdrop-blur-sm p-2 rounded-2xl border border-stone-200/50">
                                                             <input
                                                                 type="text"
                                                                 value={commentText}
                                                                 onChange={(e) => setCommentText(e.target.value)}
                                                                 placeholder="כתוב תגובה..."
-                                                                className="flex-grow bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#C37D46]"
+                                                                className="flex-grow bg-transparent px-3 py-2 text-sm focus:outline-none"
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                                         e.preventDefault();
@@ -421,10 +428,10 @@ export default function GalleryPage() {
                                                             />
                                                             <button
                                                                 onClick={() => handleComment(img.id)}
-                                                                disabled={submittingComment || !commentText.trim()}
-                                                                className="bg-[#C37D46] text-white p-2 rounded-lg hover:bg-[#A06438] disabled:opacity-50 transition-colors"
+                                                                disabled={isPending || !commentText.trim()}
+                                                                className="bg-[#C37D46] text-white p-2 rounded-xl hover:bg-[#A06438] disabled:opacity-50 transition-colors shadow-lg shadow-[#C37D46]/20"
                                                             >
-                                                                {submittingComment ? <Loader className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                                                {isPending ? <Loader className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                                                             </button>
                                                         </div>
                                                     )}
