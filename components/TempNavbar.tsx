@@ -340,6 +340,19 @@ export default function Navbar() {
                                 {session.user?.name?.split(' ')[0]}
                             </span>
 
+                            {/* VIP PRO Badge - Gold Shimmer */}
+                            {(session.user as any).subscription?.plan === 'PRO' && (
+                                <div className="relative z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#FFD700] to-[#B8860B] shadow-lg shadow-[#FFD700]/20 overflow-hidden">
+                                    <Crown className="w-3 h-3 text-[#1a1005]" />
+                                    <span className="text-[9px] font-black text-[#1a1005] uppercase tracking-wider">VIP</span>
+                                    <motion.div
+                                        animate={{ x: ['-100%', '200%'] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: 'linear', repeatDelay: 3 }}
+                                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 pointer-events-none"
+                                    />
+                                </div>
+                            )}
+
                             <div className="relative z-10 w-9 h-9 rounded-full ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105 overflow-hidden">
                                 {session.user?.image ? (
                                     <img src={session.user.image} alt="" className="w-full h-full rounded-full object-cover" />

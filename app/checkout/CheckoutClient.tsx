@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/context/useCartStore';
-import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock, Tag, Gift } from 'lucide-react';
+import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock, Tag, Gift, Crown, Sparkles } from 'lucide-react';
 import { Autocomplete } from '../../components/ui/Autocomplete';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,11 +54,31 @@ export default function CheckoutPage() {
     const [couponApplied, setCouponApplied] = useState(false);
     const [couponError, setCouponError] = useState('');
 
+    // VIP PRO state (verified server-side)
+    const [isVipPro, setIsVipPro] = useState(false);
+    const STANDARD_SHIPPING_FEE = 29.90;
+    const VIP_DISCOUNT_RATE = 0.05;
+
+    // Fetch VIP status on mount
+    useEffect(() => {
+        async function checkVipStatus() {
+            try {
+                const { processLoyaltyProgression } = await import('@/app/actions/user');
+                const result = await processLoyaltyProgression() as any;
+                if (result.success && result.tier === 'PRO') {
+                    setIsVipPro(true);
+                }
+            } catch (e) {
+                // Non-critical — default to standard
+            }
+        }
+        if (session?.user) checkVipStatus();
+    }, [session]);
+
     // Auto-detect COFFEE10 from re-engagement banner
-    React.useEffect(() => {
+    useEffect(() => {
         const dismissed = localStorage.getItem('reengagement-dismissed');
         const bannerWasShown = localStorage.getItem('reengagement-shown');
-        // If banner was shown (campaign user), auto-fill the code
         if (!dismissed || bannerWasShown) {
             setCouponCode('COFFEE10');
         }
@@ -76,10 +96,12 @@ export default function CheckoutPage() {
         }
     };
 
-    // Calculate final total
+    // Calculate final total (matches server-side logic exactly)
     const couponDiscount = couponApplied ? Math.round(total * 0.10 * 100) / 100 : 0;
-    const discount = usePoints ? Math.min(pointsValue, total - couponDiscount) : 0;
-    const finalTotal = total - couponDiscount - discount;
+    const vipDiscount = isVipPro ? Math.round(total * VIP_DISCOUNT_RATE * 100) / 100 : 0;
+    const shippingFee = isVipPro ? 0 : STANDARD_SHIPPING_FEE;
+    const discount = usePoints ? Math.min(pointsValue, total - couponDiscount - vipDiscount) : 0;
+    const finalTotal = Math.round((total - couponDiscount - vipDiscount - discount + shippingFee) * 100) / 100;
 
     const onSubmit = async (data: any) => {
         if (!session) {
@@ -683,8 +705,37 @@ export default function CheckoutPage() {
                                             <Truck className="w-4 h-4 opacity-50" />
                                             <span>משלוח</span>
                                         </div>
-                                        <span className="text-emerald-400 font-bold bg-emerald-400/10 px-3 py-1 rounded-full text-xs border border-emerald-400/20">חינם</span>
+                                        {isVipPro ? (
+                                            <div className="flex items-center gap-1.5">
+                                                <Crown className="w-3 h-3 text-[#FFD700]" />
+                                                <span className="text-[#FFD700] font-bold bg-[#FFD700]/10 px-3 py-1 rounded-full text-xs border border-[#FFD700]/20">VIP חינם</span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-white/70 font-mono">₪{STANDARD_SHIPPING_FEE.toFixed(0)}</span>
+                                        )}
                                     </div>
+
+                                    {/* VIP Discount Line */}
+                                    {isVipPro && (
+                                        <div className="flex justify-between items-center text-[#FFD700] text-sm font-bold flex-row-reverse">
+                                            <div className="flex items-center gap-2 flex-row-reverse">
+                                                <Sparkles className="w-4 h-4" />
+                                                <span>הנחת VIP PRO (5%)</span>
+                                            </div>
+                                            <span className="font-mono">-₪{vipDiscount.toFixed(0)}</span>
+                                        </div>
+                                    )}
+
+                                    {/* VIP Banner */}
+                                    {isVipPro && (
+                                        <div className="mt-2 p-3 bg-gradient-to-l from-[#FFD700]/10 to-[#B8860B]/5 border border-[#FFD700]/20 rounded-2xl">
+                                            <div className="flex items-center gap-2 flex-row-reverse">
+                                                <Crown className="w-4 h-4 text-[#FFD700]" />
+                                                <span className="text-xs font-black text-[#FFD700] uppercase tracking-wider">הטבות VIP PRO מופעלות</span>
+                                            </div>
+                                            <p className="text-[10px] text-[#C37D46]/60 font-bold text-right mt-1">משלוח חינם + הנחת 5% אוטומטית</p>
+                                        </div>
+                                    )}
 
                                     {/* Coupon Code Input */}
                                     <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 space-y-3">
@@ -704,10 +755,10 @@ export default function CheckoutPage() {
                                                 placeholder="הכנס קוד קופון"
                                                 disabled={couponApplied}
                                                 className={`flex-1 bg-black/20 border rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-center outline-none transition-all placeholder:text-white/20 ${couponApplied
-                                                        ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
-                                                        : couponError
-                                                            ? 'border-red-500/40 text-red-400'
-                                                            : 'border-white/10 text-white focus:border-[#C37D46]/50'
+                                                    ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
+                                                    : couponError
+                                                        ? 'border-red-500/40 text-red-400'
+                                                        : 'border-white/10 text-white focus:border-[#C37D46]/50'
                                                     }`}
                                             />
                                             {couponApplied ? (

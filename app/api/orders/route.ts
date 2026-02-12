@@ -86,6 +86,23 @@ export async function POST(req: Request) {
             }
         }
 
+        // === VIP BENEFITS (SERVER-SIDE — verified against DB, never trusted from client) ===
+        const userRecord = await prisma.user.findUnique({
+            where: { id: (session.user as any).id },
+            select: { subscription: { select: { plan: true } } },
+        });
+
+        const isVipPro = userRecord?.subscription?.plan === 'PRO';
+        const VIP_DISCOUNT_RATE = 0.05; // 5% automatic VIP discount
+        const STANDARD_SHIPPING_FEE = 29.90;
+
+        const vipDiscount = isVipPro ? Math.round(total * VIP_DISCOUNT_RATE * 100) / 100 : 0;
+        const shippingFee = isVipPro ? 0 : STANDARD_SHIPPING_FEE;
+
+        if (isVipPro) {
+            console.log(`[VIP] PRO user detected. Discount: -₪${vipDiscount}, Shipping: FREE`);
+        }
+
         // Validate and apply coupon (SERVER-SIDE — never trust client prices)
         let appliedCoupon: string | null = null;
         let discountAmount = 0;
@@ -99,14 +116,16 @@ export async function POST(req: Request) {
                 if (isEligible) {
                     discountAmount = Math.round(total * coupon.discount * 100) / 100;
                     appliedCoupon = couponKey;
-                    console.log(`[COUPON] Applied ${couponKey}: -$${discountAmount} (${coupon.discount * 100}%)`);
+                    console.log(`[COUPON] Applied ${couponKey}: -₪${discountAmount} (${coupon.discount * 100}%)`);
                 } else {
                     console.log(`[COUPON] User not eligible for ${couponKey}`);
                 }
             }
         }
 
-        const finalTotal = Math.round((total - discountAmount) * 100) / 100;
+        // Final total: original - coupon discount - VIP discount + shipping
+        const subtotalAfterDiscounts = Math.round((total - discountAmount - vipDiscount) * 100) / 100;
+        const finalTotal = Math.round((subtotalAfterDiscounts + shippingFee) * 100) / 100;
 
         // Create the order in the database
         const order = await prisma.order.create({
@@ -114,6 +133,8 @@ export async function POST(req: Request) {
                 userId: (session.user as any).id,
                 total: finalTotal,
                 discount: discountAmount,
+                vipDiscount: vipDiscount,
+                shippingFee: shippingFee,
                 appliedCoupon: appliedCoupon,
                 status: 'pending',
                 shippingAddress: shippingDetails || {},
@@ -167,6 +188,9 @@ export async function POST(req: Request) {
             pointsEarned,
             appliedCoupon,
             discount: discountAmount,
+            vipDiscount,
+            shippingFee,
+            isVipPro,
             loyaltyUpgrade: loyaltyResult.justUpgraded ? 'PRO' : null,
         });
 

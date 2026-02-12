@@ -157,6 +157,8 @@ model Order {
   shippingAddress Json?
   total     Float
   discount  Float    @default(0)
+  vipDiscount Float  @default(0)
+  shippingFee Float  @default(0)
   appliedCoupon String?
   status    String   @default("pending")
   createdAt DateTime @default(now())
