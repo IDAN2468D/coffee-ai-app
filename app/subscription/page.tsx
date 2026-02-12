@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import Navbar from "@/components/TempNavbar";
 import Footer from "@/components/AppFooter";
 import { Check, Sparkles, Star, Crown, Zap, Loader2 } from 'lucide-react';
@@ -12,31 +12,34 @@ import { updateSubscription } from '@/app/actions/subscription';
 export default function SubscriptionPage() {
     const router = useRouter();
     const { data: session } = useSession();
-    const [loadingTier, setLoadingTier] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
+    const [activeTier, setActiveTier] = useState<string | null>(null);
 
-    const handleSubscribe = async (tier: string) => {
+    const handleSubscribe = (tier: string) => {
         if (!session) {
             router.push('/auth/login?callbackUrl=/subscription');
             return;
         }
 
-        setLoadingTier(tier);
-        try {
-            const plan = tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
-            const result = await updateSubscription({ plan: plan as any });
+        setActiveTier(tier);
+        startTransition(async () => {
+            try {
+                const plan = tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
+                const result = await updateSubscription({ plan: plan as any });
 
-            if (result.success) {
-                router.push('/dashboard');
-                router.refresh();
-            } else {
-                throw new Error('Subscription failed');
+                if (result.success) {
+                    router.push('/dashboard');
+                    router.refresh();
+                } else {
+                    alert(result.error || 'Subscription failed');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An unexpected error occurred.');
+            } finally {
+                setActiveTier(null);
             }
-        } catch (error) {
-            console.error(error);
-            // innovative error handling could go here
-        } finally {
-            setLoadingTier(null);
-        }
+        });
     };
 
     const tiers = [
@@ -109,57 +112,60 @@ export default function SubscriptionPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {tiers.map((tier) => (
-                        <div
-                            key={tier.name}
-                            className={`relative bg-white rounded-[2.5rem] p-8 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl border ${tier.popular ? 'border-[#C37D46] shadow-xl scale-105 z-10' : 'border-stone-100 shadow-lg'}`}
-                        >
-                            {tier.popular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C37D46] text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-lg">
-                                    הכי משתלם
-                                </div>
-                            )}
-
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${tier.bgColor} ${tier.color}`}>
-                                <tier.icon size={28} />
-                            </div>
-
-                            <h3 className="text-2xl font-black text-[#2D1B14] mb-2">{tier.name}</h3>
-                            <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-[#2D1B14]">₪{tier.price}</span>
-                                <span className="text-stone-400 text-sm">/חודש</span>
-                            </div>
-
-                            <button
-                                onClick={() => handleSubscribe(tier.name)}
-                                disabled={loadingTier !== null}
-                                className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${tier.popular
-                                    ? 'bg-[#2D1B14] text-white hover:bg-black'
-                                    : 'bg-stone-100 text-[#2D1B14] hover:bg-stone-200'
-                                    }`}
+                    {tiers.map((tier) => {
+                        const isLoading = isPending && activeTier === tier.name;
+                        return (
+                            <div
+                                key={tier.name}
+                                className={`relative bg-white rounded-[2.5rem] p-8 transition-all duration-300 hover:transform hover:-translate-y-2 hover:shadow-2xl border ${tier.popular ? 'border-[#C37D46] shadow-xl scale-105 z-10' : 'border-stone-100 shadow-lg'}`}
                             >
-                                {loadingTier === tier.name ? (
-                                    <Loader2 className="animate-spin" size={20} />
-                                ) : (
-                                    <>
-                                        הצטרף ל-{tier.name}
-                                        <Check size={18} />
-                                    </>
-                                )}
-                            </button>
-
-                            <div className="mt-8 space-y-4">
-                                {tier.features.map((feature, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 text-stone-600">
-                                        <div className={`mt-1 min-w-[1.25rem] h-5 rounded-full flex items-center justify-center ${tier.bgColor}`}>
-                                            <Check size={12} className={tier.color} />
-                                        </div>
-                                        <span className="text-sm leading-tight">{feature}</span>
+                                {tier.popular && (
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#C37D46] text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide shadow-lg">
+                                        הכי משתלם
                                     </div>
-                                ))}
+                                )}
+
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${tier.bgColor} ${tier.color}`}>
+                                    <tier.icon size={28} />
+                                </div>
+
+                                <h3 className="text-2xl font-black text-[#2D1B14] mb-2">{tier.name}</h3>
+                                <div className="flex items-baseline gap-1 mb-6">
+                                    <span className="text-4xl font-black text-[#2D1B14]">₪{tier.price}</span>
+                                    <span className="text-stone-400 text-sm">/חודש</span>
+                                </div>
+
+                                <button
+                                    onClick={() => handleSubscribe(tier.name)}
+                                    disabled={isPending}
+                                    className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${tier.popular
+                                        ? 'bg-[#2D1B14] text-white hover:bg-black'
+                                        : 'bg-stone-100 text-[#2D1B14] hover:bg-stone-200'
+                                        } ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    {isLoading ? (
+                                        <Loader2 className="animate-spin" size={20} />
+                                    ) : (
+                                        <>
+                                            הצטרף ל-{tier.name}
+                                            <Check size={18} />
+                                        </>
+                                    )}
+                                </button>
+
+                                <div className="mt-8 space-y-4">
+                                    {tier.features.map((feature, idx) => (
+                                        <div key={idx} className="flex items-start gap-3 text-stone-600">
+                                            <div className={`mt-1 min-w-[1.25rem] h-5 rounded-full flex items-center justify-center ${tier.bgColor}`}>
+                                                <Check size={12} className={tier.color} />
+                                            </div>
+                                            <span className="text-sm leading-tight">{feature}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 

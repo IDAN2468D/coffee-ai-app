@@ -12,53 +12,59 @@ const updateSubscriptionSchema = z.object({
 });
 
 export async function updateSubscription(formData: FormData | { plan: Plan }) {
-    const session = await getServerSession(authOptions);
+    try {
+        const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
-        throw new Error("You must be logged in to upgrade your plan.");
+        if (!session?.user?.email) {
+            return { success: false, error: "You must be logged in to upgrade your plan." };
+        }
+
+        const data = formData instanceof FormData
+            ? { plan: formData.get("plan") as Plan }
+            : formData;
+
+        const validatedData = updateSubscriptionSchema.safeParse(data);
+
+        if (!validatedData.success) {
+            return { success: false, error: "Invalid plan selected." };
+        }
+
+        const { plan } = validatedData.data;
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+        });
+
+        if (!user) {
+            return { success: false, error: "User not found." };
+        }
+
+        // Calculate next billing date (30 days from now)
+        const nextBillingDate = new Date();
+        nextBillingDate.setDate(nextBillingDate.getDate() + 30);
+
+        const subscription = await prisma.subscription.upsert({
+            where: { userId: user.id },
+            update: {
+                plan,
+                status: "active",
+                nextBillingDate,
+            },
+            create: {
+                userId: user.id,
+                plan,
+                status: "active",
+                nextBillingDate,
+            },
+        });
+
+        revalidatePath("/vip");
+        revalidatePath("/dashboard");
+        revalidatePath("/subscription");
+
+        return { success: true, data: subscription as Subscription };
+    } catch (error) {
+        console.error("Subscription update error:", error);
+        return { success: false, error: "An unexpected error occurred while updating your subscription." };
     }
-
-    const data = formData instanceof FormData
-        ? { plan: formData.get("plan") as Plan }
-        : formData;
-
-    const validatedData = updateSubscriptionSchema.safeParse(data);
-
-    if (!validatedData.success) {
-        throw new Error("Invalid plan selected.");
-    }
-
-    const { plan } = validatedData.data;
-
-    const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-    });
-
-    if (!user) {
-        throw new Error("User not found.");
-    }
-
-    // Calculate next billing date (30 days from now)
-    const nextBillingDate = new Date();
-    nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-
-    const subscription = await prisma.subscription.upsert({
-        where: { userId: user.id },
-        update: {
-            plan,
-            status: "active",
-            nextBillingDate,
-        },
-        create: {
-            userId: user.id,
-            plan,
-            status: "active",
-            nextBillingDate,
-        },
-    });
-
-    revalidatePath("/vip");
-    revalidatePath("/dashboard");
-
-    return { success: true, subscription: subscription as Subscription };
 }
