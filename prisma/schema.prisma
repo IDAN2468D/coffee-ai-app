@@ -90,8 +90,8 @@ model Product {
   categoryId  String?   @db.ObjectId
   // Backward compatibility
   image       String?
-  roast       String?  // LIGHT, MEDIUM, DARK
-  flavor      String[] // FRUITY, NUTTY, CHOCOLATY
+  roast       String? 
+  flavor      String[]
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]

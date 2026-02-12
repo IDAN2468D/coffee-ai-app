@@ -16,7 +16,6 @@ export async function matchCoffee(data: z.infer<typeof MatchSchema>) {
     const validated = MatchSchema.parse(data)
     const session = await getServerSession(authOptions)
 
-    // 1. Identify best product match
     let matchedProduct = await prisma.product.findFirst({
         where: {
             roast: validated.roastLevel,
