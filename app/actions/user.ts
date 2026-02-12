@@ -84,3 +84,41 @@ export async function getReengagementStatus(): Promise<ReengagementData> {
         return { shouldShow: false, productName: null, productImage: null };
     }
 }
+
+/**
+ * @Architect — processLoyaltyProgression
+ *
+ * Server Action: checks VIP qualification for current user.
+ * Uses live DB queries (not cached counters) to exclude cancelled/refunded orders.
+ *
+ * Called from Dashboard or post-checkout to get real-time loyalty status.
+ */
+export async function processLoyaltyProgression() {
+    try {
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user?.email) {
+            return { success: false, error: 'Not authenticated' };
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            select: { id: true },
+        });
+
+        if (!user) {
+            return { success: false, error: 'User not found' };
+        }
+
+        const { checkLoyaltyUpgrade } = await import('@/lib/loyalty');
+        const loyaltyStatus = await checkLoyaltyUpgrade(user.id);
+
+        return {
+            success: true,
+            ...loyaltyStatus,
+        };
+    } catch (error) {
+        console.error("Loyalty progression error:", error);
+        return { success: false, error: 'Internal error' };
+    }
+}

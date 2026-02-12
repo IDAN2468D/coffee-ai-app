@@ -2,9 +2,10 @@
  * @Architect — Loyalty Progression Engine
  *
  * Tiers:
- *  - STANDARD: 0-2 orders AND <₪500 total spend
- *  - PRO:      3+ orders OR ≥₪500 total spend (LIFETIME — no downgrade)
+ *  - STANDARD: 0-2 successful orders AND <₪500 total spend
+ *  - PRO:      3+ successful orders OR ≥₪500 total spend (LIFETIME — no downgrade)
  *
+ * IMPORTANT: Only non-cancelled orders count toward VIP qualification.
  * Called after every successful order to check for auto-upgrade.
  */
 
@@ -14,7 +15,7 @@ export type LoyaltyTier = 'STANDARD' | 'PRO';
 
 export interface LoyaltyStatus {
     tier: LoyaltyTier;
-    orderCount: number;
+    orderCount: number;       // successful orders only (excludes cancelled)
     totalSpent: number;
     ordersToVip: number;      // remaining orders needed (0 if already VIP)
     spendToVip: number;       // remaining spend needed (0 if already VIP)
@@ -24,19 +25,54 @@ export interface LoyaltyStatus {
 const VIP_ORDER_THRESHOLD = 3;
 const VIP_SPEND_THRESHOLD = 500;
 
+/** Excluded statuses — cancelled orders do NOT count toward VIP */
+const EXCLUDED_STATUSES = ['cancelled', 'refunded'];
+
+/**
+ * Count only successful (non-cancelled, non-refunded) orders for a user.
+ * This is the single source of truth for order-based VIP qualification.
+ */
+async function countSuccessfulOrders(userId: string): Promise<number> {
+    return prisma.order.count({
+        where: {
+            userId,
+            status: { notIn: EXCLUDED_STATUSES },
+        },
+    });
+}
+
+/**
+ * Sum total spent from successful orders only.
+ * More accurate than the cached totalSpent counter.
+ */
+async function sumSuccessfulSpend(userId: string): Promise<number> {
+    const result = await prisma.order.aggregate({
+        where: {
+            userId,
+            status: { notIn: EXCLUDED_STATUSES },
+        },
+        _sum: { total: true },
+    });
+    return result._sum.total || 0;
+}
+
 /**
  * Check and execute loyalty upgrade after an order.
  * Uses Prisma $transaction for atomic plan + notification update.
+ *
+ * CRITICAL: Uses live DB queries (not cached counters) to exclude cancelled orders.
  */
 export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus> {
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            totalSpent: true,
-            orderCount: true,
-            subscription: { select: { plan: true, id: true } },
-        },
-    });
+    const [user, successfulOrders, successfulSpend] = await Promise.all([
+        prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                subscription: { select: { plan: true, id: true } },
+            },
+        }),
+        countSuccessfulOrders(userId),
+        sumSuccessfulSpend(userId),
+    ]);
 
     if (!user) {
         return {
@@ -49,30 +85,29 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
         };
     }
 
-    const { orderCount, totalSpent, subscription } = user;
+    const { subscription } = user;
     const currentPlan = subscription?.plan || 'FREE';
 
     // Already PRO — lifetime, no recalculation needed
     if (currentPlan === 'PRO') {
         return {
             tier: 'PRO',
-            orderCount,
-            totalSpent,
+            orderCount: successfulOrders,
+            totalSpent: successfulSpend,
             ordersToVip: 0,
             spendToVip: 0,
             justUpgraded: false,
         };
     }
 
-    // Check thresholds
-    const qualifiesByOrders = orderCount >= VIP_ORDER_THRESHOLD;
-    const qualifiesBySpend = totalSpent >= VIP_SPEND_THRESHOLD;
+    // Check thresholds against LIVE counts (cancelled excluded)
+    const qualifiesByOrders = successfulOrders >= VIP_ORDER_THRESHOLD;
+    const qualifiesBySpend = successfulSpend >= VIP_SPEND_THRESHOLD;
     const shouldUpgrade = qualifiesByOrders || qualifiesBySpend;
 
     if (shouldUpgrade) {
         // Atomic upgrade: update plan + create notification
         await prisma.$transaction([
-            // Upsert subscription to PRO
             subscription
                 ? prisma.subscription.update({
                     where: { id: subscription.id },
@@ -85,7 +120,6 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
                         status: 'active',
                     },
                 }),
-            // Create celebration notification
             prisma.notification.create({
                 data: {
                     userId,
@@ -97,8 +131,8 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
 
         return {
             tier: 'PRO',
-            orderCount,
-            totalSpent,
+            orderCount: successfulOrders,
+            totalSpent: successfulSpend,
             ordersToVip: 0,
             spendToVip: 0,
             justUpgraded: true,
@@ -107,10 +141,10 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
 
     return {
         tier: 'STANDARD',
-        orderCount,
-        totalSpent,
-        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - orderCount),
-        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - totalSpent),
+        orderCount: successfulOrders,
+        totalSpent: successfulSpend,
+        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - successfulOrders),
+        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - successfulSpend),
         justUpgraded: false,
     };
 }
@@ -118,16 +152,20 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
 /**
  * Get loyalty status without triggering upgrade (read-only).
  * Used by frontend to render progress bar.
+ *
+ * Uses live DB counts to ensure cancelled orders are excluded.
  */
 export async function getLoyaltyStatus(userId: string): Promise<LoyaltyStatus> {
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-            totalSpent: true,
-            orderCount: true,
-            subscription: { select: { plan: true } },
-        },
-    });
+    const [user, successfulOrders, successfulSpend] = await Promise.all([
+        prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                subscription: { select: { plan: true } },
+            },
+        }),
+        countSuccessfulOrders(userId),
+        sumSuccessfulSpend(userId),
+    ]);
 
     if (!user) {
         return {
@@ -145,8 +183,8 @@ export async function getLoyaltyStatus(userId: string): Promise<LoyaltyStatus> {
     if (currentPlan === 'PRO') {
         return {
             tier: 'PRO',
-            orderCount: user.orderCount,
-            totalSpent: user.totalSpent,
+            orderCount: successfulOrders,
+            totalSpent: successfulSpend,
             ordersToVip: 0,
             spendToVip: 0,
             justUpgraded: false,
@@ -155,10 +193,10 @@ export async function getLoyaltyStatus(userId: string): Promise<LoyaltyStatus> {
 
     return {
         tier: 'STANDARD',
-        orderCount: user.orderCount,
-        totalSpent: user.totalSpent,
-        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - user.orderCount),
-        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - user.totalSpent),
+        orderCount: successfulOrders,
+        totalSpent: successfulSpend,
+        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - successfulOrders),
+        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - successfulSpend),
         justUpgraded: false,
     };
 }
