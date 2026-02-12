@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendOrderConfirmationEmail } from '@/lib/mailer';
 import { getReengagementStatus } from '@/app/actions/user';
+import { checkLoyaltyUpgrade } from '@/lib/loyalty';
 
 const VALID_COUPONS: Record<string, { discount: number; validator: () => Promise<boolean> }> = {
     COFFEE10: {
@@ -133,26 +134,27 @@ export async function POST(req: Request) {
             }
         });
 
-        // Update User Loyalty Points
-        const pointsEarned = Math.round(total * 10);
-        console.log('[POINTS] User ID:', (session.user as any).id, 'Points earned:', pointsEarned);
+        // Update User: Points + Loyalty Counters (atomic)
+        const pointsEarned = Math.round(finalTotal * 10);
+        const userId = (session.user as any).id;
 
-        // Fetch current points
-        const currentUser = await prisma.user.findUnique({
-            where: { id: (session.user as any).id }
-        });
-
-        // @ts-ignore - points field exists in schema but Prisma client needs regeneration
-        const newPoints = (currentUser?.points || 0) + pointsEarned;
-
-        // Update with new total
-        // @ts-ignore - points field exists in schema but Prisma client needs regeneration
         await prisma.user.update({
-            where: { id: (session.user as any).id },
-            data: { points: newPoints }
+            where: { id: userId },
+            data: {
+                points: { increment: pointsEarned },
+                totalSpent: { increment: finalTotal },
+                orderCount: { increment: 1 },
+            },
         });
 
-        console.log('[POINTS] Points updated successfully. New total:', newPoints);
+        console.log(`[LOYALTY] User ${userId}: +${pointsEarned} pts, +₪${finalTotal} spent, +1 order`);
+
+        // Check for VIP upgrade (runs $transaction internally)
+        const loyaltyResult = await checkLoyaltyUpgrade(userId);
+
+        if (loyaltyResult.justUpgraded) {
+            console.log(`[LOYALTY] 🏆 User ${userId} upgraded to VIP PRO!`);
+        }
 
         // Send confirmation email with receipt
         if (session.user.email && session.user.name) {
@@ -165,6 +167,7 @@ export async function POST(req: Request) {
             pointsEarned,
             appliedCoupon,
             discount: discountAmount,
+            loyaltyUpgrade: loyaltyResult.justUpgraded ? 'PRO' : null,
         });
 
     } catch (error) {

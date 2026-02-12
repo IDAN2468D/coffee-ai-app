@@ -26,15 +26,19 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PRODUCTS, Product } from '../../lib/products';
 import { useCartStore } from '@/context/useCartStore';
+import LoyaltyTracker from '@/components/LoyaltyTracker';
+import type { LoyaltyStatus } from '@/lib/loyalty';
 
 export default function Dashboard({
     initialPoints,
     initialOrders,
-    subscription
+    subscription,
+    loyaltyStatus
 }: {
     initialPoints: number,
     initialOrders: any[],
-    subscription: { tier: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null
+    subscription: { tier: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null,
+    loyaltyStatus: LoyaltyStatus | null
 }) {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -187,28 +191,8 @@ export default function Dashboard({
                     {/* Main Feed */}
                     <div className="lg:col-span-2 space-y-12">
 
-                        {/* Loyalty Bar */}
-                        <div className="relative group overflow-hidden rounded-[2.5rem]">
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#C37D46] to-[#8B4513] opacity-20 group-hover:opacity-30 transition-opacity"></div>
-                            <div className="bg-[#1a1a1a] backdrop-blur-xl border border-white/10 p-8 relative z-10">
-                                <div className="flex justify-between items-end mb-4 flex-row-reverse text-right">
-                                    <div>
-                                        <h3 className="text-2xl font-serif font-bold text-white mb-1">הדרך שלך לקפה חינם</h3>
-                                        <p className="text-white/40 text-sm">צבור נקודות בכל הזמנה וקבל הטבות בלעדיות</p>
-                                    </div>
-                                    <div className="text-[#C37D46] font-mono font-black text-xl">{initialPoints} / 500</div>
-                                </div>
-                                <div className="h-4 bg-black/40 rounded-full overflow-hidden border border-white/5">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${Math.min((initialPoints / 500) * 100, 100)}%` }}
-                                        className="h-full bg-gradient-to-l from-[#C37D46] to-[#E8CBAD] relative"
-                                    >
-                                        <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
-                                    </motion.div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* VIP Loyalty Tracker */}
+                        {loyaltyStatus && <LoyaltyTracker status={loyaltyStatus} />}
 
                         {/* Recent Orders */}
                         <div className="space-y-6">
