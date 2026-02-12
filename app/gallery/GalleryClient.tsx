@@ -44,7 +44,7 @@ interface CoffeeImage {
 
 export default function GalleryPage() {
     const { data: session } = useSession();
-    const { addItem } = useCartStore();
+    const { addItem } = useCart();
     const [images, setImages] = useState<CoffeeImage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
