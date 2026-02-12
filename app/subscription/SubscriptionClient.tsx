@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Navbar from "@/components/TempNavbar";
 import { Check, Sparkles, Coffee, Package, Star, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { updateSubscription } from '@/app/actions/subscription';
 
 const PLANS = [
     {
@@ -69,13 +70,10 @@ export default function SubscriptionClient() {
     const handleJoin = async (tierId: string) => {
         setLoading(tierId);
         try {
-            const response = await fetch('/api/subscription/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan: tierId.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO' })
-            });
+            const plan = tierId.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
+            const result = await updateSubscription({ plan: plan as any });
 
-            if (response.ok) {
+            if (result.success) {
                 setSuccess(tierId);
                 setTimeout(() => setSuccess(null), 5000);
             } else {

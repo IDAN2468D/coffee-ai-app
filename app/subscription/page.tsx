@@ -7,6 +7,8 @@ import { Check, Sparkles, Star, Crown, Zap, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 
+import { updateSubscription } from '@/app/actions/subscription';
+
 export default function SubscriptionPage() {
     const router = useRouter();
     const { data: session } = useSession();
@@ -20,16 +22,15 @@ export default function SubscriptionPage() {
 
         setLoadingTier(tier);
         try {
-            const res = await fetch('/api/subscription/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan: tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO' })
-            });
+            const plan = tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
+            const result = await updateSubscription({ plan: plan as any });
 
-            if (!res.ok) throw new Error('Subscription failed');
-
-            router.push('/dashboard');
-            router.refresh();
+            if (result.success) {
+                router.push('/dashboard');
+                router.refresh();
+            } else {
+                throw new Error('Subscription failed');
+            }
         } catch (error) {
             console.error(error);
             // innovative error handling could go here

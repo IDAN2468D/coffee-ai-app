@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { updateSubscription } from '@/app/actions/subscription';
 
 export default function DebugTierPage() {
     const { data: session, update } = useSession();
@@ -12,13 +13,9 @@ export default function DebugTierPage() {
     const updateTier = async (tier: string) => {
         setUpdating(true);
         try {
-            const res = await fetch('/api/subscription/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tier })
-            });
+            const result = await updateSubscription({ plan: tier as any });
 
-            if (res.ok) {
+            if (result.success) {
                 // Force session update
                 await update();
                 router.refresh();
