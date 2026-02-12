@@ -418,6 +418,9 @@ export default function GalleryPage() {
                                                                 value={commentText}
                                                                 onChange={(e) => setCommentText(e.target.value)}
                                                                 placeholder="כתוב תגובה..."
+                                                                spellCheck="false"
+                                                                data-gramm="false"
+                                                                data-lpignore="true"
                                                                 className="flex-grow bg-transparent px-3 py-2 text-sm focus:outline-none"
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -525,6 +528,9 @@ export default function GalleryPage() {
                                         onChange={(e) => setPrompt(e.target.value)}
                                         disabled={isGenerating}
                                         placeholder="לדוגמה: שועל לוגם הפוך בבית קפה פריזאי בגשם..."
+                                        spellCheck="false"
+                                        data-gramm="false"
+                                        data-lpignore="true"
                                         className="w-full h-32 bg-stone-50 border-2 border-stone-100 focus:border-[#C37D46] focus:bg-white rounded-2xl p-4 text-base resize-none outline-none transition-all disabled:opacity-50"
                                     />
                                 </div>
