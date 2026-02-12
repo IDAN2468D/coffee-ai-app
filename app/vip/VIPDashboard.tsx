@@ -57,8 +57,8 @@ export default function VIPDashboard({ initialSubscription }: VIPPageProps) {
             setOptimisticSubscription(plan);
             try {
                 const result = await updateSubscription({ plan });
-                if (result.success) {
-                    setCurrentSubscription(result.subscription);
+                if (result.success && result.data) {
+                    setCurrentSubscription(result.data);
                 }
             } catch (error) {
                 console.error("Failed to upgrade subscription:", error);

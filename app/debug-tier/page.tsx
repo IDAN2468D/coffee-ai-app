@@ -20,6 +20,8 @@ export default function DebugTierPage() {
                 await update();
                 router.refresh();
                 alert(`Tier updated to ${tier}! Please refresh the page.`);
+            } else {
+                alert(result.error || 'Error updating tier');
             }
         } catch (error) {
             console.error(error);

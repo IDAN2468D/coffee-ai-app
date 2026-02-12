@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 import Navbar from "@/components/TempNavbar";
 import { Sparkles, Map, Star, Calendar, ChefHat, Droplets, ArrowRight, Share2, Globe, Clock, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -9,8 +9,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PASSPORT_ENTRIES } from '@/lib/mock-passport';
 
-export default function PassportDetailsPage({ params }: { params: { id: string } }) {
-    const entry = PASSPORT_ENTRIES.find(e => e.id === Number(params.id));
+export default function PassportDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: entryId } = use(params);
+    const entry = PASSPORT_ENTRIES.find(e => e.id === Number(entryId));
 
     if (!entry) {
         return notFound();

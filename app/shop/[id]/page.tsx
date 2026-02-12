@@ -11,14 +11,15 @@ import ProductReviews from "@/components/reviews/ProductReviews";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
+export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id: productId } = await params;
     // Validate ObjectID roughly (24 hex chars)
-    if (!params.id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!productId.match(/^[0-9a-fA-F]{24}$/)) {
         notFound();
     }
 
     const product = await prisma.product.findUnique({
-        where: { id: params.id },
+        where: { id: productId },
         include: { category: true }
     });
 
