@@ -74,5 +74,5 @@ export async function matchCoffee(data: z.infer<typeof MatchSchema>) {
     }
 
     revalidatePath("/match")
-    return { success: true, product: matchedProduct }
+    return { success: true, data: matchedProduct }
 }

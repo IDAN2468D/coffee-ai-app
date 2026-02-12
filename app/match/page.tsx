@@ -39,7 +39,7 @@ export default function MatchPage() {
             })
 
             if (res.success) {
-                setMatchedProduct(res.product)
+                setMatchedProduct(res.data)
             }
         })
     }
