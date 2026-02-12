@@ -140,7 +140,7 @@ export default function GalleryPage() {
         const userId = (session.user as any).id;
         setImages(prev => prev.map(img => {
             if (img.id === imageId) {
-                const hasLiked = img.likes.some(like => like.userId === userId);
+                const hasLiked = img.likes?.some(like => like.userId === userId) ?? false;
                 const newLikes = hasLiked
                     ? img.likes.filter(like => like.userId !== userId)
                     : [...img.likes, { userId }];
@@ -290,7 +290,7 @@ export default function GalleryPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {images.length > 0 ? images.map((img, idx) => {
-                            const isLiked = session ? img.likes.some(like => like.userId === (session.user as any).id) : false;
+                            const isLiked = session ? img.likes?.some(like => like.userId === (session.user as any).id) ?? false : false;
 
                             return (
                                 <motion.div
@@ -363,14 +363,14 @@ export default function GalleryPage() {
                                                         }`}
                                                 >
                                                     <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-                                                    <span>{img.likes.length}</span>
+                                                    <span>{img.likes?.length ?? 0}</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setExpandedImageId(expandedImageId === img.id ? null : img.id)}
                                                     className="flex items-center gap-1 text-xs font-bold text-stone-400 hover:text-[#C37D46] transition-colors"
                                                 >
                                                     <MessageCircle className="w-5 h-5" />
-                                                    <span>{img.comments.length}</span>
+                                                    <span>{img.comments?.length ?? 0}</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -389,7 +389,7 @@ export default function GalleryPage() {
                                                     className="border-t border-stone-100 pt-4 space-y-4 overflow-hidden"
                                                 >
                                                     <div className="max-h-40 overflow-y-auto space-y-3 custom-scrollbar">
-                                                        {img.comments.length === 0 ? (
+                                                        {!img.comments || img.comments.length === 0 ? (
                                                             <p className="text-center text-xs text-stone-400 italic py-2">אין תגובות עדיין. היה הראשון להגיב!</p>
                                                         ) : (
                                                             img.comments.map(comment => (
