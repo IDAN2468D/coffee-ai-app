@@ -48,6 +48,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   blends        Blend[]
+  tasteProfile  TasteProfile?
 }
 
 model Account {
@@ -89,6 +90,8 @@ model Product {
   categoryId  String?   @db.ObjectId
   // Backward compatibility
   image       String?
+  roast       String?  // LIGHT, MEDIUM, DARK
+  flavor      String?  // FRUITY, NUTTY, CHOCOLATY
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]
@@ -199,4 +202,15 @@ model Blend {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model TasteProfile {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @unique @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roastLevel   String   // LIGHT, MEDIUM, DARK
+  flavorNotes  String   // FRUITY, NUTTY, CHOCOLATY
+  brewMethod   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

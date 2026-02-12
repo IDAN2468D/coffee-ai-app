@@ -12,3 +12,15 @@ export interface Subscription {
     createdAt: Date;
     updatedAt: Date;
 }
+export interface TasteProfile {
+    id: string;
+    userId: string;
+    roastLevel: 'LIGHT' | 'MEDIUM' | 'DARK';
+    flavorNotes: 'FRUITY' | 'NUTTY' | 'CHOCOLATY';
+    brewMethod?: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export type RoastLevel = TasteProfile['roastLevel'];
+export type FlavorNote = TasteProfile['flavorNotes'];
