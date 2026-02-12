@@ -5,7 +5,7 @@ import Navbar from "@/components/TempNavbar";
 import { Coffee, ArrowLeft, Check, Sparkles, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PRODUCTS } from '@/lib/products';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import Link from 'next/link';
 
 const QUESTIONS = [
@@ -58,7 +58,7 @@ interface MatchResult {
 }
 
 export default function MatchClient() {
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [freeText, setFreeText] = useState('');

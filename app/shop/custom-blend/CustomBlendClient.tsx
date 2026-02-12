@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import Navbar from "@/components/TempNavbar";
 import { Coffee, RotateCcw, ShoppingBag, Star, Sparkles, Tag, Check, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import { Product } from '@/lib/products';
 
 const FLAVOR_TAGS = [
@@ -18,7 +18,7 @@ const FLAVOR_TAGS = [
 ];
 
 export default function CustomBlendClient() {
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
 
     // State
     const [name, setName] = useState('');

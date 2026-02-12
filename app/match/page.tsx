@@ -9,7 +9,7 @@ import StepRoast from "@/components/match/StepRoast"
 import StepFlavor from "@/components/match/StepFlavor"
 import StepResult from "@/components/match/StepResult"
 import { matchCoffee } from "@/app/actions/matchmaker"
-import { useCart } from "@/lib/store"
+import { useCartStore } from "@/context/useCartStore"
 import type { Product } from "@/lib/products"
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react"
 
@@ -23,7 +23,7 @@ export default function MatchPage() {
     const [flavor, setFlavor] = useState<FlavorNote | null>(null)
     const [matchedProduct, setMatchedProduct] = useState<Product | null>(null)
     const [isPending, startTransition] = useTransition()
-    const { addItem } = useCart()
+    const { addItem } = useCartStore()
     const { data: session } = useSession()
 
     const handleMatch = async (fLevel: FlavorNote) => {

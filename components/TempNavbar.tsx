@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Menu, X, User, ChevronDown, Sparkles, Coffee, Crown, Home, Store, FlaskConical, Gavel, Scale, BrainCircuit, Bot, Activity, Image as ImageIcon, Headphones, Mic, Globe, Lock } from 'lucide-react';
 import Link from 'next/link';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
+import type { CartItem } from '@/src/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
@@ -46,9 +47,9 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [featuresOpen, setFeaturesOpen] = useState(false);
     const { data: session } = useSession();
-    const { items } = useCart();
+    const { items } = useCartStore();
     const pathname = usePathname();
-    const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    const cartCount = items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
 
     // Determines if the page has a light background (requiring dark text initially)
     const isLightPage = ['/shop', '/subscription', '/dashboard', '/match', '/checkout'].includes(pathname || '');

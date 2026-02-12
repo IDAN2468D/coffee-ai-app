@@ -4,7 +4,7 @@ import React, { useEffect, useState, useOptimistic, useTransition } from 'react'
 import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, Globe, Lock, MessageCircle, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { useCart } from '../../lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
 import Navbar from '../../components/TempNavbar';
@@ -44,7 +44,7 @@ interface CoffeeImage {
 
 export default function GalleryPage() {
     const { data: session } = useSession();
-    const { addItem } = useCart();
+    const addItem = useCartStore((state) => state.addItem);
     const [images, setImages] = useState<CoffeeImage[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -77,20 +77,23 @@ export default function GalleryPage() {
     );
 
     useEffect(() => {
-        fetchGallery();
+        const controller = new AbortController();
+        fetchGallery(controller.signal);
+        return () => controller.abort();
     }, [activeTab]);
 
-    const fetchGallery = () => {
+    const fetchGallery = (signal?: AbortSignal) => {
         setIsLoading(true);
         const endpoint = activeTab === 'community' ? '/api/gallery/public' : '/api/gallery';
 
-        fetch(endpoint)
+        fetch(endpoint, { signal })
             .then(res => res.json())
             .then(data => {
                 setImages(Array.isArray(data) ? data : []);
                 setIsLoading(false);
             })
             .catch(err => {
+                if (err.name === 'AbortError') return;
                 console.error(err);
                 setImages([]);
                 setIsLoading(false);
@@ -452,7 +455,9 @@ export default function GalleryPage() {
                                                     image: img.url,
                                                     category: 'Equipment'
                                                 };
-                                                addItem(customMug);
+                                                if (addItem) {
+                                                    addItem(customMug);
+                                                }
                                             }}
                                             className="w-full mt-2 bg-stone-50 text-[#2D1B14] py-3 rounded-xl font-bold text-sm hover:bg-[#C37D46] hover:text-white transition-all flex items-center justify-center gap-2 border border-stone-100"
                                         >

@@ -21,7 +21,7 @@ interface CartStore {
     clearRecentlyAdded: () => void;
 }
 
-export const useCart = create<CartStore>()(
+export const useCartStore = create<CartStore>()(
     persist(
         (set) => ({
             items: [],
@@ -75,4 +75,4 @@ export const useCart = create<CartStore>()(
         }
     )
 );
-export default useCart;
+export default useCartStore;

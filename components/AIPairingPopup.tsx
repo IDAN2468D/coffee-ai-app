@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import { getAIPairing } from '@/lib/pairing-logic';
 import { Product } from '@/lib/products';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -10,7 +10,7 @@ import { Plus, X, Sparkles, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 
 export default function AIPairingPopup() {
-    const { recentlyAddedItem, clearRecentlyAdded, addItem } = useCart();
+    const { recentlyAddedItem, clearRecentlyAdded, addItem } = useCartStore();
     const [suggestion, setSuggestion] = useState<{ suggestedProduct: Product, reason: string } | null>(null);
 
     useEffect(() => {

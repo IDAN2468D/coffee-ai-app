@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Thermometer, Zap, Droplets, Sparkles, ShoppingBag, ArrowRight, RotateCcw, Heart, CheckCircle2 } from 'lucide-react';
 import { PRODUCTS, Product } from '@/lib/products';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
 
 type QuizStep = 'welcome' | 'temp' | 'intensity' | 'milk' | 'result';
 
@@ -15,7 +15,7 @@ interface QuizAnswers {
 }
 
 export default function CoffeeQuiz() {
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
     const [step, setStep] = useState<QuizStep>('welcome');
     const [answers, setAnswers] = useState<QuizAnswers>({
         temp: null,

@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, User, Bot, Loader2, Coffee, ShoppingBag, Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from "../../components/TempNavbar";
-import { useCart } from '../../lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import { PRODUCTS } from '../../lib/products';
 import { useSearchParams } from 'next/navigation';
 
@@ -23,7 +23,7 @@ interface Message {
 }
 
 export default function ExpertClient() {
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
     const [actionToast, setActionToast] = useState<{ show: boolean, item?: string }>({ show: false });
 
     const [messages, setMessages] = useState<Message[]>([

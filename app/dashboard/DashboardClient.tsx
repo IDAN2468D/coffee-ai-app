@@ -25,7 +25,7 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { PRODUCTS, Product } from '../../lib/products';
-import { useCart } from '../../lib/store';
+import { useCartStore } from '@/context/useCartStore';
 
 export default function Dashboard({
     initialPoints,
@@ -38,7 +38,7 @@ export default function Dashboard({
 }) {
     const { data: session, status } = useSession();
     const router = useRouter();
-    const { addItem } = useCart();
+    const { addItem } = useCartStore();
     const [stats, setStats] = useState<any>(null);
     const [myImages, setMyImages] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);

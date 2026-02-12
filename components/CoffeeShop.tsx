@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { ShoppingBag, Star, Plus, Minus } from 'lucide-react';
-import { useCart } from '@/lib/store';
+import { useCartStore } from '@/context/useCartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: any[], initialFavoriteIds?: string[] }) {
     const [activeCategory, setActiveCategory] = useState<string>('הכל');
-    const { items, addItem, removeItem } = useCart();
+    const { items, addItem, removeItem } = useCartStore();
     const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
     const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
 
