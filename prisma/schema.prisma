@@ -91,7 +91,7 @@ model Product {
   // Backward compatibility
   image       String?
   roast       String?  // LIGHT, MEDIUM, DARK
-  flavor      String?  // FRUITY, NUTTY, CHOCOLATY
+  flavor      String[] // FRUITY, NUTTY, CHOCOLATY
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]

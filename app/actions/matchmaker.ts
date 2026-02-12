@@ -20,7 +20,7 @@ export async function matchCoffee(data: z.infer<typeof MatchSchema>) {
     let matchedProduct = await prisma.product.findFirst({
         where: {
             roast: validated.roastLevel,
-            flavor: validated.flavorNotes,
+            flavor: { has: validated.flavorNotes },
             isArchived: false,
         },
     })

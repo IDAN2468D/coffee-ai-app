@@ -8,21 +8,27 @@ async function main() {
             description: 'שוט עמוק ואינטנסיבי של קפה ערביקה טהור עם תווים של שוקולד מריר.',
             price: 14.00,
             image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?q=80&w=1000&auto=format&fit=crop',
-            category: 'Hot'
+            category: 'Hot',
+            roast: 'DARK',
+            flavor: ['CHOCOLATY']
         },
         {
             name: 'קורטדו דבש ואלון',
             description: 'אספרסו חלק חתוך עם חלב שיבולת שועל חם ומגע של דבש פרחי בר.',
             price: 18.00,
             image: 'https://images.unsplash.com/photo-1534706936160-d5ee67737249?q=80&w=1000&auto=format&fit=crop',
-            category: 'Hot'
+            category: 'Hot',
+            roast: 'MEDIUM',
+            flavor: ['NUTTY']
         },
         {
             name: 'לאטה שדות לבנדר',
             description: 'לאטה קרמי מתובל בלבנדר קולינרי אורגני ומתיקות פרחונית עדינה.',
             price: 22.00,
             image: 'https://images.unsplash.com/photo-1545665225-b23b99e4d45e?q=80&w=1000&auto=format&fit=crop',
-            category: 'Hot'
+            category: 'Hot',
+            roast: 'LIGHT',
+            flavor: ['FRUITY']
         },
         {
             name: 'קולד ברו וניל',
@@ -119,6 +125,7 @@ async function main() {
 
     console.log('Clearing existing data...');
     // Delete in order to avoid foreign key constraints
+    await prisma.review.deleteMany({});
     await prisma.orderItem.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.category.deleteMany({});
