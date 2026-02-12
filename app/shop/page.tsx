@@ -3,8 +3,10 @@ import Navbar from "@/components/TempNavbar";
 import Footer from "@/components/AppFooter";
 import CoffeeShop from "@/components/CoffeeShop";
 import ShopHeader from "@/components/ShopHeader";
+import ReengagementBanner from "@/components/ReengagementBanner";
 import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
+import { getReengagementStatus } from "@/app/actions/user";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -34,9 +36,14 @@ export default async function ShopPage() {
         if (user) favoriteIds = user.favoriteIds;
     }
 
+    // Fetch re-engagement data server-side
+    const reengagementData = await getReengagementStatus();
+
     return (
         <main className="min-h-screen bg-white font-sans">
             <Navbar />
+
+            <ReengagementBanner data={reengagementData} />
 
             <ShopHeader />
 
