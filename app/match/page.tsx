@@ -10,6 +10,7 @@ import StepFlavor from "@/components/match/StepFlavor"
 import StepResult from "@/components/match/StepResult"
 import { matchCoffee } from "@/app/actions/matchmaker"
 import { useCart } from "@/lib/store"
+import type { Product } from "@/lib/products"
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react"
 
 type Step = "ROAST" | "FLAVOR" | "RESULT"
@@ -20,7 +21,7 @@ export default function MatchPage() {
     const [step, setStep] = useState<Step>("ROAST")
     const [roast, setRoast] = useState<RoastLevel | null>(null)
     const [flavor, setFlavor] = useState<FlavorNote | null>(null)
-    const [matchedProduct, setMatchedProduct] = useState<any>(null)
+    const [matchedProduct, setMatchedProduct] = useState<Product | null>(null)
     const [isPending, startTransition] = useTransition()
     const { addItem } = useCart()
     const { data: session } = useSession()
@@ -38,8 +39,8 @@ export default function MatchPage() {
                 flavorNotes: fLevel
             })
 
-            if (res.success) {
-                setMatchedProduct(res.data)
+            if (res.success && res.data) {
+                setMatchedProduct(res.data as unknown as Product)
             }
         })
     }
