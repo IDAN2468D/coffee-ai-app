@@ -3,6 +3,17 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendOrderConfirmationEmail } from '@/lib/mailer';
+import { getReengagementStatus } from '@/app/actions/user';
+
+const VALID_COUPONS: Record<string, { discount: number; validator: () => Promise<boolean> }> = {
+    COFFEE10: {
+        discount: 0.10, // 10%
+        validator: async () => {
+            const status = await getReengagementStatus();
+            return status.shouldShow;
+        },
+    },
+};
 
 export async function POST(req: Request) {
     try {
@@ -11,7 +22,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "You must be signed in to place an order" }, { status: 401 });
         }
 
-        const { items, total, shippingDetails } = await req.json();
+        const { items, total, shippingDetails, couponCode } = await req.json();
 
         if (!items || items.length === 0) {
             return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -74,18 +85,42 @@ export async function POST(req: Request) {
             }
         }
 
+        // Validate and apply coupon (SERVER-SIDE — never trust client prices)
+        let appliedCoupon: string | null = null;
+        let discountAmount = 0;
+
+        if (couponCode && typeof couponCode === 'string') {
+            const couponKey = couponCode.toUpperCase().trim();
+            const coupon = VALID_COUPONS[couponKey];
+
+            if (coupon) {
+                const isEligible = await coupon.validator();
+                if (isEligible) {
+                    discountAmount = Math.round(total * coupon.discount * 100) / 100;
+                    appliedCoupon = couponKey;
+                    console.log(`[COUPON] Applied ${couponKey}: -$${discountAmount} (${coupon.discount * 100}%)`);
+                } else {
+                    console.log(`[COUPON] User not eligible for ${couponKey}`);
+                }
+            }
+        }
+
+        const finalTotal = Math.round((total - discountAmount) * 100) / 100;
+
         // Create the order in the database
         const order = await prisma.order.create({
             data: {
                 userId: (session.user as any).id,
-                total: total,
+                total: finalTotal,
+                discount: discountAmount,
+                appliedCoupon: appliedCoupon,
                 status: 'pending',
                 shippingAddress: shippingDetails || {},
                 items: {
                     create: finalItems.map((item: any) => ({
                         productId: item.id,
                         quantity: item.quantity,
-                        size: item.size || 'M', // Save selected size, default to M
+                        size: item.size || 'M',
                     }))
                 }
             },
@@ -124,7 +159,13 @@ export async function POST(req: Request) {
             sendOrderConfirmationEmail(session.user.email, session.user.name, order).catch(console.error);
         }
 
-        return NextResponse.json({ success: true, orderId: order.id, pointsEarned });
+        return NextResponse.json({
+            success: true,
+            orderId: order.id,
+            pointsEarned,
+            appliedCoupon,
+            discount: discountAmount,
+        });
 
     } catch (error) {
         console.error("Order creation error:", error);

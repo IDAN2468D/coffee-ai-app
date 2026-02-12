@@ -154,6 +154,8 @@ model Order {
   items     OrderItem[]
   shippingAddress Json?
   total     Float
+  discount  Float    @default(0)
+  appliedCoupon String?
   status    String   @default("pending")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

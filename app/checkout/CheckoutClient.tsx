@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCartStore } from '@/context/useCartStore';
-import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
+import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock, Tag, Gift } from 'lucide-react';
 import { Autocomplete } from '../../components/ui/Autocomplete';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,14 +46,40 @@ export default function CheckoutPage() {
     };
 
     const [usePoints, setUsePoints] = useState(false);
-    // Mock points for now, or fetch from session/API. 
-    // Ideally pass this as prop or fetch on mount. Let's assume user has 403 points as seen in logs.
     const userPoints = 403;
-    const pointsValue = Math.floor(userPoints / 10); // 10 points = 1 NIS
+    const pointsValue = Math.floor(userPoints / 10);
+
+    // Coupon state
+    const [couponCode, setCouponCode] = useState('');
+    const [couponApplied, setCouponApplied] = useState(false);
+    const [couponError, setCouponError] = useState('');
+
+    // Auto-detect COFFEE10 from re-engagement banner
+    React.useEffect(() => {
+        const dismissed = localStorage.getItem('reengagement-dismissed');
+        const bannerWasShown = localStorage.getItem('reengagement-shown');
+        // If banner was shown (campaign user), auto-fill the code
+        if (!dismissed || bannerWasShown) {
+            setCouponCode('COFFEE10');
+        }
+    }, []);
+
+    const handleApplyCoupon = () => {
+        setCouponError('');
+        const code = couponCode.toUpperCase().trim();
+        if (code === 'COFFEE10') {
+            setCouponApplied(true);
+            setCouponError('');
+        } else if (code.length > 0) {
+            setCouponApplied(false);
+            setCouponError('קוד קופון לא תקין');
+        }
+    };
 
     // Calculate final total
-    const discount = usePoints ? Math.min(pointsValue, total) : 0;
-    const finalTotal = total - discount;
+    const couponDiscount = couponApplied ? Math.round(total * 0.10 * 100) / 100 : 0;
+    const discount = usePoints ? Math.min(pointsValue, total - couponDiscount) : 0;
+    const finalTotal = total - couponDiscount - discount;
 
     const onSubmit = async (data: any) => {
         if (!session) {
@@ -68,8 +94,9 @@ export default function CheckoutPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     items: items,
-                    total: finalTotal, // Send discounted total
+                    total: total, // Send original total — server recalculates discount
                     shippingDetails: data,
+                    couponCode: couponApplied ? couponCode.toUpperCase().trim() : undefined,
                     redeemedPoints: usePoints ? Math.min(userPoints, Math.ceil(discount * 10)) : 0
                 })
             });
@@ -659,7 +686,69 @@ export default function CheckoutPage() {
                                         <span className="text-emerald-400 font-bold bg-emerald-400/10 px-3 py-1 rounded-full text-xs border border-emerald-400/20">חינם</span>
                                     </div>
 
-                                    {/* Points Redemption - Gold Card Design */}
+                                    {/* Coupon Code Input */}
+                                    <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5 space-y-3">
+                                        <div className="flex items-center gap-2 flex-row-reverse">
+                                            <Tag className="w-4 h-4 text-[#C37D46]" />
+                                            <span className="text-xs font-black uppercase text-white/60 tracking-widest">קוד קופון</span>
+                                        </div>
+                                        <div className="flex gap-2 flex-row-reverse">
+                                            <input
+                                                type="text"
+                                                value={couponCode}
+                                                onChange={(e) => {
+                                                    setCouponCode(e.target.value);
+                                                    setCouponApplied(false);
+                                                    setCouponError('');
+                                                }}
+                                                placeholder="הכנס קוד קופון"
+                                                disabled={couponApplied}
+                                                className={`flex-1 bg-black/20 border rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-center outline-none transition-all placeholder:text-white/20 ${couponApplied
+                                                        ? 'border-emerald-500/40 text-emerald-400 bg-emerald-500/10'
+                                                        : couponError
+                                                            ? 'border-red-500/40 text-red-400'
+                                                            : 'border-white/10 text-white focus:border-[#C37D46]/50'
+                                                    }`}
+                                            />
+                                            {couponApplied ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setCouponApplied(false); setCouponCode(''); }}
+                                                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/20 hover:bg-red-500/30 transition-all"
+                                                >
+                                                    הסר
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleApplyCoupon}
+                                                    className="px-4 py-2.5 rounded-xl text-xs font-bold bg-[#C37D46] text-white hover:bg-[#A05A2C] transition-all shadow-lg"
+                                                >
+                                                    החל
+                                                </button>
+                                            )}
+                                        </div>
+                                        {couponApplied && (
+                                            <div className="flex items-center gap-2 flex-row-reverse text-emerald-400 text-xs font-bold">
+                                                <Gift className="w-3.5 h-3.5" />
+                                                <span>הנחת קמפיין 10% הופעלה בהצלחה!</span>
+                                            </div>
+                                        )}
+                                        {couponError && (
+                                            <p className="text-red-400 text-xs font-bold text-right">{couponError}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Coupon Discount Line */}
+                                    {couponApplied && (
+                                        <div className="flex justify-between items-center text-emerald-400 text-sm font-bold flex-row-reverse">
+                                            <div className="flex items-center gap-2 flex-row-reverse">
+                                                <Gift className="w-4 h-4" />
+                                                <span>הנחת קמפיין (COFFEE10)</span>
+                                            </div>
+                                            <span className="font-mono">-₪{couponDiscount.toFixed(0)}</span>
+                                        </div>
+                                    )}
                                     <div className={`mt-6 p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group ${usePoints ? 'bg-gradient-to-br from-[#FFD700]/10 to-[#B8860B]/20 border-[#FFD700]/30' : 'bg-white/5 border-white/5 hover:border-white/10'}`}>
                                         <div className="flex items-center justify-between flex-row-reverse relative z-10">
                                             <div className="flex items-center gap-3 flex-row-reverse">
