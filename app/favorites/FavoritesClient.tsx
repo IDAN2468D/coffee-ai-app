@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Product } from '@/lib/products'; // Note: using the interface from lib/products or prisma client type
 import { Star, Trash2, ShoppingBag, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import useCartStore from '../../lib/store';
+import { useCart } from '../../lib/store';
 import { useRouter } from 'next/navigation';
 
 interface FavoritesClientProps {
@@ -14,7 +14,7 @@ interface FavoritesClientProps {
 export default function FavoritesClient({ initialFavorites }: FavoritesClientProps) {
     const [favorites, setFavorites] = useState(initialFavorites);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
-    const { addItem } = useCartStore();
+    const { addItem } = useCart();
     const router = useRouter();
 
     const handleSelect = (id: string) => {

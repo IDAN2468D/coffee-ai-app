@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import useCartStore from '../../lib/store';
+import { useCart } from '../../lib/store';
 import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock } from 'lucide-react';
 import { Autocomplete } from '../../components/ui/Autocomplete';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ import { useSession } from 'next-auth/react';
 
 export default function CheckoutPage() {
     const { data: session } = useSession();
-    const { items, total, clearCart } = useCartStore();
+    const { items, total, clearCart } = useCart();
     const [step, setStep] = useState(1);
     const [isOrdered, setIsOrdered] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
