@@ -35,8 +35,9 @@ export async function getUnlockedOrigins() {
         const origins = new Set<string>();
         user.orders.forEach(order => {
             order.items.forEach(item => {
-                if (item.product.origin) {
-                    origins.add(item.product.origin);
+                const product = item.product as any;
+                if (product.origin) {
+                    origins.add(product.origin);
                 }
             });
         });

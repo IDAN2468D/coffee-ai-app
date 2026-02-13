@@ -50,7 +50,7 @@ export async function craftBlend(stats: { acidity: number; body: number; sweetne
                 sweetness: stats.sweetness,
                 bitterness: stats.bitterness,
                 userId: user.id
-            }
+            } as any
         });
 
         revalidatePath("/dashboard");
