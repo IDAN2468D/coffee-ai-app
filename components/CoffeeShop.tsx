@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ShoppingBag, Star, Plus, Minus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingBag, Star, Plus, Minus, Zap } from 'lucide-react';
 import { useCartStore } from '@/context/useCartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -11,6 +11,19 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
     const { items, addItem, removeItem } = useCartStore();
     const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
     const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+    const [isHappyHour, setIsHappyHour] = useState(false);
+
+    useEffect(() => {
+        function checkHappyHour() {
+            const now = new Date();
+            const israelTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jerusalem' }));
+            const hour = israelTime.getHours();
+            setIsHappyHour(hour >= 14 && hour < 17);
+        }
+        checkHappyHour();
+        const interval = setInterval(checkHappyHour, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     const toggleFavorite = async (productId: string) => {
         // Optimistic update
@@ -89,6 +102,17 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 key={product.id}
                                 className="relative bg-white rounded-[2rem] p-6 pt-24 shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center mt-12 group/card"
                             >
+                                {/* Happy Hour Badge */}
+                                {isHappyHour && (product.tags?.includes('PASTRY') || (typeof product.category === 'object' && product.category?.name === 'Pastry')) && (
+                                    <motion.div
+                                        initial={{ scale: 0, rotate: -12 }}
+                                        animate={{ scale: 1, rotate: 0 }}
+                                        className="absolute top-4 left-4 z-20 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"
+                                    >
+                                        <Zap className="w-3.5 h-3.5 fill-yellow-200 text-yellow-200" />
+                                        <span className="text-[10px] font-black uppercase tracking-wider">Happy Hour</span>
+                                    </motion.div>
+                                )}
                                 {/* Floating Image */}
                                 <Link
                                     href={`/shop/${product.id}`}
@@ -114,7 +138,16 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 <Link href={`/shop/${product.id}`} className="block mb-2 group-hover/card:text-[#C37D46] transition-colors">
                                     <h3 className="text-xl font-serif font-bold text-[#2D1B14]">{product.name}</h3>
                                 </Link>
-                                <div className="text-[#2D1B14] font-black text-lg mb-4">₪{product.price}</div>
+                                {/* Dynamic Pricing */}
+                                {isHappyHour && (product.tags?.includes('PASTRY') || (typeof product.category === 'object' && product.category?.name === 'Pastry')) ? (
+                                    <div className="mb-4 flex items-center gap-2 justify-center">
+                                        <span className="text-stone-400 line-through text-sm">₪{product.price}</span>
+                                        <span className="text-[#2D1B14] font-black text-lg">₪{Math.round(product.price * 0.85)}</span>
+                                        <span className="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">-15%</span>
+                                    </div>
+                                ) : (
+                                    <div className="text-[#2D1B14] font-black text-lg mb-4">₪{product.price}</div>
+                                )}
 
                                 <p className="text-xs text-stone-500 mb-6 px-4 leading-relaxed line-clamp-2 min-h-[2.5em]">
                                     {product.description || "Rich coffee brewed of Italian origin roast with raw sugar and steamed milk."}

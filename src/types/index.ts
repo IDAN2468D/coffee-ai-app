@@ -38,6 +38,7 @@ export interface Product {
     category: 'Hot' | 'Cold' | 'Pastry' | 'Beans' | 'Equipment' | 'Capsules';
     roast?: string | null;
     flavor?: string[];
+    tags?: string[];
 }
 
 export interface CartItem extends Product {
@@ -55,8 +56,41 @@ export interface CartStore {
     clearRecentlyAdded: () => void;
 }
 
-export interface ServerActionResponse<T = any> {
+export interface ServerActionResponse<T = unknown> {
     success: boolean;
     data?: T;
     error?: string;
+}
+
+// --- Gift Card Types ---
+
+export interface GiftCardData {
+    code: string;
+    balance: number;
+    originalAmount: number;
+    recipientEmail: string;
+    message?: string;
+    expiresAt: Date;
+}
+
+// --- AI Brewmaster Types ---
+
+export type TimeOfDay = 'Morning' | 'Afternoon' | 'Evening';
+export type WeatherCondition = 'Sunny' | 'Rainy' | 'Cold';
+
+export interface ContextData {
+    timeOfDay: TimeOfDay;
+    weather: WeatherCondition;
+    greeting: string;
+    recommendedTags: string[];
+    recommendedProduct?: string;
+}
+
+// --- Dynamic Pricing Types ---
+
+export interface DynamicPriceResult {
+    originalPrice: number;
+    finalPrice: number;
+    discountPercent: number;
+    isHappyHour: boolean;
 }

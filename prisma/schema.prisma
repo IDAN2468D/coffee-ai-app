@@ -51,6 +51,8 @@ model User {
   updatedAt     DateTime  @updatedAt
   blends        Blend[]
   tasteProfile  TasteProfile?
+  sentGiftCards     GiftCard[]  @relation("SentGiftCards")
+  receivedGiftCards GiftCard[]  @relation("ReceivedGiftCards")
 }
 
 model Account {
@@ -94,6 +96,7 @@ model Product {
   image       String?
   roast       String?
   flavor      String[]
+  tags        String[]   // AI Brewmaster context tags: "Morning", "Rainy", "Energy", "PASTRY"
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]
@@ -219,4 +222,21 @@ model TasteProfile {
   brewMethod   String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model GiftCard {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  code           String    @unique
+  balance        Float
+  originalAmount Float
+  senderId       String    @db.ObjectId
+  sender         User      @relation("SentGiftCards", fields: [senderId], references: [id])
+  recipientEmail String
+  message        String?
+  isRedeemed     Boolean   @default(false)
+  expiresAt      DateTime
+  createdAt      DateTime  @default(now())
+  redeemedAt     DateTime?
+  redeemedById   String?   @db.ObjectId
+  redeemedBy     User?     @relation("ReceivedGiftCards", fields: [redeemedById], references: [id])
 }

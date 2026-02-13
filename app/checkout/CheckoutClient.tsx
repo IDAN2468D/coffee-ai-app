@@ -54,6 +54,11 @@ export default function CheckoutPage() {
     const [couponApplied, setCouponApplied] = useState(false);
     const [couponError, setCouponError] = useState('');
 
+    // Gift card state
+    const [isGift, setIsGift] = useState(false);
+    const [giftRecipientEmail, setGiftRecipientEmail] = useState('');
+    const [giftMessage, setGiftMessage] = useState('');
+
     // VIP PRO state (verified server-side)
     const [isVipPro, setIsVipPro] = useState(false);
     const STANDARD_SHIPPING_FEE = 29.90;
@@ -119,7 +124,10 @@ export default function CheckoutPage() {
                     total: total, // Send original total — server recalculates discount
                     shippingDetails: data,
                     couponCode: couponApplied ? couponCode.toUpperCase().trim() : undefined,
-                    redeemedPoints: usePoints ? Math.min(userPoints, Math.ceil(discount * 10)) : 0
+                    redeemedPoints: usePoints ? Math.min(userPoints, Math.ceil(discount * 10)) : 0,
+                    isGift,
+                    giftRecipientEmail: isGift ? giftRecipientEmail : undefined,
+                    giftMessage: isGift ? giftMessage : undefined,
                 })
             });
 
@@ -447,6 +455,66 @@ export default function CheckoutPage() {
                                             </div>
                                             {errors.email && <p className="text-[10px] text-red-500 font-bold mr-2 uppercase">{(errors.email as any).message}</p>}
                                         </div>
+                                    </div>
+
+                                    {/* Send as Gift Toggle */}
+                                    <div className="mt-8 p-6 rounded-2xl bg-gradient-to-l from-amber-50 to-orange-50 border-2 border-amber-100/50 space-y-5">
+                                        <div className="flex items-center justify-between flex-row-reverse">
+                                            <div className="flex items-center gap-3 flex-row-reverse">
+                                                <div className="bg-gradient-to-br from-[#C37D46] to-[#8B4513] p-2 rounded-xl shadow-sm">
+                                                    <Gift className="w-5 h-5 text-white" />
+                                                </div>
+                                                <div className="text-right">
+                                                    <h4 className="font-bold text-[#2D1B14] text-sm">שלח כמתנה</h4>
+                                                    <p className="text-[10px] text-stone-400 font-bold">הפתעה מושלמת לחובבי קפה</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsGift(!isGift)}
+                                                className={`relative w-14 h-7 rounded-full transition-colors duration-300 ${isGift ? 'bg-[#C37D46]' : 'bg-stone-200'}`}
+                                            >
+                                                <div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${isGift ? 'right-0.5' : 'right-7'}`} />
+                                            </button>
+                                        </div>
+
+                                        <AnimatePresence>
+                                            {isGift && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                    className="overflow-hidden space-y-4"
+                                                >
+                                                    <div className="space-y-3">
+                                                        <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">אימייל הנמען</label>
+                                                        <div className="relative group">
+                                                            <input
+                                                                type="email"
+                                                                value={giftRecipientEmail}
+                                                                onChange={(e) => setGiftRecipientEmail(e.target.value)}
+                                                                placeholder="friend@example.com"
+                                                                className="w-full bg-white border-2 border-amber-100 focus:border-[#C37D46] rounded-2xl p-4 pr-12 text-sm transition-all outline-none font-medium placeholder:text-stone-300"
+                                                            />
+                                                            <Mail className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400 group-focus-within:text-[#C37D46] transition-colors" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-3">
+                                                        <label className="text-xs font-black uppercase text-[#2D1B14] tracking-widest mr-1">הודעה אישית (אופציונלי)</label>
+                                                        <textarea
+                                                            value={giftMessage}
+                                                            onChange={(e) => setGiftMessage(e.target.value)}
+                                                            maxLength={200}
+                                                            placeholder="☕ תהנה מקפה מעולה!"
+                                                            rows={2}
+                                                            className="w-full bg-white border-2 border-amber-100 focus:border-[#C37D46] rounded-2xl p-4 text-sm transition-all outline-none font-medium placeholder:text-stone-300 resize-none"
+                                                        />
+                                                        <p className="text-[10px] text-stone-400 text-left font-mono">{giftMessage.length}/200</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
                                 </div>
                             )}

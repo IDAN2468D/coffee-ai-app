@@ -6,31 +6,38 @@ import PopularTaste from "@/components/PopularTaste";
 import { prisma } from "@/lib/prisma";
 import { Product } from "@prisma/client";
 import Footer from "@/components/AppFooter";
-import Highlights from "@/components/Highlights";
 import Subscription from "@/components/Subscription";
+import HappyHourBanner from "@/components/HappyHourBanner";
+import { getContextData } from "@/app/actions/brewmaster";
+import type { ContextData } from "@/src/types";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   let products: Product[] = [];
+  let contextData: ContextData | null = null;
+
   try {
-    products = await prisma.product.findMany({
-      include: {
-        category: true
-      }
-    });
+    const [productsResult, contextResult] = await Promise.all([
+      prisma.product.findMany({ include: { category: true } }),
+      getContextData(),
+    ]);
+    products = productsResult;
+    if (contextResult.success && contextResult.data) {
+      contextData = contextResult.data;
+    }
   } catch (error) {
-    console.error("Failed to fetch products:", error);
+    console.error("Failed to fetch page data:", error);
   }
 
   return (
     <main className="min-h-screen bg-white font-sans">
       <Navbar />
 
-      <Hero />
+      <Hero context={contextData} />
 
-      {/* Optional: Features/Highlights strip if fits design, keeping simpler for now */}
+      <HappyHourBanner />
 
       <AboutSection />
 
@@ -44,3 +51,4 @@ export default async function Home() {
     </main>
   );
 }
+
