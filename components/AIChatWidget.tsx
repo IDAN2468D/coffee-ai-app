@@ -2,7 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, Coffee, Sparkles, User, Bot } from 'lucide-react';
+import { MessageSquare, Send, X, Coffee, Sparkles, User, Bot, Lock } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { UserTier, TIER_BENEFITS } from '@/lib/tiers';
+import { FeatureLock } from './FeatureLock';
+import { TierBadge } from './TierBadge';
 
 type Message = {
     role: 'user' | 'model';
@@ -17,6 +21,9 @@ export default function AIChatWidget() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const { data: session } = useSession();
+    const userTier: UserTier = (session?.user as any)?.tier || 'SILVER';
+    const benefits = TIER_BENEFITS[userTier];
 
     useEffect(() => {
         setMounted(true);
@@ -170,7 +177,20 @@ export default function AIChatWidget() {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-3 bg-white border-t border-stone-100">
+                        <div className="p-3 bg-white border-t border-stone-100 relative">
+                            {benefits.aiAccess === false ? (
+                                <div className="absolute inset-0 bg-stone-50/90 backdrop-blur-[1px] z-20 flex items-center justify-center p-4">
+                                    <div className="text-center">
+                                        <p className="text-xs font-bold text-stone-600 mb-2">שדרגו ל-Gold לגישה מלאה לצ'אט</p>
+                                        <button
+                                            onClick={() => window.location.href = '/dashboard/subscription'}
+                                            className="text-[10px] bg-[#C37D46] text-white px-3 py-1 rounded-full font-bold shadow-sm"
+                                        >
+                                            שדרג עכשיו
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : null}
                             <form
                                 className="flex gap-2"
                                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
@@ -179,12 +199,13 @@ export default function AIChatWidget() {
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="שאל אותי על קפה..."
-                                    className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C37D46] focus:ring-1 focus:ring-[#C37D46] transition-all"
+                                    placeholder={benefits.aiAccess === false ? "הצ'אט נעול..." : "שאל אותי על קפה..."}
+                                    disabled={benefits.aiAccess === false}
+                                    className="flex-1 bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C37D46] focus:ring-1 focus:ring-[#C37D46] transition-all disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
-                                    disabled={isLoading || !input.trim()}
+                                    disabled={isLoading || !input.trim() || benefits.aiAccess === false}
                                     className="bg-[#C37D46] hover:bg-[#a86535] disabled:opacity-50 disabled:cursor-not-allowed text-white p-3 rounded-xl transition-all shadow-md active:scale-95"
                                 >
                                     <Send size={18} />

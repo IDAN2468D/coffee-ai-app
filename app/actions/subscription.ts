@@ -8,10 +8,11 @@ import { Plan, Subscription } from "@/src/types";
 import { revalidatePath } from "next/cache";
 
 const updateSubscriptionSchema = z.object({
-    plan: z.nativeEnum(Plan),
+    plan: z.nativeEnum(Plan).optional(),
+    tier: z.enum(['SILVER', 'GOLD', 'PLATINUM']).optional(),
 });
 
-export async function updateSubscription(formData: FormData | { plan: Plan }) {
+export async function updateSubscription(formData: FormData | { plan?: Plan; tier?: 'SILVER' | 'GOLD' | 'PLATINUM' }) {
     try {
         const session = await getServerSession(authOptions);
 
@@ -20,7 +21,10 @@ export async function updateSubscription(formData: FormData | { plan: Plan }) {
         }
 
         const data = formData instanceof FormData
-            ? { plan: formData.get("plan") as Plan }
+            ? {
+                plan: formData.get("plan") as Plan,
+                tier: formData.get("tier") as any
+            }
             : formData;
 
         const validatedData = updateSubscriptionSchema.safeParse(data);
@@ -29,7 +33,7 @@ export async function updateSubscription(formData: FormData | { plan: Plan }) {
             return { success: false, error: "Invalid plan selected." };
         }
 
-        const { plan } = validatedData.data;
+        const { plan, tier } = validatedData.data;
 
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
@@ -43,7 +47,14 @@ export async function updateSubscription(formData: FormData | { plan: Plan }) {
         const nextBillingDate = new Date();
         nextBillingDate.setDate(nextBillingDate.getDate() + 30);
 
-        const subscription = await prisma.subscription.upsert({
+        if (tier) {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { tier: tier as any },
+            });
+        }
+
+        const subscription = plan ? await prisma.subscription.upsert({
             where: { userId: user.id },
             update: {
                 plan,
@@ -56,7 +67,7 @@ export async function updateSubscription(formData: FormData | { plan: Plan }) {
                 status: "active",
                 nextBillingDate,
             },
-        });
+        }) : null;
 
         revalidatePath("/vip");
         revalidatePath("/dashboard");

@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { TIER_BENEFITS, UserTier } from '@/lib/tiers';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -10,6 +11,24 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         const { prompt, variant = 0 } = await req.json();
+
+        if (session?.user) {
+            const user = await prisma.user.findUnique({
+                where: { id: (session.user as any).id },
+                select: { tier: true }
+            });
+            const userTier: UserTier = (user?.tier as UserTier) || 'SILVER';
+            const benefits = TIER_BENEFITS[userTier];
+
+            if (benefits.aiAccess === false) {
+                const fallbackUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1024&auto=format&fit=crop";
+                return NextResponse.json({
+                    url: fallbackUrl,
+                    message: "שדרג ל-Gold כדי ליהנות מהמלצות AI אישיות!",
+                    isLocked: true
+                });
+            }
+        }
 
         if (!process.env.GEMINI_API_KEY) {
             console.warn("⚠️ No Gemini API Key found. Please add GEMINI_API_KEY to your .env file");

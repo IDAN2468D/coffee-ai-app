@@ -1,6 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { TIER_BENEFITS, UserTier } from "@/lib/tiers";
 import type { ServerActionResponse, ContextData, DynamicPriceResult, TimeOfDay, WeatherCondition } from "@/src/types";
 
 // --- Constants ---
@@ -134,6 +137,21 @@ export async function getDynamicPrice(
     productId: string
 ): Promise<ServerActionResponse<DynamicPriceResult>> {
     try {
+        const session = await getServerSession(authOptions);
+        const userEmail = session?.user?.email;
+
+        let userTier: UserTier = 'SILVER';
+
+        if (userEmail) {
+            const user = await prisma.user.findUnique({
+                where: { email: userEmail },
+                select: { tier: true }
+            });
+            if (user) {
+                userTier = (user.tier as UserTier) || 'SILVER';
+            }
+        }
+
         const product = await prisma.product.findUnique({
             where: { id: productId },
             select: { price: true, tags: true },
@@ -150,9 +168,12 @@ export async function getDynamicPrice(
         let finalPrice = product.price;
         let discountPercent = 0;
 
+        const benefits = TIER_BENEFITS[userTier];
+        const tierDiscount = benefits.happyHourDiscount;
+
         if (isHappyHour && isPastry) {
-            discountPercent = HAPPY_HOUR_DISCOUNT * 100; // 15
-            finalPrice = product.price * (1 - HAPPY_HOUR_DISCOUNT);
+            discountPercent = tierDiscount * 100;
+            finalPrice = product.price * (1 - tierDiscount);
 
             // Price floor: never below 50% of base price
             const floor = product.price * PRICE_FLOOR_RATIO;

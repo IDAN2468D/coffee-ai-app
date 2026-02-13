@@ -11,7 +11,9 @@
 
 import { prisma } from '@/lib/prisma';
 
-export type LoyaltyTier = 'STANDARD' | 'PRO';
+import { UserTier } from './tiers';
+
+export type LoyaltyTier = UserTier;
 
 export interface LoyaltyStatus {
     tier: LoyaltyTier;
@@ -22,8 +24,8 @@ export interface LoyaltyStatus {
     justUpgraded: boolean;    // true if this check triggered an upgrade
 }
 
-const VIP_ORDER_THRESHOLD = 3;
-const VIP_SPEND_THRESHOLD = 500;
+const GOLD_ORDER_THRESHOLD = 5;
+const PLATINUM_ORDER_THRESHOLD = 10;
 
 /** Excluded statuses — cancelled orders do NOT count toward VIP */
 const EXCLUDED_STATUSES = ['cancelled', 'refunded'];
@@ -76,92 +78,86 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
 
     if (!user) {
         return {
-            tier: 'STANDARD',
+            tier: 'SILVER',
             orderCount: 0,
             totalSpent: 0,
-            ordersToVip: VIP_ORDER_THRESHOLD,
-            spendToVip: VIP_SPEND_THRESHOLD,
+            ordersToNextTier: GOLD_ORDER_THRESHOLD,
+            nextTier: 'GOLD',
             justUpgraded: false,
         };
     }
 
-    const { subscription } = user;
-    const currentPlan = subscription?.plan || 'FREE';
+    const currentTier = (user as any).tier || 'SILVER';
 
-    // Already PRO — lifetime, no recalculation needed
-    if (currentPlan === 'PRO') {
+    // PLATINUM is the highest tier
+    if (currentTier === 'PLATINUM') {
         return {
-            tier: 'PRO',
+            tier: 'PLATINUM',
             orderCount: successfulOrders,
             totalSpent: successfulSpend,
-            ordersToVip: 0,
-            spendToVip: 0,
+            ordersToNextTier: 0,
+            nextTier: null,
             justUpgraded: false,
         };
     }
 
-    // Check thresholds against LIVE counts (cancelled excluded)
-    const qualifiesByOrders = successfulOrders >= VIP_ORDER_THRESHOLD;
-    const qualifiesBySpend = successfulSpend >= VIP_SPEND_THRESHOLD;
-    const shouldUpgrade = qualifiesByOrders || qualifiesBySpend;
+    let nextTier: UserTier | null = null;
+    let threshold = 0;
 
-    if (shouldUpgrade) {
-        // Atomic upgrade: update plan + create notification
+    if (currentTier === 'SILVER') {
+        nextTier = 'GOLD';
+        threshold = GOLD_ORDER_THRESHOLD;
+    } else if (currentTier === 'GOLD') {
+        nextTier = 'PLATINUM';
+        threshold = PLATINUM_ORDER_THRESHOLD;
+    }
+
+    const shouldUpgrade = successfulOrders >= threshold;
+
+    if (shouldUpgrade && nextTier) {
+        // Atomic upgrade: update user tier + create notification
         await prisma.$transaction([
-            subscription
-                ? prisma.subscription.update({
-                    where: { id: subscription.id },
-                    data: { plan: 'PRO', status: 'active' },
-                })
-                : prisma.subscription.create({
-                    data: {
-                        userId,
-                        plan: 'PRO',
-                        status: 'active',
-                    },
-                }),
+            prisma.user.update({
+                where: { id: userId },
+                data: { tier: nextTier },
+            }),
             prisma.notification.create({
                 data: {
                     userId,
                     type: 'promo',
-                    message: '🏆 מזל טוב! עלית לדרגת VIP PRO! נהנה מהטבות בלעדיות.',
+                    message: `🏆 מזל טוב! עלית לדרגת ${nextTier}! נהנה מהטבות בלעדיות.`,
                 },
             }),
         ]);
 
         return {
-            tier: 'PRO',
+            tier: nextTier,
             orderCount: successfulOrders,
             totalSpent: successfulSpend,
-            ordersToVip: 0,
-            spendToVip: 0,
+            ordersToNextTier: 0, // Need to re-evaluate for the NEXT tier if applicable
+            nextTier: nextTier === 'GOLD' ? 'PLATINUM' : null,
             justUpgraded: true,
         };
     }
 
     return {
-        tier: 'STANDARD',
+        tier: currentTier,
         orderCount: successfulOrders,
         totalSpent: successfulSpend,
-        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - successfulOrders),
-        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - successfulSpend),
+        ordersToNextTier: Math.max(0, threshold - successfulOrders),
+        nextTier,
         justUpgraded: false,
     };
 }
 
 /**
  * Get loyalty status without triggering upgrade (read-only).
- * Used by frontend to render progress bar.
- *
- * Uses live DB counts to ensure cancelled orders are excluded.
  */
-export async function getLoyaltyStatus(userId: string): Promise<LoyaltyStatus> {
+export async function getLoyaltyStatus(userId: string): Promise<any> {
     const [user, successfulOrders, successfulSpend] = await Promise.all([
         prisma.user.findUnique({
             where: { id: userId },
-            select: {
-                subscription: { select: { plan: true } },
-            },
+            select: { tier: true },
         }),
         countSuccessfulOrders(userId),
         sumSuccessfulSpend(userId),
@@ -169,36 +165,44 @@ export async function getLoyaltyStatus(userId: string): Promise<LoyaltyStatus> {
 
     if (!user) {
         return {
-            tier: 'STANDARD',
+            tier: 'SILVER',
             orderCount: 0,
             totalSpent: 0,
-            ordersToVip: VIP_ORDER_THRESHOLD,
-            spendToVip: VIP_SPEND_THRESHOLD,
+            ordersToNextTier: GOLD_ORDER_THRESHOLD,
+            nextTier: 'GOLD',
             justUpgraded: false,
         };
     }
 
-    const currentPlan = user.subscription?.plan || 'FREE';
+    const currentTier = (user as any).tier || 'SILVER';
 
-    if (currentPlan === 'PRO') {
+    if (currentTier === 'PLATINUM') {
         return {
-            tier: 'PRO',
+            tier: 'PLATINUM',
             orderCount: successfulOrders,
             totalSpent: successfulSpend,
-            ordersToVip: 0,
-            spendToVip: 0,
+            ordersToNextTier: 0,
+            nextTier: null,
             justUpgraded: false,
         };
+    }
+
+    let nextTier: UserTier | null = 'GOLD';
+    let threshold = GOLD_ORDER_THRESHOLD;
+
+    if (currentTier === 'GOLD') {
+        nextTier = 'PLATINUM';
+        threshold = PLATINUM_ORDER_THRESHOLD;
     }
 
     return {
-        tier: 'STANDARD',
+        tier: currentTier,
         orderCount: successfulOrders,
         totalSpent: successfulSpend,
-        ordersToVip: Math.max(0, VIP_ORDER_THRESHOLD - successfulOrders),
-        spendToVip: Math.max(0, VIP_SPEND_THRESHOLD - successfulSpend),
+        ordersToNextTier: Math.max(0, threshold - successfulOrders),
+        nextTier,
         justUpgraded: false,
     };
 }
 
-export { VIP_ORDER_THRESHOLD, VIP_SPEND_THRESHOLD };
+export { GOLD_ORDER_THRESHOLD, PLATINUM_ORDER_THRESHOLD };

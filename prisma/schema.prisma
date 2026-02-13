@@ -14,6 +14,12 @@ enum Plan {
   PRO
 }
 
+enum UserTier {
+  SILVER
+  GOLD
+  PLATINUM
+}
+
 model Subscription {
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   userId          String   @unique @db.ObjectId
@@ -47,6 +53,7 @@ model User {
   points        Int       @default(0)
   totalSpent    Float     @default(0)
   orderCount    Int       @default(0)
+  tier          UserTier  @default(SILVER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   blends        Blend[]

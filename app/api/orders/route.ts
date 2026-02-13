@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { sendOrderConfirmationEmail } from '@/lib/mailer';
 import { getReengagementStatus } from '@/app/actions/user';
 import { checkLoyaltyUpgrade } from '@/lib/loyalty';
+import { TIER_BENEFITS, UserTier } from '@/lib/tiers';
 
 const VALID_COUPONS: Record<string, { discount: number; validator: () => Promise<boolean> }> = {
     COFFEE10: {
@@ -89,18 +90,19 @@ export async function POST(req: Request) {
         // === VIP BENEFITS (SERVER-SIDE — verified against DB, never trusted from client) ===
         const userRecord = await prisma.user.findUnique({
             where: { id: (session.user as any).id },
-            select: { subscription: { select: { plan: true } } },
+            select: { tier: true },
         });
 
-        const isVipPro = userRecord?.subscription?.plan === 'PRO';
-        const VIP_DISCOUNT_RATE = 0.05; // 5% automatic VIP discount
-        const STANDARD_SHIPPING_FEE = 29.90;
+        const userTier: UserTier = (userRecord?.tier as UserTier) || 'SILVER';
+        const benefits = TIER_BENEFITS[userTier];
 
-        const vipDiscount = isVipPro ? Math.round(total * VIP_DISCOUNT_RATE * 100) / 100 : 0;
-        const shippingFee = isVipPro ? 0 : STANDARD_SHIPPING_FEE;
+        const vipDiscountRate = benefits.vipDiscount;
+        const shippingFee = benefits.freeShipping ? 0 : benefits.shippingFee;
 
-        if (isVipPro) {
-            console.log(`[VIP] PRO user detected. Discount: -₪${vipDiscount}, Shipping: FREE`);
+        const vipDiscount = Math.round(total * vipDiscountRate * 100) / 100;
+
+        if (userTier !== 'SILVER') {
+            console.log(`[VIP] ${userTier} user detected. Discount: -₪${vipDiscount}, Shipping: ${shippingFee === 0 ? 'FREE' : '₪' + shippingFee}`);
         }
 
         // Validate and apply coupon (SERVER-SIDE — never trust client prices)
@@ -190,8 +192,8 @@ export async function POST(req: Request) {
             discount: discountAmount,
             vipDiscount,
             shippingFee,
-            isVipPro,
-            loyaltyUpgrade: loyaltyResult.justUpgraded ? 'PRO' : null,
+            userTier,
+            loyaltyUpgrade: loyaltyResult.justUpgraded ? loyaltyResult.tier : null,
         });
 
     } catch (error) {

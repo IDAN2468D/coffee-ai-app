@@ -3,11 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Clock } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { TIER_BENEFITS, UserTier } from '@/lib/tiers';
 
 export default function HappyHourBanner() {
     const [isActive, setIsActive] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState('');
     const [mounted, setMounted] = useState(false);
+    const { data: session } = useSession();
+    const userTier: UserTier = (session?.user as any)?.tier || 'SILVER';
+    const benefits = TIER_BENEFITS[userTier];
+    const discountPercent = benefits.happyHourDiscount * 100;
 
     useEffect(() => {
         setMounted(true);
@@ -97,7 +103,7 @@ export default function HappyHourBanner() {
                                     ⚡ שעת הפי אוור!
                                 </h3>
                                 <p className="text-white/80 text-xs md:text-sm font-bold">
-                                    הנחה של 15% על כל המאפים
+                                    הנחה של {discountPercent}% על כל המאפים לחברי {userTier}
                                 </p>
                             </div>
                         </div>
