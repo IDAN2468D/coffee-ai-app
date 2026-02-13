@@ -35,16 +35,29 @@ export async function craftBlend(stats: { acidity: number; body: number; sweetne
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
-        const aiData = JSON.parse(text.replace(/```json|```/g, "").trim());
+        let text = response.text();
+
+        // Robust JSON extraction
+        let aiData;
+        try {
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                aiData = JSON.parse(jsonMatch[0]);
+            } else {
+                aiData = JSON.parse(text);
+            }
+        } catch (parseError) {
+            console.error("JSON Parse Error. Raw Text:", text);
+            return { success: false, error: "ה-AI הפיק תשובה בפורמט לא תקין. נסה שוב." };
+        }
 
         // Save to DB
         const blend = await prisma.blend.create({
             data: {
-                name: aiData.name,
+                name: aiData.name || "תערובת מסתורית",
                 base: "Alchemy Custom",
                 milk: "None",
-                flavor: aiData.description,
+                flavor: aiData.description || "טעם גנרי של קפה",
                 acidity: stats.acidity,
                 body: stats.body,
                 sweetness: stats.sweetness,
@@ -57,8 +70,10 @@ export async function craftBlend(stats: { acidity: number; body: number; sweetne
         revalidatePath("/alchemy");
 
         return { success: true, data: blend };
-    } catch (error) {
+    } catch (error: any) {
         console.error("Crafting error:", error);
-        return { success: false, error: "The lab is currently unstable. Please try again later." };
+        // Provide more context if it's an API error
+        const errorMsg = error.message?.includes("API_KEY") ? "מפתח ה-API חסר או לא תקין" : "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";
+        return { success: false, error: errorMsg };
     }
 }
