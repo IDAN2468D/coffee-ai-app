@@ -48,16 +48,17 @@ model User {
   comments      Comment[]
   subscription  Subscription?
 
-  favoriteIds   String[]  @db.ObjectId
-  isAdmin       Boolean   @default(false)
-  points        Int       @default(0)
-  totalSpent    Float     @default(0)
-  orderCount    Int       @default(0)
-  tier          UserTier  @default(SILVER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  blends        Blend[]
-  tasteProfile  TasteProfile?
+  favoriteIds      String[]  @db.ObjectId
+  isAdmin          Boolean   @default(false)
+  points           Int       @default(0)
+  totalSpent       Float     @default(0)
+  orderCount       Int       @default(0)
+  tier             UserTier  @default(SILVER)
+  purchasedOrigins String[]  @default([]) // For "The Coffee Odyssey"
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  blends           Blend[]
+  tasteProfile     TasteProfile?
   sentGiftCards     GiftCard[]  @relation("SentGiftCards")
   receivedGiftCards GiftCard[]  @relation("ReceivedGiftCards")
 }
@@ -104,6 +105,7 @@ model Product {
   roast       String?
   flavor      String[]
   tags        String[]   @default([]) // AI Brewmaster context tags: "Morning", "Rainy", "Energy", "PASTRY"
+  origin      String?    // For "The Coffee Odyssey" (e.g. "Ethiopia", "Colombia")
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]

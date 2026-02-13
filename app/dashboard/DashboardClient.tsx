@@ -20,7 +20,10 @@ import {
     Crown,
     Settings,
     User,
-    Home
+    Home,
+    Beaker,
+    Compass,
+    ChefHat
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -331,6 +334,49 @@ export default function Dashboard({
                                         </button>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Premium Services */}
+                        <div className="bg-[#1a1a1a] rounded-[2.5rem] p-6 border border-amber-500/20 shadow-xl relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="flex items-center gap-2 mb-6 flex-row-reverse">
+                                <Sparkles className="w-5 h-5 text-amber-500" />
+                                <h3 className="text-xl font-serif font-bold text-white">שירותי פרימיום</h3>
+                            </div>
+                            <div className="space-y-4 relative z-10">
+                                <Link href="/alchemy" className="flex items-center justify-between p-4 rounded-2xl bg-black/40 hover:bg-amber-500/10 border border-white/5 hover:border-amber-500/30 transition-all flex-row-reverse">
+                                    <div className="flex items-center gap-3 flex-row-reverse text-right">
+                                        <div className="p-2 rounded-lg bg-amber-500/20"><Beaker className="w-4 h-4 text-amber-500" /></div>
+                                        <div>
+                                            <div className="text-sm font-bold text-white">מעבדת האלכימיה</div>
+                                            <div className="text-[10px] text-white/40">זיקוק תערובות AI</div>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-white/20" />
+                                </Link>
+
+                                <Link href="/odyssey" className="flex items-center justify-between p-4 rounded-2xl bg-black/40 hover:bg-blue-500/10 border border-white/5 hover:border-blue-500/30 transition-all flex-row-reverse">
+                                    <div className="flex items-center gap-3 flex-row-reverse text-right">
+                                        <div className="p-2 rounded-lg bg-blue-500/20"><Compass className="w-4 h-4 text-blue-400" /></div>
+                                        <div>
+                                            <div className="text-sm font-bold text-white">מסע הקפה</div>
+                                            <div className="text-[10px] text-white/40">מפת עולם אינטראקטיבית</div>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-white/20" />
+                                </Link>
+
+                                <Link href="/brewmaster" className="flex items-center justify-between p-4 rounded-2xl bg-black/40 hover:bg-orange-500/10 border border-white/5 hover:border-orange-500/30 transition-all flex-row-reverse">
+                                    <div className="flex items-center gap-3 flex-row-reverse text-right">
+                                        <div className="p-2 rounded-lg bg-orange-500/20"><ChefHat className="w-4 h-4 text-orange-400" /></div>
+                                        <div>
+                                            <div className="text-sm font-bold text-white">עוזר חליטה חכם</div>
+                                            <div className="text-[10px] text-white/40">מדריך חליטה וטיימר</div>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="w-4 h-4 text-white/20" />
+                                </Link>
                             </div>
                         </div>
 
