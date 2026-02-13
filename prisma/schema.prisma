@@ -96,7 +96,7 @@ model Product {
   image       String?
   roast       String?
   flavor      String[]
-  tags        String[]   // AI Brewmaster context tags: "Morning", "Rainy", "Energy", "PASTRY"
+  tags        String[]   @default([]) // AI Brewmaster context tags: "Morning", "Rainy", "Energy", "PASTRY"
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]
