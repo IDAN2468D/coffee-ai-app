@@ -128,3 +128,6 @@ export interface OdysseyResponse {
     error?: string;
 }
 
+export type OriginCoordinates = Record<string, [number, number]>;
+
+

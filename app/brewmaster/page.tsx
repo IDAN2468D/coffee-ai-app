@@ -12,6 +12,8 @@ const STEPS = [
     { id: 4, title: "מזיגה סופית", desc: "השלם את המזיגה וסיים את החליטה", time: 60 },
 ];
 
+import Image from "next/image";
+
 export default function BrewMasterPage() {
     const [activeStep, setActiveStep] = useState(0);
     const [timeLeft, setTimeLeft] = useState(STEPS[0].time);
@@ -20,12 +22,11 @@ export default function BrewMasterPage() {
     const [loadingTips, setLoadingTips] = useState(false);
 
     useEffect(() => {
-        let timer: any;
+        let timer: NodeJS.Timeout;
         if (isActive && timeLeft > 0) {
             timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
         } else if (timeLeft === 0 && activeStep < STEPS.length - 1) {
             setIsActive(false);
-            // Auto advance or wait? Let's wait for user confirmation
         }
         return () => clearInterval(timer);
     }, [isActive, timeLeft, activeStep]);
@@ -46,17 +47,31 @@ export default function BrewMasterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white p-8 font-sans">
-            <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
+        <div className="min-h-screen bg-[#0a0a0a] text-white p-8 font-sans relative overflow-hidden">
+            {/* Premium Background Layer */}
+            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none scale-110">
+                <Image
+                    src="/images/premium_hero_bg.png"
+                    alt="Background"
+                    fill
+                    className="object-cover blur-3xl opacity-50"
+                    priority
+                />
+            </div>
+
+            <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-8 relative z-10">
                 <div className="md:col-span-2 space-y-8">
                     <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="bg-zinc-900/50 p-8 rounded-[2rem] border border-white/5 backdrop-blur-xl"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-white/5 p-10 rounded-[2.5rem] border border-white/10 backdrop-blur-3xl shadow-2xl relative overflow-hidden"
                     >
-                        <div className="flex items-center gap-4 mb-8">
-                            <ChefHat className="text-amber-500 w-8 h-8" />
-                            <h1 className="text-3xl font-bold">מדריך חליטה חכם</h1>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 blur-[60px] rounded-full -translate-y-16 translate-x-16" />
+                        <div className="flex items-center gap-4 mb-10 relative z-10">
+                            <div className="p-3 rounded-2xl bg-amber-500/20 border border-amber-500/20">
+                                <ChefHat className="text-amber-500 w-8 h-8" />
+                            </div>
+                            <h1 className="text-4xl font-bold tracking-tight">מדריך חליטה חכם</h1>
                         </div>
 
                         <div className="relative h-64 flex items-center justify-center bg-black/40 rounded-3xl border border-white/5 mb-8">
