@@ -5,11 +5,22 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+import { ServerActionResponse, AlchemyStats } from "@/src/types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export async function craftBlend(stats: { acidity: number; body: number; sweetness: number; bitterness: number }) {
+const AlchemySchema = z.object({
+    acidity: z.number().min(0).max(100),
+    body: z.number().min(0).max(100),
+    sweetness: z.number().min(0).max(100),
+    bitterness: z.number().min(0).max(100),
+});
+
+export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionResponse> {
     try {
+        const stats = AlchemySchema.parse(rawStats);
+
         const session = await getServerSession(authOptions);
         if (!session?.user?.email) {
             return { success: false, error: "Unauthorized" };
@@ -63,7 +74,7 @@ export async function craftBlend(stats: { acidity: number; body: number; sweetne
                 sweetness: stats.sweetness,
                 bitterness: stats.bitterness,
                 userId: user.id
-            } as any
+            }
         });
 
         revalidatePath("/dashboard");
@@ -71,6 +82,9 @@ export async function craftBlend(stats: { acidity: number; body: number; sweetne
 
         return { success: true, data: blend };
     } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return { success: false, error: "ערכי הקלט אינם תקינים." };
+        }
         console.error("Crafting error:", error);
         // Provide more context if it's an API error
         const errorMsg = error.message?.includes("API_KEY") ? "מפתח ה-API חסר או לא תקין" : "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";

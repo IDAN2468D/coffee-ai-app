@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { craftBlend } from "@/app/actions/alchemy";
 import { Beaker, Sparkles, Wand2, Coffee, CheckCircle2 } from "lucide-react";
+import { AlchemyResult } from "@/src/types";
 
 export default function AlchemyPage() {
     const [stats, setStats] = useState({
@@ -12,18 +13,18 @@ export default function AlchemyPage() {
         sweetness: 50,
         bitterness: 50
     });
-    const [isCrafting, setIsCrafting] = useState(false);
-    const [result, setResult] = useState<any>(null);
+    const [isPending, startTransition] = useTransition();
+    const [result, setResult] = useState<AlchemyResult | null>(null);
 
-    const handleCraft = async () => {
-        setIsCrafting(true);
-        const res = await craftBlend(stats);
-        if (res.success) {
-            setResult(res.data);
-        } else {
-            alert(res.error);
-        }
-        setIsCrafting(false);
+    const handleCraft = () => {
+        startTransition(async () => {
+            const res = await craftBlend(stats);
+            if (res.success) {
+                setResult(res.data as AlchemyResult);
+            } else {
+                alert(res.error);
+            }
+        });
     };
 
     return (
@@ -70,10 +71,10 @@ export default function AlchemyPage() {
 
                         <button
                             onClick={handleCraft}
-                            disabled={isCrafting}
+                            disabled={isPending}
                             className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 font-bold text-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all disabled:opacity-50"
                         >
-                            {isCrafting ? (
+                            {isPending ? (
                                 <motion.div
                                     animate={{ rotate: 360 }}
                                     transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
@@ -83,13 +84,13 @@ export default function AlchemyPage() {
                             ) : (
                                 <Sparkles className="w-6 h-6" />
                             )}
-                            {isCrafting ? "מזקק טעמים..." : "צור תערובת פרימיום"}
+                            {isPending ? "מזקק טעמים..." : "צור תערובת פרימיום"}
                         </button>
                     </div>
 
                     <div className="relative h-[400px] flex items-center justify-center">
                         <AnimatePresence mode="wait">
-                            {!result && !isCrafting && (
+                            {!result && !isPending && (
                                 <motion.div
                                     key="empty"
                                     initial={{ opacity: 0 }}
@@ -101,7 +102,7 @@ export default function AlchemyPage() {
                                     <p>הזן ערכים כדי להתחיל בזיקוק</p>
                                 </motion.div>
                             )}
-                            {isCrafting && (
+                            {isPending && (
                                 <motion.div
                                     key="loading"
                                     initial={{ scale: 0.8, opacity: 0 }}

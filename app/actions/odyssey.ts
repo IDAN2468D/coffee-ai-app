@@ -3,12 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { OdysseyResponse } from "@/src/types";
 
-export async function getUnlockedOrigins() {
+export async function getUnlockedOrigins(): Promise<OdysseyResponse> {
     try {
         const session = await getServerSession(authOptions);
         if (!session?.user?.email) {
-            return { success: false, error: "Unauthorized" };
+            return { success: false, origins: [], error: "Unauthorized" };
         }
 
         const user = await prisma.user.findUnique({
@@ -29,14 +30,14 @@ export async function getUnlockedOrigins() {
         });
 
         if (!user) {
-            return { success: false, error: "User not found" };
+            return { success: false, origins: [], error: "User not found" };
         }
 
         const origins = new Set<string>();
         user.orders.forEach(order => {
             order.items.forEach(item => {
-                const product = item.product as any;
-                if (product.origin) {
+                const product = item.product;
+                if (product && 'origin' in product && typeof product.origin === 'string') {
                     origins.add(product.origin);
                 }
             });
@@ -45,6 +46,6 @@ export async function getUnlockedOrigins() {
         return { success: true, origins: Array.from(origins) };
     } catch (error) {
         console.error("Odyssey error:", error);
-        return { success: false, error: "Failed to load your odyssey." };
+        return { success: false, origins: [], error: "Failed to load your odyssey." };
     }
 }

@@ -41,7 +41,7 @@ export default function BrewMasterPage() {
     const fetchTips = async () => {
         setLoadingTips(true);
         const res = await getBrewProTips("Ethiopia Gesha Village"); // Example coffee
-        if (res.success) setTips(res.tips);
+        if (res.success && res.data) setTips(res.data);
         setLoadingTips(false);
     };
 

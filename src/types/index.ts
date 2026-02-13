@@ -98,3 +98,33 @@ export interface DynamicPriceResult {
     discountPercent: number;
     isHappyHour: boolean;
 }
+
+// --- Alchemy & Odyssey Types ---
+
+export interface AlchemyStats {
+    acidity: number;
+    body: number;
+    sweetness: number;
+    bitterness: number;
+}
+
+export interface AlchemyResult {
+    id: string;
+    name: string;
+    base: string;
+    milk: string;
+    flavor: string;
+    acidity: number;
+    body: number;
+    sweetness: number;
+    bitterness: number;
+    userId: string;
+    createdAt: Date;
+}
+
+export interface OdysseyResponse {
+    success: boolean;
+    origins: string[];
+    error?: string;
+}
+

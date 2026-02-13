@@ -212,14 +212,18 @@ model Notification {
 
 
 model Blend {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  base      String
-  milk      String
-  flavor    String
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  base        String
+  milk        String
+  flavor      String
+  acidity     Int      @default(50)
+  body        Int      @default(50)
+  sweetness   Int      @default(50)
+  bitterness  Int      @default(50)
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
 }
 
 model TasteProfile {
