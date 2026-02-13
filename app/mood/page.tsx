@@ -7,14 +7,7 @@ import { Sparkles, MessageSquare, Coffee, ArrowRight, RefreshCcw } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
-interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-    category: string;
-}
+import { Product } from '@/src/types';
 
 export default function MoodPage() {
     const [mood, setMood] = useState('');

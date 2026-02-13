@@ -2,24 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '@/lib/products';
-
-export type CoffeeSize = 'S' | 'M' | 'L';
-
-interface CartItem extends Product {
-    quantity: number;
-    size?: CoffeeSize; // Coffee size: S, M, L
-}
-
-interface CartStore {
-    items: CartItem[];
-    addItem: (product: Product, size?: CoffeeSize) => void;
-    removeItem: (productId: string, size?: CoffeeSize) => void;
-    clearCart: () => void;
-    total: number;
-    recentlyAddedItem: CartItem | null;
-    clearRecentlyAdded: () => void;
-}
+import { Product, CartItem, CoffeeSize, CartStore } from '@/src/types';
 
 export const useCartStore = create<CartStore>()(
     persist(
