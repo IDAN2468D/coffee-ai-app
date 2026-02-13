@@ -21,20 +21,20 @@ export default function TierDemoPage() {
 
             <div className="space-y-4">
                 <h2 className="text-xl font-semibold">Feature Visibility Tests</h2>
-
-                {/* BASIC Feature */}
+                bash
+                {/* GOLD Feature */}
                 <div className="p-4 border rounded relative">
-                    <span className="absolute top-2 right-2 text-xs bg-gray-200 px-2 py-1 rounded">BASIC+</span>
-                    <ProtectFeature minTier="BASIC">
-                        <div className="text-green-600 font-bold">✅ Visible to BASIC & PRO</div>
+                    <span className="absolute top-2 right-2 text-xs bg-gray-200 px-2 py-1 rounded">GOLD+</span>
+                    <ProtectFeature minTier="GOLD">
+                        <div className="text-green-600 font-bold">✅ Visible to GOLD & PLATINUM</div>
                     </ProtectFeature>
                 </div>
 
-                {/* PRO Feature */}
+                {/* PLATINUM Feature */}
                 <div className="p-4 border rounded relative">
-                    <span className="absolute top-2 right-2 text-xs bg-amber-200 px-2 py-1 rounded">PRO+</span>
-                    <ProtectFeature minTier="PRO" fallback={<div className="text-red-400">⛔ Hidden (Requires PRO)</div>}>
-                        <div className="text-green-600 font-bold">✅ Visible ONLY to PRO</div>
+                    <span className="absolute top-2 right-2 text-xs bg-amber-200 px-2 py-1 rounded">PLATINUM+</span>
+                    <ProtectFeature minTier="PLATINUM" fallback={<div className="text-red-400">⛔ Hidden (Requires PLATINUM)</div>}>
+                        <div className="text-green-600 font-bold">✅ Visible ONLY to PLATINUM</div>
                     </ProtectFeature>
                 </div>
             </div>

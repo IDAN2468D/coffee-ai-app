@@ -37,7 +37,7 @@ export default function Dashboard({
 }: {
     initialPoints: number,
     initialOrders: any[],
-    subscription: { tier: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null,
+    subscription: { plan: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null,
     loyaltyStatus: LoyaltyStatus | null
 }) {
     const { data: session, status } = useSession();
@@ -118,7 +118,7 @@ export default function Dashboard({
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    {subscription?.tier && (
+                                    {subscription?.plan && (
                                         <div className="absolute -bottom-2 -left-2 bg-[#C37D46] text-white p-1.5 rounded-lg shadow-lg">
                                             <Crown className="w-4 h-4" />
                                         </div>
@@ -167,7 +167,7 @@ export default function Dashboard({
                         { label: 'יצירות AI', value: stats?.creationsCount || 0, icon: Sparkles, color: 'text-purple-400', bg: 'bg-purple-500/10' },
                         { label: 'סגנון אהוב', value: stats?.favoriteCategory || '-', icon: Heart, color: 'text-red-400', bg: 'bg-red-500/10' },
                         { label: 'הזמנות', value: initialOrders.length, icon: ShoppingBag, color: 'text-green-400', bg: 'bg-green-500/10' },
-                        { label: 'סטטוס', value: subscription?.tier || 'Basic', icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+                        { label: 'סטטוס', value: subscription?.plan || 'Free', icon: Crown, color: 'text-amber-400', bg: 'bg-amber-500/10' },
                     ].map((item, idx) => (
                         <motion.div
                             key={idx}
@@ -340,10 +340,10 @@ export default function Dashboard({
                             <Crown className="w-12 h-12 mx-auto mb-4 text-white/80" />
                             <h3 className="text-2xl font-serif font-black mb-2">מועדון ה-Pro</h3>
                             <p className="text-white/60 text-sm mb-6 leading-relaxed">
-                                {subscription?.tier ? 'המשך ליהנות מהטבות בלעדיות וממשלוחים חינם.' : 'הצטרף למועדון וקבל 20% הנחה על כל הזמנה ומשלוחים חינם.'}
+                                {subscription?.plan ? 'המשך ליהנות מהטבות בלעדיות וממשלוחים חינם.' : 'הצטרף למועדון וקבל 20% הנחה על כל הזמנה ומשלוחים חינם.'}
                             </p>
                             <Link href="/subscription" className="block w-full py-3 bg-white text-[#8B4513] font-bold uppercase tracking-widest rounded-xl hover:bg-stone-100 transition-colors shadow-lg">
-                                {subscription?.tier ? 'ניהול מנוי' : 'הצטרף עכשיו'}
+                                {subscription?.plan ? 'ניהול מנוי' : 'הצטרף עכשיו'}
                             </Link>
                         </div>
                     </div>
