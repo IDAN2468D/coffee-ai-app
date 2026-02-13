@@ -81,13 +81,19 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
         revalidatePath("/alchemy");
 
         return { success: true, data: blend };
-    } catch (error: any) {
+    } catch (error: unknown) {
         if (error instanceof z.ZodError) {
             return { success: false, error: "ערכי הקלט אינם תקינים." };
         }
         console.error("Crafting error:", error);
-        // Provide more context if it's an API error
-        const errorMsg = error.message?.includes("API_KEY") ? "מפתח ה-API חסר או לא תקין" : "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";
-        return { success: false, error: errorMsg };
+
+        let message = "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";
+        if (error instanceof Error) {
+            if (error.message.includes("API_KEY")) {
+                message = "מפתח ה-API חסר או לא תקין";
+            }
+        }
+
+        return { success: false, error: message };
     }
 }

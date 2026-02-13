@@ -5,8 +5,10 @@ import { ShoppingBag, Star, Plus, Minus, Zap } from 'lucide-react';
 import { useCartStore } from '@/context/useCartStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Product } from '@/src/types';
 
-export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: any[], initialFavoriteIds?: string[] }) {
+export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: Product[], initialFavoriteIds?: string[] }) {
     const [activeCategory, setActiveCategory] = useState<string>('הכל');
     const { items, addItem, removeItem } = useCartStore();
     const [favoriteIds, setFavoriteIds] = useState<string[]>(initialFavoriteIds);
@@ -53,7 +55,8 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
 
     const filteredProducts = initialProducts.filter(p => {
         if (activeCategory === 'הכל') return true;
-        const categoryName = typeof p.category === 'string' ? p.category : p.category?.name;
+        const categoryRaw = p.category as any;
+        const categoryName = typeof categoryRaw === 'string' ? categoryRaw : categoryRaw?.name;
         // Map Hebrew UI categories to English DB categories or just match if DB updated
         // For now, let's map Hebrew back to the English DB keys or string values
         // Actually, seed used English keys 'Hot', 'Cold', etc for `category.name`?
@@ -103,7 +106,7 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 className="relative bg-white rounded-[2rem] p-6 pt-24 shadow-sm hover:shadow-xl transition-shadow flex flex-col items-center text-center mt-12 group/card"
                             >
                                 {/* Happy Hour Badge */}
-                                {isHappyHour && (product.tags?.includes('PASTRY') || (typeof product.category === 'object' && product.category?.name === 'Pastry')) && (
+                                {isHappyHour && (product.tags?.includes('PASTRY') || (product.category as any)?.name === 'Pastry' || product.category === 'Pastry') && (
                                     <motion.div
                                         initial={{ scale: 0, rotate: -12 }}
                                         animate={{ scale: 1, rotate: 0 }}
@@ -118,10 +121,11 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                     href={`/shop/${product.id}`}
                                     className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover/card:scale-110 transition-transform duration-500 cursor-pointer"
                                 >
-                                    <img
+                                    <Image
                                         src={product.image}
                                         alt={product.name}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 </Link>
 
@@ -139,7 +143,7 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                     <h3 className="text-xl font-serif font-bold text-[#2D1B14]">{product.name}</h3>
                                 </Link>
                                 {/* Dynamic Pricing */}
-                                {isHappyHour && (product.tags?.includes('PASTRY') || (typeof product.category === 'object' && product.category?.name === 'Pastry')) ? (
+                                {isHappyHour && (product.tags?.includes('PASTRY') || (product.category as any)?.name === 'Pastry' || product.category === 'Pastry') ? (
                                     <div className="mb-4 flex items-center gap-2 justify-center">
                                         <span className="text-stone-400 line-through text-sm">₪{product.price}</span>
                                         <span className="text-[#2D1B14] font-black text-lg">₪{Math.round(product.price * 0.85)}</span>
@@ -164,7 +168,7 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                         // Normalize product data before adding to cart
                                         const normalizedProduct = {
                                             ...product,
-                                            category: typeof product.category === 'string' ? product.category : product.category?.name || 'Other'
+                                            category: typeof product.category === 'string' ? product.category : (product.category as any)?.name || 'Other'
                                         };
                                         const size = (selectedSizes[product.id] || 'M') as 'S' | 'M' | 'L';
                                         addItem(normalizedProduct, size);

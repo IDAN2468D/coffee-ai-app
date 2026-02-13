@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Heart, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Product, Category } from '@prisma/client';
 import { useCartStore } from '@/context/useCartStore';
 import { PRODUCTS } from '@/lib/products';
@@ -70,12 +71,13 @@ export default function PopularTaste({ products = [] }: PopularTasteProps) {
                             className="group relative bg-[#F5F5F5] rounded-3xl p-4 transition-transform hover:-translate-y-2"
                         >
                             <div className="relative aspect-square rounded-2xl overflow-hidden mb-4">
-                                <img
+                                <Image
                                     src={item.image || '/images/placeholder.jpg'}
                                     alt={item.name}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    fill
+                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
-                                <button className="absolute top-3 left-3 p-2 bg-white/20 backdrop-blur-sm rounded-full text-stone-500 hover:bg-white hover:text-red-500 transition-colors">
+                                <button className="absolute top-3 left-3 p-2 bg-white/20 backdrop-blur-sm rounded-full text-stone-500 hover:bg-white hover:text-red-500 transition-colors z-10">
                                     <Heart size={16} fill="currentColor" />
                                 </button>
                             </div>

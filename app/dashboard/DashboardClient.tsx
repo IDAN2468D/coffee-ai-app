@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { PRODUCTS, Product } from '../../lib/products';
 import { useCartStore } from '@/context/useCartStore';
 import LoyaltyTracker from '@/components/LoyaltyTracker';
@@ -114,11 +115,12 @@ export default function Dashboard({
                                 className="flex items-center gap-4 flex-row-reverse justify-end"
                             >
                                 <div className="relative">
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#C37D46] shadow-lg shadow-[#C37D46]/20">
-                                        <img
+                                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#C37D46] shadow-lg shadow-[#C37D46]/20 relative">
+                                        <Image
                                             src={session?.user?.image || `https://ui-avatars.com/api/?name=${session?.user?.name}&background=1a1a1a&color=C37D46`}
                                             alt="Profile"
-                                            className="w-full h-full object-cover"
+                                            fill
+                                            className="object-cover"
                                         />
                                     </div>
                                     {subscription?.plan && (
@@ -243,8 +245,8 @@ export default function Dashboard({
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                 {order.items.map((item: any) => (
                                                     <div key={item.id} className="flex items-center gap-3 bg-black/20 p-2 rounded-xl border border-white/5 flex-row-reverse">
-                                                        <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden">
-                                                            {item.product?.image && <img src={item.product.image} className="w-full h-full object-cover opacity-80" />}
+                                                        <div className="w-10 h-10 rounded-lg bg-white/5 overflow-hidden relative">
+                                                            {item.product?.image && <Image src={item.product.image} alt={item.product.name} fill className="object-cover opacity-80" />}
                                                         </div>
                                                         <div className="flex-1 text-right min-w-0">
                                                             <div className="text-sm font-bold text-white/90 truncate">{item.product?.name}</div>
@@ -279,7 +281,7 @@ export default function Dashboard({
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                     {myImages.slice(0, 4).map((img) => (
                                         <div key={img.id} className="group aspect-square rounded-2xl overflow-hidden relative border border-white/10">
-                                            <img src={img.url} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <Image src={img.url} alt="User creation" fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center p-4">
                                                 <button
                                                     onClick={(e) => {
@@ -319,8 +321,8 @@ export default function Dashboard({
                             <div className="space-y-4">
                                 {PRODUCTS.slice(4, 7).map((product) => (
                                     <div key={product.id} className="flex items-center gap-4 bg-black/20 p-3 rounded-2xl hover:bg-black/40 transition-colors group flex-row-reverse text-right">
-                                        <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden flex-shrink-0">
-                                            <img src={product.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                        <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden flex-shrink-0 relative">
+                                            <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="font-bold text-white text-sm truncate">{product.name}</h4>

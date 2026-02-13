@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Coffee, Thermometer, Zap, Droplets, Sparkles, ShoppingBag, ArrowRight, RotateCcw, Heart, CheckCircle2 } from 'lucide-react';
 import { PRODUCTS, Product } from '@/lib/products';
 import { useCartStore } from '@/context/useCartStore';
+import Image from 'next/image';
 
 type QuizStep = 'welcome' | 'temp' | 'intensity' | 'milk' | 'result';
 
@@ -204,8 +205,13 @@ export default function CoffeeQuiz() {
                     <motion.div key="result" variants={containerVariants} initial="hidden" animate="visible" exit="exit" className="w-full">
                         <div className="bg-white rounded-[3rem] shadow-[0_40px_100px_rgba(45,27,20,0.1)] border border-stone-100 overflow-hidden lg:flex items-stretch min-h-[500px]">
                             {/* Image Side */}
-                            <div className="lg:w-2/5 relative">
-                                <img src={recommendedProduct.image} alt={recommendedProduct.name} className="w-full h-full object-cover" />
+                            <div className="lg:w-2/5 relative min-h-[300px] lg:min-h-0">
+                                <Image
+                                    src={recommendedProduct.image}
+                                    alt={recommendedProduct.name}
+                                    fill
+                                    className="object-cover"
+                                />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#2D1B14]/80 to-transparent flex items-end p-8">
                                     <div className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-full font-black text-sm shadow-xl animate-pulse">
                                         <Heart className="w-4 h-4 fill-white" />

@@ -4,12 +4,11 @@ import AboutSection from "@/components/AboutSection";
 import CoffeeShop from "@/components/CoffeeShop";
 import PopularTaste from "@/components/PopularTaste";
 import { prisma } from "@/lib/prisma";
-import { Product } from "@prisma/client";
 import Footer from "@/components/AppFooter";
 import Subscription from "@/components/Subscription";
 import HappyHourBanner from "@/components/HappyHourBanner";
 import { getContextData } from "@/app/actions/brewmaster";
-import type { ContextData } from "@/src/types";
+import type { ContextData, Product } from "@/src/types";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -23,7 +22,11 @@ export default async function Home() {
       prisma.product.findMany({ include: { category: true } }),
       getContextData(),
     ]);
-    products = productsResult;
+    products = productsResult.map(p => ({
+      ...p,
+      image: p.image || '',
+      category: (p.category?.name as any) || 'Hot'
+    }));
     if (contextResult.success && contextResult.data) {
       contextData = contextResult.data;
     }
@@ -41,7 +44,7 @@ export default async function Home() {
 
       <AboutSection />
 
-      <PopularTaste products={products} />
+      <PopularTaste products={products as any} />
 
       <CoffeeShop initialProducts={products} />
 

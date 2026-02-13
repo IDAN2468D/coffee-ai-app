@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AboutSection() {
     return (
@@ -14,17 +15,19 @@ export default function AboutSection() {
                 <div className="relative h-[600px] w-full hidden lg:block">
                     {/* Main Image */}
                     <div className="absolute top-10 right-10 w-80 h-80 rounded-full overflow-hidden border-8 border-white shadow-2xl z-20">
-                        <img
+                        <Image
                             src="https://images.unsplash.com/photo-1512568400610-62da28bc8a13?auto=format&fit=crop&q=80&w=800"
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             alt="Latte Art"
                         />
                     </div>
                     {/* Secondary Image */}
                     <div className="absolute bottom-10 left-10 w-64 h-64 rounded-full overflow-hidden border-8 border-white shadow-xl z-10">
-                        <img
+                        <Image
                             src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=800"
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             alt="Coffee Beans"
                         />
                     </div>
@@ -51,10 +54,11 @@ export default function AboutSection() {
             </div>
 
             {/* Mobile Image for smaller screens */}
-            <div className="lg:hidden mt-12 px-6">
-                <img
+            <div className="lg:hidden mt-12 px-6 relative aspect-square">
+                <Image
                     src="https://images.unsplash.com/photo-1512568400610-62da28bc8a13?auto=format&fit=crop&q=80&w=800"
-                    className="w-full aspect-square object-cover rounded-[3rem] shadow-xl"
+                    fill
+                    className="object-cover rounded-[3rem] shadow-xl"
                     alt="Latte Art"
                 />
             </div>

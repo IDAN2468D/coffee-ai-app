@@ -3,16 +3,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ShopHeader() {
     return (
         <header className="relative pt-48 pb-24 overflow-hidden bg-[#2D1B14]">
             {/* Background Pattern */}
             <div className="absolute inset-0 z-0 opacity-20">
-                <img
+                <Image
                     src="https://www.transparenttextures.com/patterns/coffee-beans.png"
                     alt="pattern"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                 />
             </div>
 

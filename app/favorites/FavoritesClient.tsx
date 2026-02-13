@@ -6,9 +6,10 @@ import { Star, Trash2, ShoppingBag, CheckSquare, Square, ArrowRight } from 'luci
 import Link from 'next/link';
 import { useCartStore } from '@/context/useCartStore';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface FavoritesClientProps {
-    initialFavorites: any[]; // Using any to avoid strict type conflicts for now, ideally Product from prisma
+    initialFavorites: Product[]; // Updated from any to Product
 }
 
 export default function FavoritesClient({ initialFavorites }: FavoritesClientProps) {
@@ -130,8 +131,8 @@ export default function FavoritesClient({ initialFavorites }: FavoritesClientPro
                                     )}
                                 </div>
 
-                                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-stone-50">
-                                    <img src={product.image || '/placeholder.png'} alt={product.name} className="w-full h-full object-cover" />
+                                <div className="aspect-square rounded-xl overflow-hidden mb-4 bg-stone-50 relative">
+                                    <Image src={product.image || '/placeholder.png'} alt={product.name} fill className="object-cover" />
                                 </div>
 
                                 <div className="text-right">

@@ -8,6 +8,7 @@ import { useCartStore } from '@/context/useCartStore';
 import { Product } from '@/lib/products';
 import { useSession } from 'next-auth/react';
 import Navbar from '../../components/TempNavbar';
+import Image from 'next/image';
 import { toggleLike, addComment } from '../actions/gallery';
 
 interface Comment {
@@ -161,7 +162,7 @@ export default function GalleryPage() {
             return;
         }
 
-        const userId = (session.user as any).id;
+        const userId = (session.user as { id: string }).id;
         addOptimisticUpdate({ type: 'like', imageId, userId });
 
         const result = await toggleLike(imageId);
@@ -213,7 +214,7 @@ export default function GalleryPage() {
             <Navbar />
             <header className="bg-[#2D1B14] py-32 px-6 text-center relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                    <img src="https://www.transparenttextures.com/patterns/coffee-beans.png" alt="Pattern" />
+                    <Image src="https://www.transparenttextures.com/patterns/coffee-beans.png" alt="Pattern" fill className="object-cover" />
                 </div>
                 <div className="relative z-10 max-w-4xl mx-auto space-y-8">
                     <motion.h1
@@ -299,7 +300,7 @@ export default function GalleryPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {optimisticImages.length > 0 ? optimisticImages.map((img, idx) => {
-                            const isLiked = session ? img.likes?.some(like => like.userId === (session.user as any).id) ?? false : false;
+                            const isLiked = session ? img.likes?.some(like => like.userId === (session.user as { id: string }).id) ?? false : false;
 
                             return (
                                 <motion.div
@@ -311,10 +312,11 @@ export default function GalleryPage() {
                                     className="bg-white rounded-[3rem] overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300 group border border-stone-100 flex flex-col"
                                 >
                                     <div className="relative aspect-[4/5] overflow-hidden">
-                                        <img
+                                        <Image
                                             src={img.url}
                                             alt={img.prompt}
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            fill
+                                            className="object-cover group-hover:scale-110 transition-transform duration-700"
                                         />
                                         <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex justify-between items-end">
                                             <div className="flex space-x-3 space-x-reverse">
@@ -348,9 +350,9 @@ export default function GalleryPage() {
                                         {/* User Info & Actions */}
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-2 space-x-reverse">
-                                                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden">
+                                                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden relative">
                                                     {img.user?.image ? (
-                                                        <img src={img.user.image} alt={img.user.name || ''} className="w-full h-full object-cover" />
+                                                        <Image src={img.user.image} alt={img.user.name || ''} fill className="object-cover" />
                                                     ) : (
                                                         <User className="w-4 h-4 text-stone-400" />
                                                     )}

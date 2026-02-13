@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Coffee, Package, Calendar, ChevronRight, ArrowLeft, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function OrdersPage() {
     const { data: session, status } = useSession();
@@ -124,8 +125,8 @@ export default function OrdersPage() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {order.items.map((item: any) => (
                                             <div key={item.id} className="flex items-center space-x-5 space-x-reverse p-5 rounded-[1.5rem] bg-stone-50/50 border-2 border-transparent hover:border-stone-100 hover:bg-white transition-all shadow-sm">
-                                                <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md flex-shrink-0 border-2 border-white">
-                                                    <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                                                <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md flex-shrink-0 border-2 border-white relative">
+                                                    <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
                                                 </div>
                                                 <div className="min-w-0 text-right">
                                                     <p className="font-black text-[#2D1B14] truncate uppercase text-xs tracking-wide mb-1">{item.product.name}</p>

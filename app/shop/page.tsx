@@ -5,7 +5,7 @@ import CoffeeShop from "@/components/CoffeeShop";
 import ShopHeader from "@/components/ShopHeader";
 import ReengagementBanner from "@/components/ReengagementBanner";
 import { prisma } from "@/lib/prisma";
-import { Product } from "@prisma/client";
+import { Product } from "@/src/types";
 import { getReengagementStatus } from "@/app/actions/user";
 
 import { getServerSession } from "next-auth";
@@ -16,11 +16,16 @@ export const dynamic = 'force-dynamic';
 export default async function ShopPage() {
     let products: Product[] = [];
     try {
-        products = await prisma.product.findMany({
+        const productsResult = await prisma.product.findMany({
             include: {
                 category: true
             }
         });
+        products = productsResult.map(p => ({
+            ...p,
+            image: p.image || '',
+            category: (p.category?.name as any) || 'Hot'
+        }));
     } catch (error) {
         console.error("Failed to fetch products:", error);
     }

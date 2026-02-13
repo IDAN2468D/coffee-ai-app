@@ -50,7 +50,7 @@ export async function updateSubscription(formData: FormData | { plan?: Plan; tie
         if (tier) {
             await prisma.user.update({
                 where: { id: user.id },
-                data: { tier: tier as any },
+                data: { tier },
             });
         }
 

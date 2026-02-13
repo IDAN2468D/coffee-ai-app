@@ -55,10 +55,11 @@ export default function AIPairingPopup() {
 
                 <div className="flex gap-4 pt-2">
                     <div className="w-20 h-20 bg-stone-100 rounded-xl overflow-hidden shrink-0 relative">
-                        <img
+                        <Image
                             src={suggestion.suggestedProduct.image}
                             alt={suggestion.suggestedProduct.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                         />
                     </div>
                     <div className="flex-1 min-w-0">

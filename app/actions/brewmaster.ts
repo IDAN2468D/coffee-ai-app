@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { TIER_BENEFITS, UserTier } from "@/lib/tiers";
@@ -13,6 +14,10 @@ const HAPPY_HOUR_END = 17;   // 17:00
 const HAPPY_HOUR_DISCOUNT = 0.15; // 15% off
 const PRICE_FLOOR_RATIO = 0.50;   // Never below 50% of base price
 const PASTRY_TAG = "PASTRY";
+
+const GetDynamicPriceSchema = z.object({
+    productId: z.string().min(1),
+});
 
 // Israel timezone
 const ISRAEL_TZ = "Asia/Jerusalem";
@@ -134,9 +139,14 @@ export async function getContextData(): Promise<ServerActionResponse<ContextData
  * SAFETY: Price floor at 50% of base price — never drops below that.
  */
 export async function getDynamicPrice(
-    productId: string
+    rawInput: { productId: string }
 ): Promise<ServerActionResponse<DynamicPriceResult>> {
     try {
+        const validated = GetDynamicPriceSchema.safeParse(rawInput);
+        if (!validated.success) {
+            return { success: false, error: "מזהה מוצר לא תקין" };
+        }
+        const { productId } = validated.data;
         const session = await getServerSession(authOptions);
         const userEmail = session?.user?.email;
 
@@ -145,10 +155,10 @@ export async function getDynamicPrice(
         if (userEmail) {
             const user = await prisma.user.findUnique({
                 where: { email: userEmail },
-                select: { tier: true } as any
+                select: { tier: true }
             });
-            if (user) {
-                userTier = ((user as any).tier as UserTier) || 'SILVER';
+            if (user && user.tier) {
+                userTier = (user.tier as UserTier) || 'SILVER';
             }
         }
 

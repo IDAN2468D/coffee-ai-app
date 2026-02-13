@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Coffee, Sun, CloudRain, Snowflake } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import CoffeeAnimation from './CoffeeAnimation';
 import type { ContextData } from '@/src/types';
 
@@ -43,10 +44,12 @@ export default function Hero({ context }: SmartHeroProps) {
         <section className={`relative h-screen min-h-[700px] w-full flex items-center overflow-hidden bg-gradient-to-br ${gradient}`}>
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
-                <img
+                <Image
                     src="/images/premium_hero_bg.png"
                     alt="Premium Coffee Shop Ambience"
-                    className="w-full h-full object-cover opacity-60"
+                    fill
+                    className="object-cover opacity-60"
+                    priority
                 />
                 <div className={`absolute inset-0 ${overlay}`} />
             </div>

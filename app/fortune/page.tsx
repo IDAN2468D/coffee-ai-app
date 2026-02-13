@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import Navbar from "@/components/TempNavbar";
 import { Upload, Camera, Sparkles, Share2, RefreshCw, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 export default function FortunePage() {
     const [image, setImage] = useState<string | null>(null);
@@ -128,7 +129,7 @@ export default function FortunePage() {
                                     animate={{ opacity: 1 }}
                                     className="relative w-full h-full"
                                 >
-                                    <img src={image} alt="Coffee Cup" className="w-full h-full object-cover opacity-50" />
+                                    <Image src={image} alt="Coffee Cup" fill className="w-full h-full object-cover opacity-50" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent opacity-80" />
 
                                     {/* Loading Overlay */}
