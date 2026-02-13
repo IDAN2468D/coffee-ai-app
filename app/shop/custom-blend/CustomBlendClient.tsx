@@ -6,7 +6,7 @@ import Navbar from "@/components/TempNavbar";
 import { Coffee, RotateCcw, ShoppingBag, Star, Sparkles, Tag, Check, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/context/useCartStore';
-import { Product } from '@/lib/products';
+import { Product } from '@/src/types';
 
 const FLAVOR_TAGS = [
     { id: 'choc', label: 'שוקולדי', color: '#5D4037' },

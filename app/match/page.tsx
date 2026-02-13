@@ -10,7 +10,7 @@ import StepFlavor from "@/components/match/StepFlavor"
 import StepResult from "@/components/match/StepResult"
 import { matchCoffee } from "@/app/actions/matchmaker"
 import { useCartStore } from "@/context/useCartStore"
-import type { Product } from "@/lib/products"
+import type { Product } from "@/src/types"
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react"
 
 type Step = "ROAST" | "FLAVOR" | "RESULT"

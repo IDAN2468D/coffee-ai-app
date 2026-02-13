@@ -23,9 +23,15 @@ export default async function Home() {
       getContextData(),
     ]);
     products = productsResult.map(p => ({
-      ...p,
-      image: p.image || '',
-      category: (p.category?.name as any) || 'Hot'
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: p.price,
+      image: p.image || '/placeholder.png',
+      category: (p.category?.name as any) || 'Hot',
+      roast: p.roast,
+      flavor: p.flavor,
+      tags: p.tags
     }));
     if (contextResult.success && contextResult.data) {
       contextData = contextResult.data;

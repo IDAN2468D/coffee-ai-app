@@ -1,11 +1,4 @@
-export interface Product {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    image: string;
-    category: 'Hot' | 'Cold' | 'Pastry' | 'Beans' | 'Equipment' | 'Capsules';
-}
+import { Product } from '@/src/types';
 
 export const PRODUCTS: Product[] = [
     {

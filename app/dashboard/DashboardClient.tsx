@@ -28,7 +28,8 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { PRODUCTS, Product } from '../../lib/products';
+import { PRODUCTS } from '@/lib/products';
+import { Product } from '@/src/types';
 import { useCartStore } from '@/context/useCartStore';
 import LoyaltyTracker from '@/components/LoyaltyTracker';
 import type { LoyaltyStatus } from '@/lib/loyalty';

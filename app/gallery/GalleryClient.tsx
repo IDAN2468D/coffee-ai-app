@@ -5,7 +5,7 @@ import { Coffee, User, Calendar, Share2, Download, Heart, X, Sparkles, Loader, G
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useCartStore } from '@/context/useCartStore';
-import { Product } from '@/lib/products';
+import { Product } from '@/src/types';
 import { useSession } from 'next-auth/react';
 import Navbar from '../../components/TempNavbar';
 import Image from 'next/image';
