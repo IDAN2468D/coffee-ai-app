@@ -28,7 +28,7 @@ export async function GET() {
             throw new Error("No API Key");
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
         const prompt = "Generate a single, short, surprising, and interesting fact about coffee in Hebrew. Keep it one sentence. Return JSON: { \"fact\": \"...\", \"icon\": \"emoji\" }";
 
         const result = await model.generateContent(prompt);

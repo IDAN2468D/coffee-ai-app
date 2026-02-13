@@ -96,14 +96,14 @@ export default function Navbar() {
         if (!minTier) return true; // No tier required
         if (!session?.user) return false; // Must be logged in
 
-        const userTier = (session.user as any).subscription?.plan as Tier;
+        const userTier = (session.user as any).tier as Tier;
 
         // Debugging Log
         if (minTier) {
-            console.log(`Checking Access for ${minTier}: User Tier = ${userTier}, Access = ${TIERS[userTier] >= TIERS[minTier]}`);
+            console.log(`Checking Access for ${minTier}: User Tier = ${userTier}, Access = ${userTier && TIERS[userTier] >= TIERS[minTier]}`);
         }
 
-        if (!userTier || !TIERS[userTier]) return false; // User has no valid tier
+        if (!userTier || TIERS[userTier] === undefined) return false;
 
         return TIERS[userTier] >= TIERS[minTier];
     };
@@ -356,7 +356,7 @@ export default function Navbar() {
 
                             <div className="relative z-10 w-9 h-9 rounded-full ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105 overflow-hidden">
                                 {session.user?.image ? (
-                                    <img src={session.user.image} alt="" className="w-full h-full rounded-full object-cover" />
+                                    <img src={session.user.image} alt={session.user.name || ''} className="w-full h-full rounded-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center">
                                         <User className="w-5 h-5 text-white" />

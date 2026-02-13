@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         // Simulating password reset token generation
         const token = crypto.randomBytes(32).toString('hex');
 
-        console.log(`Password reset requested for ${email}. Link: http://localhost:3000/reset-password?token=${token}`);
+        console.log(`Password reset requested for ${email}. Link: https://coffee-ai-app.onrender.com/reset-password?token=${token}`);
 
         return NextResponse.json({ message: "Password reset link sent to your email (check console context)" });
     } catch (error) {

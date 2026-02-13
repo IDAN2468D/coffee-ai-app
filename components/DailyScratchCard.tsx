@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Gift, Sparkles, Trophy, Lightbulb } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function DailyScratchCard() {
     const pathname = usePathname();
+    const { data: session } = useSession();
     const [isOpen, setIsOpen] = useState(false);
     const [isScratched, setIsScratched] = useState(false);
     const [prize, setPrize] = useState<{ text: string, code?: string, type: 'coupon' | 'fact' } | null>(null);
@@ -27,13 +29,27 @@ export default function DailyScratchCard() {
         }
     }, []);
 
+
     const fetchPrize = React.useCallback(async () => {
         if (prize) return; // Already fetched
 
+        const userTier = (session?.user as any)?.tier || 'SILVER';
         const rand = Math.random();
 
-        if (rand < 0.7) {
-            // 70% - Coffee Fact (AI)
+        // Adjust odds based on tier
+        let factThreshold = 0.7; // 70% fact for Silver
+        let smallCouponThreshold = 0.9; // 20% coupon for Silver
+
+        if (userTier === 'GOLD') {
+            factThreshold = 0.5; // 50% fact
+            smallCouponThreshold = 0.8; // 30% coupon
+        } else if (userTier === 'PLATINUM') {
+            factThreshold = 0.3; // 30% fact
+            smallCouponThreshold = 0.6; // 30% coupon, 40% big prize
+        }
+
+        if (rand < factThreshold) {
+            // Coffee Fact (AI)
             try {
                 const res = await fetch('/api/daily-fact');
                 const data = await res.json();
@@ -41,14 +57,20 @@ export default function DailyScratchCard() {
             } catch (e) {
                 setPrize({ text: "הידעת? קפה הוא פרי!", type: 'fact' });
             }
-        } else if (rand < 0.9) {
-            // 20% - Small Coupon
+        } else if (rand < smallCouponThreshold) {
+            // Small Coupon
             setPrize({ text: '5% הנחה לקנייה הבאה', code: 'COFFEE5', type: 'coupon' });
         } else {
-            // 10% - Big Prize
-            setPrize({ text: 'משלוח חינם!', code: 'FREESHIP', type: 'coupon' });
+            // Big Prize
+            if (userTier === 'PLATINUM') {
+                setPrize({ text: '15% הנחה לקנייה הבאה!', code: 'PLATINUM15', type: 'coupon' });
+            } else if (userTier === 'GOLD') {
+                setPrize({ text: '10% הנחה לקנייה הבאה!', code: 'GOLD10', type: 'coupon' });
+            } else {
+                setPrize({ text: 'משלוח חינם!', code: 'FREESHIP', type: 'coupon' });
+            }
         }
-    }, [prize]);
+    }, [prize, session?.user]);
 
     useEffect(() => {
         if (isOpen) {
