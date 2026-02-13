@@ -28,7 +28,7 @@ export const sendWelcomeEmail = async (userEmail: string, userName: string) => {
             <p style="margin: 0; font-weight: bold; color: #8B4513;">הקפה הראשון שלך כבר מחכה שתעצב אותו...</p>
           </div>
           
-          <a href="${process.env.NEXTAUTH_URL || 'http://localhost:3000'}" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 15px 35px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">חזרה לאתר</a>
+          <a href="${process.env.NEXTAUTH_URL || '#'}" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 15px 35px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">חזרה לאתר</a>
         </div>
         <div style="background-color: #F3F4F6; padding: 20px; text-align: center; font-size: 12px; color: #9CA3AF;">
           © 2026 The Digital Roast. כל הזכויות שמורות.
@@ -82,7 +82,7 @@ export const sendLoginEmail = async (userEmail: string, userName: string) => {
             </div>
 
             <div style="margin-top: 20px;">
-              <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}/gallery" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 14px; font-weight: bold; font-size: 16px; transition: all 0.3s ease;">מעבר לגלריה הדיגיטלית</a>
+              <a href="${(process.env.NEXTAUTH_URL || '')}/gallery" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 14px; font-weight: bold; font-size: 16px; transition: all 0.3s ease;">מעבר לגלריה הדיגיטלית</a>
             </div>
           </div>
 
@@ -151,7 +151,7 @@ export const sendOrderConfirmationEmail = async (userEmail: string, userName: st
 
             <div style="text-align: center; margin-top: 30px;">
               <p style="font-size: 14px; color: #6B7280;">הקפה שלך יהיה מוכן בקרוב!</p>
-              <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}/orders" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 14px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; margin-top: 15px;">צפייה בהזמנות שלי</a>
+              <a href="${(process.env.NEXTAUTH_URL || '')}/orders" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 14px 30px; text-decoration: none; border-radius: 12px; font-weight: bold; margin-top: 15px;">צפייה בהזמנות שלי</a>
             </div>
           </div>
 
@@ -206,7 +206,7 @@ export const sendNewsletterEmail = async (userEmail: string) => {
             </div>
 
             <div style="text-align: center; margin-top: 40px;">
-              <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">התחל לקנות עכשיו</a>
+              <a href="${(process.env.NEXTAUTH_URL || '')}" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">התחל לקנות עכשיו</a>
             </div>
           </div>
 
@@ -252,7 +252,7 @@ export const sendAIImageEmail = async (userEmail: string, imageUrl: string, prom
               <p style="margin: 10px 0 0; font-size: 15px; color: #2D1B14;">${prompt}</p>
             </div>
 
-            <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}/ai-barista" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: bold; margin-top: 20px;">צור עוד יצירות</a>
+            <a href="${(process.env.NEXTAUTH_URL || '')}/ai-barista" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 14px 32px; text-decoration: none; border-radius: 12px; font-weight: bold; margin-top: 20px;">צור עוד יצירות</a>
           </div>
 
           <div style="background-color: #F9FAFB; padding: 20px; text-align: center; font-size: 12px; color: #9CA3AF;">
@@ -305,7 +305,7 @@ export const sendMatchmakerEmail = async (userEmail: string, userName: string, p
             </div>
 
             <div style="margin-top: 30px;">
-              <a href="${(process.env.NEXTAUTH_URL || 'http://localhost:3000')}/shop" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">רכשו עכשיו</a>
+              <a href="${(process.env.NEXTAUTH_URL || '')}/shop" style="display: inline-block; background-color: #2D1B14; color: #FFFFFF; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">רכשו עכשיו</a>
             </div>
           </div>
 
