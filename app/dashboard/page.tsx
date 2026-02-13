@@ -44,7 +44,7 @@ export default async function DashboardPage() {
         initialPoints={points}
         initialOrders={orders}
         subscription={userData?.subscription ? {
-            tier: userData.subscription.plan,
+            plan: userData.subscription.plan,
             status: userData.subscription.status,
             expiry: userData.subscription.nextBillingDate
         } : null}
