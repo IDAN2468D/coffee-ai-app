@@ -11,6 +11,7 @@ declare module "next-auth" {
         id: string;
         isAdmin: boolean;
         points: number;
+        tier: "SILVER" | "GOLD" | "PLATINUM";
         subscription?: {
             plan: "FREE" | "BASIC" | "PRO";
             status: string;
@@ -27,6 +28,7 @@ declare module "next-auth/jwt" {
         id: string;
         isAdmin: boolean;
         points: number;
+        tier: "SILVER" | "GOLD" | "PLATINUM";
         subscription?: {
             plan: "FREE" | "BASIC" | "PRO";
             status: string;
@@ -75,6 +77,7 @@ export const authOptions: NextAuthOptions = {
                     name: user.name,
                     isAdmin: user.isAdmin,
                     points: user.points,
+                    tier: (user as any).tier as "SILVER" | "GOLD" | "PLATINUM",
                     subscription: user.subscription ? {
                         plan: user.subscription.plan as "FREE" | "BASIC" | "PRO",
                         status: user.subscription.status,
@@ -96,6 +99,7 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.isAdmin = user.isAdmin;
                 token.points = user.points;
+                token.tier = user.tier;
                 token.subscription = (user as any).subscription;
             }
             return token;
@@ -105,6 +109,7 @@ export const authOptions: NextAuthOptions = {
                 session.user.id = token.id as string;
                 (session.user as any).isAdmin = token.isAdmin as boolean;
                 (session.user as any).points = token.points as number;
+                (session.user as any).tier = token.tier as any;
                 (session.user as any).subscription = token.subscription as any;
             }
             return session;

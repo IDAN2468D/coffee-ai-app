@@ -145,10 +145,10 @@ export async function getDynamicPrice(
         if (userEmail) {
             const user = await prisma.user.findUnique({
                 where: { email: userEmail },
-                select: { tier: true }
+                select: { tier: true } as any
             });
             if (user) {
-                userTier = (user.tier as UserTier) || 'SILVER';
+                userTier = ((user as any).tier as UserTier) || 'SILVER';
             }
         }
 

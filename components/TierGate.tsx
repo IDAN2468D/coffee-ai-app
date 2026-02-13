@@ -9,13 +9,14 @@ import { useSession } from 'next-auth/react';
  * 2 = PRO
  */
 const TIER_LEVELS: Record<string, number> = {
-    'BASIC': 1,
-    'PRO': 2,
+    'SILVER': 0,
+    'GOLD': 1,
+    'PLATINUM': 2,
 };
 
 interface TierGateProps {
     /** The strict minimum tier required to render the content */
-    requiredTier: 'BASIC' | 'PRO';
+    requiredTier: 'SILVER' | 'GOLD' | 'PLATINUM';
     /** The content to be gated */
     children: React.ReactNode;
 }

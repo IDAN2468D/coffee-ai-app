@@ -15,8 +15,9 @@ import { NotificationBell } from './NotificationBell';
 
 // Tier hierarchy for checking access
 const TIERS = {
-    'BASIC': 1,
-    'PRO': 2
+    'SILVER': 0,
+    'GOLD': 1,
+    'PLATINUM': 2
 };
 
 type Tier = keyof typeof TIERS;
@@ -33,10 +34,10 @@ const FEATURES: Feature[] = [
     { name: 'בריסטה AI', href: '/expert', icon: Bot, action: { icon: Mic, href: '/expert?autoMic=true' } },
     { name: 'התאמת קפה', href: '/match', icon: BrainCircuit },
     { name: 'יוצר הבלנדים', href: '/my-blend', icon: FlaskConical },
-    { name: 'דרכון הקפה', href: '/passport', icon: Globe, minTier: 'PRO' },
-    { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'BASIC' },
-    { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'PRO' },
-    { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'PRO' },
+    { name: 'דרכון הקפה', href: '/passport', icon: Globe, minTier: 'PLATINUM' },
+    { name: 'מיקסר סאונד', href: '/ambience', icon: Headphones, minTier: 'SILVER' },
+    { name: 'אורקל המזל', href: '/fortune', icon: Sparkles, minTier: 'PLATINUM' },
+    { name: 'יומן קפאין', href: '/tracker', icon: Activity, minTier: 'PLATINUM' },
     { name: 'גלריה', href: '/gallery', icon: ImageIcon },
 ];
 
@@ -291,8 +292,8 @@ export default function Navbar() {
                                                         {item.name}
                                                         {item.minTier && (
                                                             <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider
-                                                                ${item.minTier === 'BASIC' ? 'bg-stone-400/20 text-stone-300' : ''}
-                                                                ${item.minTier === 'PRO' ? 'bg-amber-400/20 text-amber-300' : ''}
+                                                                ${item.minTier === 'SILVER' ? 'bg-stone-400/20 text-stone-300' : ''}
+                                                                ${item.minTier === 'PLATINUM' ? 'bg-amber-400/20 text-amber-300' : ''}
                                                             `}>
                                                                 {item.minTier}
                                                             </span>
@@ -341,7 +342,7 @@ export default function Navbar() {
                             </span>
 
                             {/* VIP PRO Badge - Gold Shimmer */}
-                            {(session.user as any).subscription?.plan === 'PRO' && (
+                            {(session.user as any).tier === 'PLATINUM' && (
                                 <div className="relative z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#FFD700] to-[#B8860B] shadow-lg shadow-[#FFD700]/20 overflow-hidden">
                                     <Crown className="w-3 h-3 text-[#1a1005]" />
                                     <span className="text-[9px] font-black text-[#1a1005] uppercase tracking-wider">VIP</span>
@@ -640,8 +641,8 @@ export default function Navbar() {
                                                                 {link.name}
                                                                 {link.minTier && (
                                                                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider border
-                                                                        ${link.minTier === 'BASIC' ? 'bg-stone-400/10 text-stone-400 border-stone-400/20' : ''}
-                                                                        ${link.minTier === 'PRO' ? 'bg-amber-400/10 text-amber-400 border-amber-400/20' : ''}
+                                                                        ${link.minTier === 'SILVER' ? 'bg-stone-400/10 text-stone-400 border-stone-400/20' : ''}
+                                                                        ${link.minTier === 'PLATINUM' ? 'bg-amber-400/10 text-amber-400 border-amber-400/20' : ''}
                                                                     `}>
                                                                         {link.minTier}
                                                                     </span>

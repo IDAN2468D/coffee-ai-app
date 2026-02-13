@@ -17,15 +17,16 @@ export type LoyaltyTier = UserTier;
 
 export interface LoyaltyStatus {
     tier: LoyaltyTier;
-    orderCount: number;       // successful orders only (excludes cancelled)
+    orderCount: number;
     totalSpent: number;
-    ordersToVip: number;      // remaining orders needed (0 if already VIP)
-    spendToVip: number;       // remaining spend needed (0 if already VIP)
-    justUpgraded: boolean;    // true if this check triggered an upgrade
+    ordersToNextTier: number;
+    nextTier: UserTier | null;
+    justUpgraded: boolean;
 }
 
-const GOLD_ORDER_THRESHOLD = 5;
-const PLATINUM_ORDER_THRESHOLD = 10;
+export const GOLD_ORDER_THRESHOLD = 5;
+export const PLATINUM_ORDER_THRESHOLD = 10;
+export const PLATINUM_SPEND_THRESHOLD = 2000; // Adding a spend threshold for Platinum as well
 
 /** Excluded statuses — cancelled orders do NOT count toward VIP */
 const EXCLUDED_STATUSES = ['cancelled', 'refunded'];
@@ -119,7 +120,7 @@ export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus
         await prisma.$transaction([
             prisma.user.update({
                 where: { id: userId },
-                data: { tier: nextTier },
+                data: { tier: nextTier } as any,
             }),
             prisma.notification.create({
                 data: {
@@ -157,7 +158,7 @@ export async function getLoyaltyStatus(userId: string): Promise<any> {
     const [user, successfulOrders, successfulSpend] = await Promise.all([
         prisma.user.findUnique({
             where: { id: userId },
-            select: { tier: true },
+            select: { tier: true } as any,
         }),
         countSuccessfulOrders(userId),
         sumSuccessfulSpend(userId),
@@ -205,4 +206,4 @@ export async function getLoyaltyStatus(userId: string): Promise<any> {
     };
 }
 
-export { GOLD_ORDER_THRESHOLD, PLATINUM_ORDER_THRESHOLD };
+export { EXCLUDED_STATUSES };

@@ -90,10 +90,10 @@ export async function POST(req: Request) {
         // === VIP BENEFITS (SERVER-SIDE — verified against DB, never trusted from client) ===
         const userRecord = await prisma.user.findUnique({
             where: { id: (session.user as any).id },
-            select: { tier: true },
+            select: { tier: true } as any,
         });
 
-        const userTier: UserTier = (userRecord?.tier as UserTier) || 'SILVER';
+        const userTier: UserTier = ((userRecord as any)?.tier as UserTier) || 'SILVER';
         const benefits = TIER_BENEFITS[userTier];
 
         const vipDiscountRate = benefits.vipDiscount;

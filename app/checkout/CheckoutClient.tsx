@@ -59,8 +59,8 @@ export default function CheckoutPage() {
     const [giftRecipientEmail, setGiftRecipientEmail] = useState('');
     const [giftMessage, setGiftMessage] = useState('');
 
-    // VIP PRO state (verified server-side)
-    const [isVipPro, setIsVipPro] = useState(false);
+    // PLATINUM VIP state (verified server-side)
+    const [isPlatinum, setIsPlatinum] = useState(false);
     const STANDARD_SHIPPING_FEE = 29.90;
     const VIP_DISCOUNT_RATE = 0.05;
 
@@ -70,8 +70,8 @@ export default function CheckoutPage() {
             try {
                 const { processLoyaltyProgression } = await import('@/app/actions/user');
                 const result = await processLoyaltyProgression() as any;
-                if (result.success && result.tier === 'PRO') {
-                    setIsVipPro(true);
+                if (result.success && result.tier === 'PLATINUM') {
+                    setIsPlatinum(true);
                 }
             } catch (e) {
                 // Non-critical — default to standard
@@ -103,8 +103,8 @@ export default function CheckoutPage() {
 
     // Calculate final total (matches server-side logic exactly)
     const couponDiscount = couponApplied ? Math.round(total * 0.10 * 100) / 100 : 0;
-    const vipDiscount = isVipPro ? Math.round(total * VIP_DISCOUNT_RATE * 100) / 100 : 0;
-    const shippingFee = isVipPro ? 0 : STANDARD_SHIPPING_FEE;
+    const vipDiscount = isPlatinum ? Math.round(total * VIP_DISCOUNT_RATE * 100) / 100 : 0;
+    const shippingFee = isPlatinum ? 0 : STANDARD_SHIPPING_FEE;
     const discount = usePoints ? Math.min(pointsValue, total - couponDiscount - vipDiscount) : 0;
     const finalTotal = Math.round((total - couponDiscount - vipDiscount - discount + shippingFee) * 100) / 100;
 
@@ -773,7 +773,7 @@ export default function CheckoutPage() {
                                             <Truck className="w-4 h-4 opacity-50" />
                                             <span>משלוח</span>
                                         </div>
-                                        {isVipPro ? (
+                                        {isPlatinum ? (
                                             <div className="flex items-center gap-1.5">
                                                 <Crown className="w-3 h-3 text-[#FFD700]" />
                                                 <span className="text-[#FFD700] font-bold bg-[#FFD700]/10 px-3 py-1 rounded-full text-xs border border-[#FFD700]/20">VIP חינם</span>
@@ -784,18 +784,18 @@ export default function CheckoutPage() {
                                     </div>
 
                                     {/* VIP Discount Line */}
-                                    {isVipPro && (
+                                    {isPlatinum && (
                                         <div className="flex justify-between items-center text-[#FFD700] text-sm font-bold flex-row-reverse">
                                             <div className="flex items-center gap-2 flex-row-reverse">
                                                 <Sparkles className="w-4 h-4" />
-                                                <span>הנחת VIP PRO (5%)</span>
+                                                <span>הנחת PLATINUM VIP (5%)</span>
                                             </div>
                                             <span className="font-mono">-₪{vipDiscount.toFixed(0)}</span>
                                         </div>
                                     )}
 
                                     {/* VIP Banner */}
-                                    {isVipPro && (
+                                    {isPlatinum && (
                                         <div className="mt-2 p-3 bg-gradient-to-l from-[#FFD700]/10 to-[#B8860B]/5 border border-[#FFD700]/20 rounded-2xl">
                                             <div className="flex items-center gap-2 flex-row-reverse">
                                                 <Crown className="w-4 h-4 text-[#FFD700]" />

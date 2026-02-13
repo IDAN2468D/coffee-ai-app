@@ -3,17 +3,17 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 
-export type Tier = 'FREE' | 'BASIC' | 'PRO';
+export type Tier = 'SILVER' | 'GOLD' | 'PLATINUM';
 
 interface TierData {
     name: Tier;
     level: number;
 }
 
-const TIER_MAP: Record<string, number> = {
-    'FREE': 1,
-    'BASIC': 2,
-    'PRO': 3,
+const TIER_MAP: Record<Tier, number> = {
+    'SILVER': 1,
+    'GOLD': 2,
+    'PLATINUM': 3,
 };
 
 interface UserTierContextType {
@@ -22,8 +22,8 @@ interface UserTierContextType {
     hasAccess: (minTier: Tier) => boolean;
 }
 
-// Default to FREE (Level 1) for guests/errors
-const DEFAULT_TIER: TierData = { name: 'FREE', level: 1 };
+// Default to SILVER (Level 1) for guests/errors
+const DEFAULT_TIER: TierData = { name: 'SILVER', level: 1 };
 
 const UserTierContext = createContext<UserTierContextType | undefined>(undefined);
 
@@ -36,20 +36,14 @@ export function UserTierProvider({ children }: { children: React.ReactNode }) {
         if (status === 'loading') return;
 
         if (status === 'authenticated' && session?.user) {
-            const userSubscription = (session.user as any).subscription;
-            const userPlan = userSubscription?.plan || 'FREE';
-
-            // Normalize case if needed
-            const matchedTier = Object.keys(TIER_MAP).find(
-                key => key.toUpperCase() === userPlan.toUpperCase()
-            ) || 'FREE';
+            const userTier = (session.user as any).tier || 'SILVER';
 
             setTierData({
-                name: matchedTier as Tier,
-                level: TIER_MAP[matchedTier] || 1
+                name: userTier as Tier,
+                level: TIER_MAP[userTier as Tier] || 1
             });
         } else {
-            // Guest -> FREE
+            // Guest -> SILVER
             setTierData(DEFAULT_TIER);
         }
         setIsLoading(false);

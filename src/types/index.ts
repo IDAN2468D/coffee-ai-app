@@ -1,6 +1,10 @@
-import { Plan } from "@prisma/client";
+export type UserTier = 'SILVER' | 'GOLD' | 'PLATINUM';
 
-export { Plan };
+export enum Plan {
+    FREE = 'FREE',
+    BASIC = 'BASIC',
+    PRO = 'PRO'
+}
 
 
 export interface Subscription {

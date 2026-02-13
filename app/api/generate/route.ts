@@ -15,9 +15,9 @@ export async function POST(req: Request) {
         if (session?.user) {
             const user = await prisma.user.findUnique({
                 where: { id: (session.user as any).id },
-                select: { tier: true }
+                select: { tier: true } as any
             });
-            const userTier: UserTier = (user?.tier as UserTier) || 'SILVER';
+            const userTier: UserTier = ((user as any)?.tier as UserTier) || 'SILVER';
             const benefits = TIER_BENEFITS[userTier];
 
             if (benefits.aiAccess === false) {

@@ -70,8 +70,12 @@ export default function SubscriptionClient() {
     const handleJoin = async (tierId: string) => {
         setLoading(tierId);
         try {
-            const plan = tierId.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
-            const result = await updateSubscription({ plan: plan as any });
+            const upperTier = tierId.toUpperCase();
+            const plan = upperTier === 'SILVER' ? 'BASIC' : 'PRO';
+            const result = await updateSubscription({
+                plan: plan as any,
+                tier: upperTier as any
+            });
 
             if (result.success) {
                 setSuccess(tierId);

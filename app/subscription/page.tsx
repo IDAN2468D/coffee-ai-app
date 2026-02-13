@@ -24,8 +24,12 @@ export default function SubscriptionPage() {
         setActiveTier(tier);
         startTransition(async () => {
             try {
-                const plan = tier.toUpperCase() === 'SILVER' ? 'BASIC' : 'PRO';
-                const result = await updateSubscription({ plan: plan as any });
+                const upperTier = tier.toUpperCase();
+                const plan = upperTier === 'SILVER' ? 'BASIC' : 'PRO';
+                const result = await updateSubscription({
+                    plan: plan as any,
+                    tier: upperTier as any
+                });
 
                 if (result.success) {
                     router.push('/dashboard');

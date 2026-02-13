@@ -10,10 +10,14 @@ export default function DebugTierPage() {
     const router = useRouter();
     const [updating, setUpdating] = useState(false);
 
-    const updateTier = async (tier: string) => {
+    const updateTier = async (tier: 'SILVER' | 'GOLD' | 'PLATINUM') => {
         setUpdating(true);
         try {
-            const result = await updateSubscription({ plan: tier as any });
+            const plan = tier === 'SILVER' ? 'BASIC' : 'PRO';
+            const result = await updateSubscription({
+                plan: plan as any,
+                tier: tier
+            });
 
             if (result.success) {
                 // Force session update
@@ -50,7 +54,7 @@ export default function DebugTierPage() {
                 <p className="text-lg">
                     <strong>Plan נוכחי:</strong>{' '}
                     <span className="text-yellow-400">
-                        {(session.user as any)?.subscription?.plan || 'FREE'}
+                        {(session.user as any)?.tier || 'SILVER'}
                     </span>
                 </p>
             </div>
@@ -59,18 +63,25 @@ export default function DebugTierPage() {
                 <h2 className="text-xl mb-4">עדכן Plan:</h2>
                 <div className="flex gap-4">
                     <button
-                        onClick={() => updateTier('BASIC')}
+                        onClick={() => updateTier('SILVER')}
                         disabled={updating}
                         className="px-6 py-3 bg-stone-500 hover:bg-stone-600 rounded-lg disabled:opacity-50 font-bold"
                     >
-                        BASIC
+                        SILVER
                     </button>
                     <button
-                        onClick={() => updateTier('PRO')}
+                        onClick={() => updateTier('GOLD')}
                         disabled={updating}
-                        className="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg disabled:opacity-50 font-bold"
+                        className="px-6 py-3 bg-[#C37D46] hover:bg-[#A66330] rounded-lg disabled:opacity-50 font-bold"
                     >
-                        PRO
+                        GOLD
+                    </button>
+                    <button
+                        onClick={() => updateTier('PLATINUM')}
+                        disabled={updating}
+                        className="px-6 py-3 bg-purple-500 hover:bg-purple-600 rounded-lg disabled:opacity-50 font-bold"
+                    >
+                        PLATINUM
                     </button>
                 </div>
             </div>

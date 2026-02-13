@@ -8,13 +8,14 @@ import { useSession } from 'next-auth/react';
  * Higher number = Higher privilege
  */
 const TIER_LEVELS: Record<string, number> = {
-    'BASIC': 1,
-    'PRO': 2,
+    'SILVER': 0,
+    'GOLD': 1,
+    'PLATINUM': 2,
 };
 
 interface RequireTierProps {
     /** The minimum tier required to see the content */
-    minTier: 'BASIC' | 'PRO';
+    minTier: 'SILVER' | 'GOLD' | 'PLATINUM';
     /** Content to render if requirements are met */
     children: React.ReactNode;
 }
