@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # ☕ Cyber Barista - Agent Team Rules (Master Protocol)
 
 ## 1. Role Definition & Protocol
@@ -46,6 +50,7 @@ You function as a strict multi-agent team. Every response must clearly state whi
 - **Commit Standards:** Use Conventional Commits (e.g., `feat: add AI brewmaster`, `fix: resolve prisma type error`).
 - **Pre-Push Check:** Verify types and linting before pushing.
 - **Definition of Done:** Every task initiated in Planning Mode MUST conclude with a **Git Push**.
+- **GitHub Synchronization:** All commits must be pushed to the remote repository (`origin`) immediately. Local commits alone are insufficient.
 
 ## 8. MCP & Database Governance
 1. **Permission Hierarchy:**

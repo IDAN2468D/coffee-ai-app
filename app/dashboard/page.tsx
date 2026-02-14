@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import DashboardClient from './DashboardClient';
+import { getDailyFact } from "@/app/actions/daily-fact";
 import { getLoyaltyStatus } from "@/lib/loyalty";
 
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,9 @@ export default async function DashboardPage() {
         });
     }
 
+    // Fetch Daily Fact
+    const dailyFactData = await getDailyFact();
+
     return <DashboardClient
         initialPoints={points}
         initialOrders={orders}
@@ -49,5 +53,6 @@ export default async function DashboardPage() {
             expiry: userData.subscription.nextBillingDate
         } : null}
         loyaltyStatus={loyaltyStatus}
+        dailyFact={dailyFactData.success && dailyFactData.data ? dailyFactData.data : null}
     />;
 }

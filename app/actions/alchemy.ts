@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ServerActionResponse, AlchemyStats } from "@/src/types";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const AlchemySchema = z.object({
     acidity: z.number().min(0).max(100),
@@ -18,11 +18,14 @@ const AlchemySchema = z.object({
 });
 
 export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionResponse> {
+    console.log("Alchemy Action Started:", rawStats);
+
     try {
         const stats = AlchemySchema.parse(rawStats);
 
         const session = await getServerSession(authOptions);
         if (!session?.user?.email) {
+            console.error("Alchemy: No Session");
             return { success: false, error: "Unauthorized" };
         }
 
@@ -31,22 +34,33 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
         });
 
         if (!user) {
+            console.error("Alchemy: User not found");
             return { success: false, error: "User not found" };
         }
 
-        // AI Generation
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Check API Key
+        if (!process.env.GEMINI_API_KEY) {
+            console.error("Alchemy: Missing API Key");
+            return { success: false, error: "מפתח ה-API חסר. אנא פנה לתמיכה." };
+        }
+
+        // AI Generation (Instantiate safely inside function)
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
         const prompt = `Act as a world-class coffee roaster. Create a unique, creative, and luxurious name and a short sensory description (max 20 words) for a coffee blend with the following characteristics (0-100 scale):
         - Acidity: ${stats.acidity}
         - Body: ${stats.body}
         - Sweetness: ${stats.sweetness}
         - Bitterness: ${stats.bitterness}
         
-        The description should be professional and evocative. Return JSON format: { "name": "...", "description": "..." }`;
+        The description should be professional and evocative (in Hebrew). Return JSON format: { "name": "...", "description": "..." }`;
 
+        console.log("Alchemy: Generating content...");
         const result = await model.generateContent(prompt);
         const response = await result.response;
         let text = response.text();
+        console.log("Alchemy: AI Response:", text);
 
         // Robust JSON extraction
         let aiData;
@@ -83,14 +97,20 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
         return { success: true, data: blend };
     } catch (error: unknown) {
         if (error instanceof z.ZodError) {
+            console.error("Alchemy Validation Error:", error.errors);
             return { success: false, error: "ערכי הקלט אינם תקינים." };
         }
-        console.error("Crafting error:", error);
+
+        console.error("Crafting Error (Full):", error);
 
         let message = "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";
         if (error instanceof Error) {
             if (error.message.includes("API_KEY")) {
                 message = "מפתח ה-API חסר או לא תקין";
+            } else if (error.message.includes("fetch")) {
+                message = "שגיאת תקשורת עם ה-AI. בדוק את החיבור לרשת.";
+            } else if (error.message.includes("quota")) {
+                message = "חריגה ממכסת השימוש ב-AI. נסה שוב מאוחר יותר.";
             }
         }
 

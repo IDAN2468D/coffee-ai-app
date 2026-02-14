@@ -38,12 +38,14 @@ export default function Dashboard({
     initialPoints,
     initialOrders,
     subscription,
-    loyaltyStatus
+    loyaltyStatus,
+    dailyFact
 }: {
     initialPoints: number,
     initialOrders: any[],
     subscription: { plan: "FREE" | "BASIC" | "PRO" | null, status: string | null, expiry: any | null } | null,
-    loyaltyStatus: LoyaltyStatus | null
+    loyaltyStatus: LoyaltyStatus | null,
+    dailyFact: { fact: string; icon: string } | null
 }) {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -313,6 +315,28 @@ export default function Dashboard({
 
                     {/* Sidebar */}
                     <div className="space-y-8">
+                        {/* Daily Fact Widget */}
+                        {dailyFact && (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-gradient-to-br from-[#1a1a1a] to-[#252525] rounded-[2.5rem] p-6 border border-white/5 shadow-xl relative overflow-hidden group"
+                            >
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl pointer-events-none group-hover:bg-[#C37D46]/10 transition-colors"></div>
+                                <div className="relative z-10 text-right">
+                                    <div className="flex items-center gap-3 mb-4 flex-row-reverse">
+                                        <div className="w-10 h-10 rounded-xl bg-[#C37D46]/20 flex items-center justify-center text-2xl shadow-inner">
+                                            {dailyFact.icon}
+                                        </div>
+                                        <h3 className="text-lg font-serif font-bold text-white">הידעת?</h3>
+                                    </div>
+                                    <p className="text-white/80 text-sm leading-relaxed font-medium">
+                                        "{dailyFact.fact}"
+                                    </p>
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Quick Shop */}
                         <div className="bg-[#1a1a1a] rounded-[2.5rem] p-6 border border-white/5 shadow-xl">
                             <div className="flex items-center justify-between mb-6 flex-row-reverse">
