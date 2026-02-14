@@ -8,6 +8,30 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/src/types';
 
+import { useFormStatus } from 'react-dom';
+
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <button
+            disabled={pending}
+            type="submit"
+            className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold tracking-widest text-sm hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+            {pending ? (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+                <>
+                    <span>הוסף לסל</span>
+                    <span className="bg-white/20 rounded-full p-0.5 group-hover:bg-white/30 transition-colors">
+                        <Plus size={14} />
+                    </span>
+                </>
+            )}
+        </button>
+    );
+}
+
 export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = [] }: { initialProducts?: Product[], initialFavoriteIds?: string[] }) {
     const [activeCategory, setActiveCategory] = useState<string>('הכל');
     const { items, addItem, removeItem } = useCartStore();
@@ -163,23 +187,16 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                 </div>
 
                                 {/* Add Button */}
-                                <button
-                                    onClick={() => {
-                                        // Normalize product data before adding to cart
-                                        const normalizedProduct = {
-                                            ...product,
-                                            category: typeof product.category === 'string' ? product.category : (product.category as any)?.name || 'Other'
-                                        };
-                                        const size = (selectedSizes[product.id] || 'M') as 'S' | 'M' | 'L';
-                                        addItem(normalizedProduct, size);
-                                    }}
-                                    className="bg-[#C37D46] text-white w-full py-4 rounded-xl font-bold tracking-widest text-sm hover:bg-[#A66330] transition-colors flex items-center justify-center gap-2 group"
-                                >
-                                    <span>הוסף לסל</span>
-                                    <span className="bg-white/20 rounded-full p-0.5 group-hover:bg-white/30 transition-colors">
-                                        <Plus size={14} />
-                                    </span>
-                                </button>
+                                <form action={async () => {
+                                    const size = (selectedSizes[product.id] || 'M');
+                                    await import('@/app/actions/cart').then(mod => mod.addToCart({
+                                        productId: product.id,
+                                        quantity: 1,
+                                        size: size
+                                    }));
+                                }}>
+                                    <SubmitButton />
+                                </form>
 
                                 {/* Right Side Toggles (Interactive) */}
                                 <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col gap-2 bg-white rounded-full p-1 shadow-lg border border-stone-100 hidden xl:flex">
