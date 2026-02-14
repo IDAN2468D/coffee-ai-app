@@ -102,7 +102,13 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
             return { success: false, error: "ערכי הקלט אינם תקינים." };
         }
 
-        console.error("Crafting Error (Full):", error);
+        const isQuotaError = error instanceof Error && (error.message.includes("429") || error.message.includes("quota"));
+
+        if (isQuotaError) {
+            console.warn("Alchemy: AI Quota Exceeded (Swapping to Fallback logic).");
+        } else {
+            console.error("Crafting Error (Full):", error);
+        }
 
         // --- Fallback Mechanism ---
         // If AI fails (network, quota, etc.), we provide a "Mystery Blend" so the user experience isn't broken.
