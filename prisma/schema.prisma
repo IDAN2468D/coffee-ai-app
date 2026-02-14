@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -47,6 +50,7 @@ model User {
   likes         Like[]
   comments      Comment[]
   subscription  Subscription?
+  cart          Cart? // One-to-One with Cart
 
   favoriteIds      String[]  @db.ObjectId
   isAdmin          Boolean   @default(false)
@@ -109,6 +113,7 @@ model Product {
   // Relations
   reviews     Review[]
   orderItems  OrderItem[]
+  cartItems   CartItem[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -252,4 +257,25 @@ model GiftCard {
   redeemedAt     DateTime?
   redeemedById   String?   @db.ObjectId
   redeemedBy     User?     @relation("ReceivedGiftCards", fields: [redeemedById], references: [id])
+}
+
+model Cart {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?    @unique @db.ObjectId
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  cartId    String   @db.ObjectId
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  size      String?  // S, M, L
+
+  @@unique([cartId, productId, size])
 }
