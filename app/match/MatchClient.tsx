@@ -308,11 +308,11 @@ export default function MatchClient() {
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#FDFCF0] to-transparent w-full h-1/2 bottom-0 z-0 pointer-events-none md:hidden" />
                                     <div className="relative w-64 h-64 md:w-96 md:h-96">
                                         <div className="absolute inset-0 bg-[#C37D46] rounded-full blur-3xl opacity-20 animate-pulse" />
-                                        <img
+                                        {result.product.image && <img
                                             src={result.product.image}
                                             alt={result.product.name}
                                             className="w-full h-full object-contain drop-shadow-2xl relative z-10 hover:scale-105 transition-transform duration-500"
-                                        />
+                                        />}
                                     </div>
                                 </div>
                             </div>

@@ -135,12 +135,12 @@ export default function MoodPage() {
                                     className="w-full bg-[#1a1a1a]/80 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl group"
                                 >
                                     <div className="relative h-64 overflow-hidden">
-                                        <Image
+                                        {recommendation.product.image && <Image
                                             src={recommendation.product.image}
                                             alt={recommendation.product.name}
                                             fill
                                             className="object-cover group-hover:scale-110 transition-transform duration-700"
-                                        />
+                                        />}
                                         <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent" />
                                         <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-4 py-1 rounded-full border border-white/10">
                                             <span className="text-[#C37D46] font-bold">₪{recommendation.product.price}</span>

@@ -14,6 +14,7 @@ export default function ShopHeader() {
                     src="https://www.transparenttextures.com/patterns/coffee-beans.png"
                     alt="pattern"
                     fill
+                    sizes="100vw"
                     className="object-cover"
                 />
             </div>

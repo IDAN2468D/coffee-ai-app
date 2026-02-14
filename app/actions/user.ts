@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { ServerActionResponse } from "@/src/types/index";
 
 export interface ReengagementData {
     shouldShow: boolean;
@@ -93,12 +94,12 @@ export async function getReengagementStatus(): Promise<ReengagementData> {
  *
  * Called from Dashboard or post-checkout to get real-time loyalty status.
  */
-export async function processLoyaltyProgression() {
+export async function processLoyaltyProgression(): Promise<ServerActionResponse> {
     try {
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.email) {
-            return { success: false, error: 'Not authenticated' };
+            return { success: false, error: 'Not authenticated', timestamp: Date.now() };
         }
 
         const user = await prisma.user.findUnique({
@@ -107,7 +108,7 @@ export async function processLoyaltyProgression() {
         });
 
         if (!user) {
-            return { success: false, error: 'User not found' };
+            return { success: false, error: 'User not found', timestamp: Date.now() };
         }
 
         const { checkLoyaltyUpgrade } = await import('@/lib/loyalty');
@@ -115,10 +116,11 @@ export async function processLoyaltyProgression() {
 
         return {
             success: true,
-            ...loyaltyStatus,
+            data: loyaltyStatus,
+            timestamp: Date.now()
         };
     } catch (error) {
         console.error("Loyalty progression error:", error);
-        return { success: false, error: 'Internal error' };
+        return { success: false, error: 'Internal error', timestamp: Date.now() };
     }
 }

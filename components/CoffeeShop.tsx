@@ -145,12 +145,14 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                     href={`/shop/${product.id}`}
                                     className="absolute -top-16 w-40 h-40 rounded-full overflow-hidden shadow-lg border-4 border-white group-hover/card:scale-110 transition-transform duration-500 cursor-pointer"
                                 >
-                                    <Image
-                                        src={product.image}
-                                        alt={product.name}
-                                        fill
-                                        className="object-cover"
-                                    />
+                                    {product.image && (
+                                        <Image
+                                            src={product.image}
+                                            alt={product.name}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    )}
                                 </Link>
 
                                 {/* Heart Button */}

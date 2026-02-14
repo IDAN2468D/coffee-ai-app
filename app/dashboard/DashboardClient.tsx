@@ -31,6 +31,7 @@ import Image from 'next/image';
 import { PRODUCTS } from '@/lib/products';
 import { Product } from '@/src/types';
 import { useCartStore } from '@/context/useCartStore';
+import QuickReOrder from '@/components/QuickReOrder';
 import LoyaltyTracker from '@/components/LoyaltyTracker';
 import type { LoyaltyStatus } from '@/lib/loyalty';
 
@@ -199,6 +200,14 @@ export default function Dashboard({
                     {/* Main Feed */}
                     <div className="lg:col-span-2 space-y-12">
 
+                        {/* VIP Quick Re-Order */}
+                        {(loyaltyStatus?.tier === 'GOLD' || loyaltyStatus?.tier === 'PLATINUM') && initialOrders.length > 0 && (
+                            <QuickReOrder
+                                lastOrder={initialOrders[0]}
+                                userTier={loyaltyStatus.tier}
+                            />
+                        )}
+
                         {/* VIP Loyalty Tracker */}
                         {loyaltyStatus && <LoyaltyTracker status={loyaltyStatus} />}
 
@@ -347,11 +356,11 @@ export default function Dashboard({
                                 {PRODUCTS.slice(4, 7).map((product) => (
                                     <div key={product.id} className="flex items-center gap-4 bg-black/20 p-3 rounded-2xl hover:bg-black/40 transition-colors group flex-row-reverse text-right">
                                         <div className="w-16 h-16 rounded-xl bg-white/5 overflow-hidden flex-shrink-0 relative">
-                                            <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform" />
+                                            {product.image && <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform" />}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <h4 className="font-bold text-white text-sm truncate">{product.name}</h4>
-                                            <p className="text-xs text-white/40 truncate">{product.category}</p>
+                                            <p className="text-xs text-white/40 truncate">{typeof product.category === 'object' ? product.category?.name : product.category}</p>
                                         </div>
                                         <button
                                             onClick={() => addItem(product)}

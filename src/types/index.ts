@@ -1,3 +1,4 @@
+
 export type UserTier = 'SILVER' | 'GOLD' | 'PLATINUM';
 
 export enum Plan {
@@ -6,6 +7,19 @@ export enum Plan {
     PRO = 'PRO'
 }
 
+export interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    isAdmin: boolean;
+    points: number;
+    totalSpent: number;
+    orderCount: number;
+    tier: UserTier;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export interface Subscription {
     id: string;
@@ -16,6 +30,7 @@ export interface Subscription {
     createdAt: Date;
     updatedAt: Date;
 }
+
 export interface TasteProfile {
     id: string;
     userId: string;
@@ -38,11 +53,15 @@ export interface Product {
     name: string;
     description: string;
     price: number;
-    image: string;
-    category: 'Hot' | 'Cold' | 'Pastry' | 'Beans' | 'Equipment' | 'Capsules';
+    image: string | null; // Nullable in schema
+    category?: { name: string } | string | null; // Allow string for backward compatibility
+    categoryId?: string | null;
     roast?: string | null;
     flavor?: string[];
     tags?: string[];
+    origin?: string | null;
+    slug?: string | null;
+    isArchived?: boolean;
 }
 
 export interface CartItem extends Product {
@@ -60,10 +79,45 @@ export interface CartStore {
     clearRecentlyAdded: () => void;
 }
 
+// --- Order Types ---
+
+export interface OrderItem {
+    id: string;
+    orderId: string;
+    productId: string;
+    product?: Product;
+    quantity: number;
+    size?: string | null;
+}
+
+export interface Order {
+    id: string;
+    userId: string;
+    user?: User;
+    items: OrderItem[];
+    shippingAddress: any; // Using any for Json? type compatibility or define a stricter Address type
+    total: number;
+    discount: number;
+    vipDiscount: number;
+    shippingFee: number;
+    appliedCoupon?: string | null;
+    status: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface ServerActionResponse<T = unknown> {
     success: boolean;
     data?: T;
     error?: string;
+    timestamp?: number; // Added for protocol compliance
+}
+
+export interface ReOrderResponse {
+    success: boolean;
+    data?: string; // orderId
+    error?: string;
+    timestamp: number;
 }
 
 // --- Gift Card Types ---
