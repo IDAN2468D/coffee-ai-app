@@ -39,13 +39,13 @@ export async function addToCart(rawInput: unknown): Promise<ServerActionResponse
         }
 
         let cartId = cookieStore.get('cartId')?.value;
-        let cart;
+        let cart = null;
 
-        // 3. Find Existing Cart
+        // 3. Find Existing Cart (if ID exists)
         if (cartId) {
             cart = await prisma.cart.findUnique({
                 where: { id: cartId },
-                select: { id: true, userId: true } // Minimize data fetch
+                select: { id: true, userId: true }
             });
         }
 
@@ -60,7 +60,8 @@ export async function addToCart(rawInput: unknown): Promise<ServerActionResponse
             cartId = cart.id;
 
             // Set cookie for persistence
-            cookieStore.set('cartId', cartId, {
+            // Explicitly ensure value is string to satisfy TS
+            cookieStore.set('cartId', cartId as string, {
                 path: '/',
                 maxAge: 60 * 60 * 24 * 30, // 30 Days
                 httpOnly: true,
@@ -69,12 +70,16 @@ export async function addToCart(rawInput: unknown): Promise<ServerActionResponse
         } else {
             // If logged in user interacts with an anonymous cart, claim it
             if (userId && !cart.userId) {
+                // Check if user already has a DIFFERENT cart? Logic simplification for now: just claim current session cart.
                 await prisma.cart.update({
                     where: { id: cartId },
                     data: { userId }
                 });
             }
         }
+
+        // Ensure cartId is guaranteed string here
+        if (!cartId) throw new Error("Critical: Failed to resolve Cart ID");
 
         // 5. Upsert Item Logic
         // We check for existing item first to decide update vs create
