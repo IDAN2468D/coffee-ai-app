@@ -95,6 +95,7 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
         revalidatePath("/alchemy");
 
         return { success: true, data: blend };
+
     } catch (error: unknown) {
         if (error instanceof z.ZodError) {
             console.error("Alchemy Validation Error:", error.errors);
@@ -103,6 +104,52 @@ export async function craftBlend(rawStats: AlchemyStats): Promise<ServerActionRe
 
         console.error("Crafting Error (Full):", error);
 
+        // --- Fallback Mechanism ---
+        // If AI fails (network, quota, etc.), we provide a "Mystery Blend" so the user experience isn't broken.
+        try {
+            // 1. Get User (Redundant check but needed for types if we reach here early)
+            const session = await getServerSession(authOptions);
+            const user = session?.user?.email ? await prisma.user.findUnique({ where: { email: session.user.email } }) : null;
+
+            if (user) {
+                const FALLBACK_NAMES = ["סוד האלכימאי", "תערובת הבית", "צללי הלילה", "תעוררות", "זהב שחור"];
+                const FALLBACK_DESCRIPTIONS = [
+                    "שילוב מעורפל ומסתורי של טעמים עמוקים.",
+                    "קפה מאוזן עם סיומת מפתיעה.",
+                    "חוויה חושית עשירה במיוחד.",
+                    "טעם עוצמתי שמעורר את החושים."
+                ];
+
+                const fallbackName = FALLBACK_NAMES[Math.floor(Math.random() * FALLBACK_NAMES.length)];
+                const fallbackDesc = FALLBACK_DESCRIPTIONS[Math.floor(Math.random() * FALLBACK_DESCRIPTIONS.length)];
+
+                // Create backup blend in DB
+                const fallbackBlend = await prisma.blend.create({
+                    data: {
+                        name: fallbackName,
+                        base: "Alchemy Fallback",
+                        milk: "None",
+                        flavor: fallbackDesc,
+                        acidity: rawStats.acidity, // Use the user's requested stats
+                        body: rawStats.body,
+                        sweetness: rawStats.sweetness,
+                        bitterness: rawStats.bitterness,
+                        userId: user.id
+                    }
+                });
+
+                revalidatePath("/dashboard");
+                revalidatePath("/alchemy");
+
+                // Return success with the fallback blend, but maybe log it warn level
+                console.warn("Served fallback blend due to AI error.");
+                return { success: true, data: fallbackBlend };
+            }
+        } catch (dbError) {
+            console.error("Critical: Fallback DB creation failed:", dbError);
+        }
+
+        // Real Error Message (only if fallback also failed)
         let message = "המעבדה כרגע לא יציבה. נסה שוב בעוד דקה.";
         if (error instanceof Error) {
             if (error.message.includes("API_KEY")) {
