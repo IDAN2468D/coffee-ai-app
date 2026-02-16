@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { Plan, Subscription } from "@/src/types";
+import { Plan, Subscription, UserTier } from "@/src/types";
 import { revalidatePath } from "next/cache";
 
 const updateSubscriptionSchema = z.object({
@@ -23,7 +23,7 @@ export async function updateSubscription(formData: FormData | { plan?: Plan; tie
         const data = formData instanceof FormData
             ? {
                 plan: formData.get("plan") as Plan,
-                tier: formData.get("tier") as any
+                tier: formData.get("tier") as UserTier
             }
             : formData;
 
@@ -77,5 +77,63 @@ export async function updateSubscription(formData: FormData | { plan?: Plan; tie
     } catch (error) {
         console.error("Subscription update error:", error);
         return { success: false, error: "An unexpected error occurred while updating your subscription." };
+    }
+}
+
+const upgradeTierSchema = z.object({
+    userId: z.string().min(1, "User ID is required"),
+    newTier: z.enum(['SILVER', 'GOLD', 'PLATINUM']),
+});
+
+export async function upgradeUserTier(userId: string, newTier: 'SILVER' | 'GOLD' | 'PLATINUM') {
+    try {
+        const session = await getServerSession(authOptions);
+
+        if (!session?.user?.email) {
+            return { success: false, error: "Unauthorized", timestamp: Date.now() };
+        }
+
+        // Validate Validation
+        const validation = upgradeTierSchema.safeParse({ userId, newTier });
+        if (!validation.success) {
+            return { success: false, error: "Invalid input data", timestamp: Date.now() };
+        }
+
+        // 30 days from now in Asia/Jerusalem
+        const now = new Date();
+        const jerusalemTime = new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Jerusalem",
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+        }).format(now);
+
+        const currentPeriodEnd = new Date(jerusalemTime);
+        currentPeriodEnd.setDate(currentPeriodEnd.getDate() + 30);
+
+        // Transaction
+        const updatedUser = await prisma.$transaction(async (tx) => {
+            const user = await tx.user.update({
+                where: { id: userId },
+                data: {
+                    tier: newTier,
+                    currentPeriodEnd: currentPeriodEnd,
+                    isSubscriptionActive: true
+                }
+            });
+            return user;
+        });
+
+        revalidatePath("/vip");
+        revalidatePath("/dashboard");
+
+        return { success: true, data: updatedUser, timestamp: Date.now() };
+
+    } catch (error) {
+        console.error("Upgrade tier error:", error);
+        return { success: false, error: "Failed to upgrade tier", timestamp: Date.now() };
     }
 }

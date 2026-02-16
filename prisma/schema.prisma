@@ -65,6 +65,10 @@ model User {
   tasteProfile     TasteProfile?
   sentGiftCards     GiftCard[]  @relation("SentGiftCards")
   receivedGiftCards GiftCard[]  @relation("ReceivedGiftCards")
+  
+  subscriptionId       String?
+  currentPeriodEnd     DateTime?
+  isSubscriptionActive Boolean   @default(false)
 }
 
 model Account {

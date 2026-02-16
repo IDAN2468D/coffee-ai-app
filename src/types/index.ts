@@ -17,6 +17,9 @@ export interface User {
     totalSpent: number;
     orderCount: number;
     tier: UserTier;
+    subscriptionId?: string | null;
+    isSubscriptionActive?: boolean;
+    currentPeriodEnd?: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
