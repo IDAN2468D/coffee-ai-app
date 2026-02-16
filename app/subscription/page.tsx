@@ -11,7 +11,7 @@ import { updateSubscription } from '@/app/actions/subscription';
 
 export default function SubscriptionPage() {
     const router = useRouter();
-    const { data: session } = useSession();
+    const { data: session, update } = useSession();
     const [isPending, startTransition] = useTransition();
     const [activeTier, setActiveTier] = useState<string | null>(null);
 
@@ -32,6 +32,12 @@ export default function SubscriptionPage() {
                 });
 
                 if (result.success) {
+                    // Force session update immediately
+                    await update({
+                        tier: upperTier,
+                        subscription: { ...session.user.subscription, plan: plan }
+                    });
+
                     router.push('/dashboard');
                     router.refresh();
                 } else {

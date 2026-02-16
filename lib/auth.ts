@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
         signIn: "/auth/login",
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id;
                 token.isAdmin = user.isAdmin;
@@ -105,6 +105,14 @@ export const authOptions: NextAuthOptions = {
                 token.subscription = (user as any).subscription;
                 token.picture = user.image;
             }
+
+            // Handle Session Update Trigger
+            if (trigger === "update" && session) {
+                // Allow updating tier and subscription from client
+                if (session.tier) token.tier = session.tier;
+                if (session.subscription) token.subscription = session.subscription;
+            }
+
             return token;
         },
         async session({ session, token }) {
