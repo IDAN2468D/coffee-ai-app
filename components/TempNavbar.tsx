@@ -10,6 +10,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 
 import { NotificationBell } from './NotificationBell';
+import UserAvatar from './UserAvatar';
 
 
 
@@ -354,15 +355,12 @@ export default function Navbar() {
                                 </div>
                             )}
 
-                            <div className="relative z-10 w-9 h-9 rounded-full ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105 overflow-hidden">
-                                {session.user?.image ? (
-                                    <img src={session.user.image} alt={session.user.name || ''} className="w-full h-full rounded-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center">
-                                        <User className="w-5 h-5 text-white" />
-                                    </div>
-                                )}
-                            </div>
+                            <UserAvatar
+                                src={session.user?.image}
+                                name={session.user?.name}
+                                size={36}
+                                className="ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105"
+                            />
                         </div>
                     </Link>
                 ) : (
@@ -701,18 +699,17 @@ export default function Navbar() {
                                         {/* Luxury Gradient Glow behind avatar */}
                                         <div className="absolute top-1/2 left-6 -translate-y-1/2 w-24 h-24 bg-[#C37D46]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                                        <div className="relative z-10 w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-[#C37D46] via-amber-200 to-[#C37D46] shadow-[0_0_20px_rgba(195,125,70,0.4)]">
-                                            <div className="w-full h-full rounded-full bg-[#1A100C] flex items-center justify-center overflow-hidden p-0.5">
-                                                {session?.user?.image ? (
-                                                    <img src={session?.user?.image || ''} alt="" className="w-full h-full object-cover rounded-full" />
-                                                ) : (
-                                                    <span className="text-white font-serif font-black text-2xl">{session?.user?.name?.[0]}</span>
-                                                )}
-                                            </div>
+                                        <div className="relative z-10">
+                                            <UserAvatar
+                                                src={session?.user?.image}
+                                                name={session?.user?.name}
+                                                size={64}
+                                                className="p-0.5 bg-gradient-to-tr from-[#C37D46] via-amber-200 to-[#C37D46] shadow-[0_0_20px_rgba(195,125,70,0.4)]"
+                                            />
                                             <motion.div
                                                 animate={{ scale: [1, 1.2, 1] }}
                                                 transition={{ duration: 2, repeat: Infinity }}
-                                                className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#C37D46] rounded-full flex items-center justify-center border-2 border-[#1A100C] shadow-lg"
+                                                className="absolute -bottom-0.5 -right-0.5 w-6 h-6 bg-[#C37D46] rounded-full flex items-center justify-center border-2 border-[#1A100C] shadow-lg z-20"
                                             >
                                                 <Activity size={12} className="text-white" />
                                             </motion.div>

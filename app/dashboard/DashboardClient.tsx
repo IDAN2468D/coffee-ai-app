@@ -34,6 +34,7 @@ import { useCartStore } from '@/context/useCartStore';
 import QuickReOrder from '@/components/QuickReOrder';
 import LoyaltyTracker from '@/components/LoyaltyTracker';
 import type { LoyaltyStatus } from '@/lib/loyalty';
+import UserAvatar from '@/components/UserAvatar';
 
 export default function Dashboard({
     initialPoints,
@@ -119,16 +120,14 @@ export default function Dashboard({
                                 className="flex items-center gap-4 flex-row-reverse justify-end"
                             >
                                 <div className="relative">
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-[#C37D46] shadow-lg shadow-[#C37D46]/20 relative">
-                                        <Image
-                                            src={session?.user?.image || `https://ui-avatars.com/api/?name=${session?.user?.name}&background=1a1a1a&color=C37D46`}
-                                            alt="Profile"
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
+                                    <UserAvatar
+                                        src={session?.user?.image}
+                                        name={session?.user?.name}
+                                        size={80}
+                                        className="rounded-2xl border-2 border-[#C37D46] shadow-lg shadow-[#C37D46]/20"
+                                    />
                                     {subscription?.plan && (
-                                        <div className="absolute -bottom-2 -left-2 bg-[#C37D46] text-white p-1.5 rounded-lg shadow-lg">
+                                        <div className="absolute -bottom-2 -left-2 bg-[#C37D46] text-white p-1.5 rounded-lg shadow-lg z-10">
                                             <Crown className="w-4 h-4" />
                                         </div>
                                     )}
