@@ -1,12 +1,14 @@
 import { redirect } from 'next/navigation';
 
 type AuthPageProps = {
-    searchParams: { mode?: string };
+    searchParams: Promise<{ mode?: string }>;
 };
 
-export default function AuthPage({ searchParams }: AuthPageProps) {
+export default async function AuthPage({ searchParams }: AuthPageProps) {
+    const { mode } = await searchParams;
+
     // Handle mode parameter for backward compatibility
-    if (searchParams.mode === 'register') {
+    if (mode === 'register') {
         redirect('/auth/register');
     }
 
