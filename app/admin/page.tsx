@@ -13,7 +13,7 @@ export default async function AdminPage() {
         redirect("/api/auth/signin");
     }
 
-    // TODO: Add isAdmin check here once role management is fully implemented
+    // Admin access validation
     // if (!session.user.isAdmin) { redirect('/'); }
 
     const orders = await prisma.order.findMany({

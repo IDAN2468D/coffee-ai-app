@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/context/useCartStore';
 import { ArrowLeft, CreditCard, ShieldCheck, MapPin, Truck, ChevronRight, User, Mail, Home, Building2, Package, Calendar, Star, CheckCircle, Lock, Tag, Gift, Crown, Sparkles } from 'lucide-react';
 import { Autocomplete } from '../../components/ui/Autocomplete';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -22,6 +23,7 @@ const checkoutSchema = z.object({
 import { useSession } from 'next-auth/react';
 
 export default function CheckoutPage() {
+    const router = useRouter();
     const { data: session } = useSession();
     const { items, total, clearCart } = useCartStore();
     const [step, setStep] = useState(1);
@@ -133,18 +135,10 @@ export default function CheckoutPage() {
 
             const result = await res.json();
             if (result.success) {
-                setOrderSuccessData({
-                    id: result.orderId,
-                    pointsEarned: result.pointsEarned,
-                    items: [...items],
-                    total: finalTotal,
-                    shippingDetails: data,
-                    date: new Date().toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
-                });
-
-                setIsOrdered(true);
+                router.push(`/checkout/${result.orderId}`);
                 clearCart();
-            } else {
+            }
+            else {
                 alert(result.error || "שגיאה בביצוע ההזמנה");
             }
         } catch (error) {

@@ -54,7 +54,7 @@ export default function FortunePage() {
                     url: window.location.href
                 });
             } catch (err) {
-                console.log('Share canceled');
+                // Share canceled or failed
             }
         } else {
             alert('התחזית הועתקה ללוח!');

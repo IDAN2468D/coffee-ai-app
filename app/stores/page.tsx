@@ -18,7 +18,6 @@ export interface IProcessedBranch {
 
 async function getBranches(): Promise<IProcessedBranch[]> {
     try {
-        console.log('STORES_DEBUG: Starting getBranches...');
 
         const MONGODB_URI = process.env.MONGODB_URI || process.env.DATABASE_URL;
         if (!MONGODB_URI) {
@@ -26,10 +25,8 @@ async function getBranches(): Promise<IProcessedBranch[]> {
             return [];
         }
 
-        console.log('STORES_DEBUG: Connecting to database...');
         await dbConnect();
 
-        console.log('STORES_DEBUG: Fetching branches from MongoDB...');
         // Ensure model exists and find
         if (!Branch) {
             console.error('STORES_DEBUG: Branch model is not registered');
@@ -37,8 +34,6 @@ async function getBranches(): Promise<IProcessedBranch[]> {
         }
 
         const rawBranches = await Branch.find({}).select('name address lat lng phoneNumber createdAt updatedAt').lean();
-
-        console.log(`STORES_DEBUG: Found ${rawBranches?.length || 0} branches`);
 
         if (!rawBranches || rawBranches.length === 0) {
             return [];

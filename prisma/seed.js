@@ -143,7 +143,7 @@ async function main() {
     for (const p of products) {
         const categoryId = categoriesMap[p.category];
         // Remove the string 'category' field and use 'categoryId'
-        const { category, ...productData } = p;
+        const { category: _, ...productData } = p;
         if (categoryId) {
             await prisma.product.create({
                 data: {

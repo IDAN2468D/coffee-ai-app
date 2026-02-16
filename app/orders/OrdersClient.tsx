@@ -136,9 +136,20 @@ export default function OrdersPage() {
                                         ))}
                                     </div>
 
-                                    <div className="mt-10 pt-10 flex items-center justify-between border-t border-stone-50 lg:hidden">
-                                        <p className="text-sm font-black text-stone-400 uppercase tracking-widest">סך ההשקעה</p>
-                                        <p className="text-3xl font-black text-[#2D1B14]">₪{order.total.toFixed(2)}</p>
+                                    <div className="mt-10 pt-10 flex items-center justify-between border-t border-stone-50">
+                                        <div className="flex items-center gap-4">
+                                            <Link
+                                                href={`/checkout/${order.id}`}
+                                                className="text-xs font-black uppercase tracking-widest text-[#C37D46] hover:text-[#8B4513] flex items-center gap-2 transition-colors"
+                                            >
+                                                <span>פרטי הזמנה מלאים</span>
+                                                <ChevronRight className="w-4 h-4 rotate-180" />
+                                            </Link>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">סך ההשקעה</p>
+                                            <p className="text-3xl font-black text-[#2D1B14]">₪{order.total.toFixed(2)}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
