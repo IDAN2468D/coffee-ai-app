@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import Navbar from '../../components/TempNavbar';
 import Image from 'next/image';
 import { toggleLike, addComment } from '../actions/gallery';
+import UserAvatar from '@/components/UserAvatar';
 
 interface Comment {
     id: string;
@@ -350,13 +351,12 @@ export default function GalleryPage() {
                                         {/* User Info & Actions */}
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-2 space-x-reverse">
-                                                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center overflow-hidden relative">
-                                                    {img.user?.image ? (
-                                                        <Image src={img.user.image} alt={img.user.name || ''} fill className="object-cover" />
-                                                    ) : (
-                                                        <User className="w-4 h-4 text-stone-400" />
-                                                    )}
-                                                </div>
+                                                <UserAvatar
+                                                    src={img.user?.image}
+                                                    name={img.user?.name}
+                                                    size={32}
+                                                    className="ring-1 ring-stone-200"
+                                                />
                                                 <div className="flex flex-col">
                                                     <span className="text-xs font-bold text-stone-700">
                                                         {img.user?.name || 'אנונימי'}
