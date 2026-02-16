@@ -151,6 +151,10 @@ export default function CoffeeShop({ initialProducts = [], initialFavoriteIds = 
                                             alt={product.name}
                                             fill
                                             className="object-cover"
+                                            unoptimized={true}
+                                            onError={(e) => {
+                                                (e.target as any).src = '/placeholder.png';
+                                            }}
                                         />
                                     )}
                                 </Link>

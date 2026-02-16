@@ -76,6 +76,10 @@ export default function PopularTaste({ products = [] }: PopularTasteProps) {
                                     alt={item.name}
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                    unoptimized={true}
+                                    onError={(e) => {
+                                        (e.target as any).src = '/placeholder.png';
+                                    }}
                                 />
                                 <button className="absolute top-3 left-3 p-2 bg-white/20 backdrop-blur-sm rounded-full text-stone-500 hover:bg-white hover:text-red-500 transition-colors z-10">
                                     <Heart size={16} fill="currentColor" />

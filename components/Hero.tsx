@@ -43,13 +43,17 @@ export default function Hero({ context }: SmartHeroProps) {
     return (
         <section className={`relative h-screen min-h-[700px] w-full flex items-center overflow-hidden bg-gradient-to-br ${gradient}`}>
             {/* Background Image */}
-            <div className="absolute inset-0 z-0">
+            <div className="absolute inset-0 z-0 text-right">
                 <Image
                     src="/images/premium_hero_bg.png"
                     alt="Premium Coffee Shop Ambience"
                     fill
                     className="object-cover opacity-60"
                     priority
+                    unoptimized={true}
+                    onError={(e) => {
+                        (e.target as any).src = 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=2000';
+                    }}
                 />
                 <div className={`absolute inset-0 ${overlay}`} />
             </div>

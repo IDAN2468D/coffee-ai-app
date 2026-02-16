@@ -14,6 +14,10 @@ export default function CoffeeCard({ imageUrl, prompt }: CoffeeCardProps) {
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform group-hover:scale-105"
+                unoptimized={true}
+                onError={(e) => {
+                    (e.target as any).src = '/placeholder.png';
+                }}
             />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                 <p className="text-white text-xs line-clamp-2">{prompt}</p>
