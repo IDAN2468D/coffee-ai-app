@@ -339,7 +339,7 @@ export default function Navbar() {
                             />
 
                             <span className="text-sm font-serif font-black tracking-wider text-white uppercase group-hover/profile:text-[#C37D46] transition-colors relative z-10">
-                                {session.user?.name?.split(' ')[0]}
+                                {session?.user?.name?.split(' ')[0]}
                             </span>
 
                             {/* VIP PRO Badge - Gold Shimmer */}
@@ -356,8 +356,8 @@ export default function Navbar() {
                             )}
 
                             <UserAvatar
-                                src={session.user?.image}
-                                name={session.user?.name}
+                                src={session?.user?.image}
+                                name={session?.user?.name}
                                 size={36}
                                 className="ring-2 ring-offset-2 ring-[#C37D46] ring-offset-[#0F0806] shadow-[0_0_15px_rgba(195,125,70,0.3)] transition-transform duration-300 group-hover/profile:scale-105"
                             />
