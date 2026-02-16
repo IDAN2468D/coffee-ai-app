@@ -34,7 +34,7 @@ export default function RenderIfTier({ minTier, children, fallback = null }: Ren
         return <>{fallback}</>;
     }
 
-    const userTier = (session?.user as any)?.subscription?.plan || 'BASIC';
+    const userTier = (session?.user as any)?.tier || 'SILVER';
 
     // Get numeric levels
     const userLevel = TIER_LEVELS[userTier] || 0;

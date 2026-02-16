@@ -38,8 +38,8 @@ export default function TierGate({ requiredTier, children }: TierGateProps) {
     }
 
     // 2. Determine User's Tier Level
-    // Access plan from session.user.subscription. Default to 0 if missing.
-    const userTierName = (session?.user as any)?.subscription?.plan;
+    // Access tier directly from session.user (populated by auth.ts)
+    const userTierName = (session?.user as any)?.tier as string;
     const userLevel = userTierName ? (TIER_LEVELS[userTierName] || 0) : 0;
 
     // 3. Determine Required Level
