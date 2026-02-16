@@ -45,7 +45,7 @@ export default function GlobalError({
                                 onClick={() => reset()}
                                 className="w-full bg-[#C37D46] hover:bg-[#8B4513] text-white px-8 py-4 rounded-2xl font-black shadow-[0_10px_30px_rgba(195,125,70,0.3)] hover:scale-[1.02] active:scale-95 transition-all text-lg uppercase tracking-wider"
                             >
-                                אתחול מחדש
+                                אתחול מחדש (Try Again)
                             </button>
 
                             {error.digest && (
@@ -59,7 +59,7 @@ export default function GlobalError({
                     </div>
 
                     <div className="text-white/10 text-xs font-mono">
-                        Cyber Barista OS v4.0.2 - Kernel Panic
+                        Cyber Barista OS v4.0.3 - Kernel Panic
                     </div>
                 </div>
             </body>
