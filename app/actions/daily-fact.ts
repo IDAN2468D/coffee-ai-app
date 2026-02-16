@@ -50,8 +50,13 @@ export async function getDailyFact(): Promise<{ success: boolean; data?: { fact:
         lastFetchTime = Date.now();
 
         return { success: true, data };
-    } catch (error) {
-        console.error("Daily Fact Error (Using Fallback):", error instanceof Error ? error.message : error);
+    } catch (error: any) {
+        // Suppress 429 Errors (Quota Exceeded)
+        if (error.message?.includes('429') || error.status === 429) {
+            console.warn("⚠️ Gemini quota exceeded (Daily Fact). Using fallback.");
+        } else {
+            console.error("Daily Fact Error:", error instanceof Error ? error.message : error);
+        }
 
         // Pick a random fallback
         const randomFact = FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];

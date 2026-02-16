@@ -11,14 +11,20 @@ import { motion } from "framer-motion";
 
 import OrderConfirmationClient from "./OrderConfirmationClient";
 
-export default async function OrderConfirmationPage({ params }: { params: { orderId: string } }) {
+export default async function OrderConfirmationPage({ params }: { params: Promise<{ orderId: string }> }) {
+    const { orderId } = await params;
     const session = await getServerSession(authOptions);
+
     if (!session || !session.user?.email) {
         redirect("/auth/signin");
     }
 
+    if (!orderId || orderId === 'undefined') {
+        notFound();
+    }
+
     const order = await prisma.order.findUnique({
-        where: { id: params.orderId },
+        where: { id: orderId },
         include: {
             items: {
                 include: {

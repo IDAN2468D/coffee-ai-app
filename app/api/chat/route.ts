@@ -50,7 +50,15 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ text });
 
-    } catch (error) {
+    } catch (error: any) {
+        // Suppress 429 Errors (Quota Exceeded)
+        if (error.message?.includes('429') || error.status === 429) {
+            console.warn("⚠️ Gemini quota exceeded (Chat API). Using fallback.");
+            return NextResponse.json({
+                text: "מצטער, הראש שלי קצת מסתובב מרוב קפאין (עומס על המערכת). אפשר לנסות שוב עוד דקה? ☕"
+            });
+        }
+
         console.error('Gemini Chat Error:', error);
         return NextResponse.json(
             { error: 'Something went wrong with the AI barista.' },
