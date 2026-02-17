@@ -7,7 +7,6 @@ import RecentOrdersTable from "@/components/admin/RecentOrdersTable";
 import nextDynamic from 'next/dynamic';
 
 const AdminChart = nextDynamic(() => import('@/components/admin/AdminChart'), {
-    ssr: false,
     loading: () => <div className="h-full w-full bg-stone-100 animate-pulse rounded-lg" />
 });
 
