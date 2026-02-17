@@ -9,6 +9,7 @@ import { checkLoyaltyUpgrade } from "@/lib/loyalty";
 import { TIER_BENEFITS, UserTier } from "@/lib/tiers";
 import { ServerActionResponse, ReOrderResponse } from "@/src/types/index";
 import { getReengagementStatus } from "./user";
+import { OrderStatus } from "@/lib/enums";
 
 // --- Validation Schemas ---
 
@@ -164,7 +165,7 @@ export async function createOrder(data: CreateOrderInput): Promise<ServerActionR
                     vipDiscount: vipDiscount,
                     shippingFee: shippingFee,
                     appliedCoupon: appliedCoupon,
-                    status: 'pending',
+                    status: OrderStatus.PENDING,
                     shippingAddress: shippingDetails || {},
                     items: {
                         create: finalItems.map((item) => ({
@@ -238,7 +239,7 @@ export async function getLastSuccessfulOrder(userId: string): Promise<ServerActi
         const lastOrder = await prisma.order.findFirst({
             where: {
                 userId: userId,
-                status: { in: ["completed", "delivered", "shipped"] },
+                status: { in: [OrderStatus.DELIVERED, OrderStatus.OUT_FOR_DELIVERY] },
             },
             orderBy: { createdAt: "desc" },
             include: {

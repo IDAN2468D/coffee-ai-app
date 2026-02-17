@@ -459,7 +459,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const { orderId, status } = args as { orderId: string, status: string };
             const updatedOrder = await prisma.order.update({
                 where: { id: orderId },
-                data: { status }
+                data: { status: status as any }
             });
             return {
                 content: [{ type: "text", text: `Order ${orderId} status updated to ${status}` }]
@@ -505,7 +505,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     data: {
                         userId,
                         total: totalAmount,
-                        status: "pending",
+                        status: "PENDING" as any,
                         items: {
                             create: orderItemsData
                         }
@@ -721,7 +721,7 @@ Period: ${startDate || 'Beginning'} - ${endDate || 'Now'}
         if (name === "get_orders_by_status") {
             const { status, limit } = args as { status: string, limit?: number };
             const orders = await prisma.order.findMany({
-                where: { status },
+                where: { status: status as any },
                 take: limit || 10,
                 orderBy: { createdAt: 'desc' },
                 include: { user: { select: { name: true, email: true } } }

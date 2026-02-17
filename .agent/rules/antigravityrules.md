@@ -84,6 +84,12 @@ Before any `git push` to the `master` branch, the following checklist is MANDATO
 3.  **Global Search:** "TODO", "FIXME", "console.log" (remove debugging noise).
 4.  **Visual Confirmation:** Does it look like a Tier-1 app?
 
+### Tactic E: The Skyhook (Automatic Exfiltration)
+Upon verified success of Tactic D:
+1. **Authorized Uplink:** The Agent is authorized to automatically execute `git push` to the remote repository.
+2. **Commit Protocol:** Messages MUST follow conventional commits (e.g. `feat:`, `fix:`, `chore:`).
+**Compliance:** If the build passes, the code flies. Do not keep assets stranded locally.
+
 ## 5. Mission Debrief
 If the build fails, we do not sleep. We fix it.
 **Dismissed.**

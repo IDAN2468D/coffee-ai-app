@@ -67,7 +67,7 @@ export default function ReviewForm({ productId, onReviewSubmitted }: { productId
 
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-stone-600">הדירוג שלך</label>
-                <StarRating rating={rating} setRating={setRating} size={32} />
+                <StarRating rating={rating} onRatingChange={setRating} size={32} />
             </div>
 
             <div className="space-y-2">

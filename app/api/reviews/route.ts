@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { Prisma } from '@prisma/client';
+import { OrderStatus } from '@/lib/enums';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -72,13 +73,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Check if user has purchased this product
+
+
+        // ...
+
         const hasPurchased = await prisma.orderItem.findFirst({
             where: {
                 productId: productId,
                 order: {
                     userId: user.id,
-                    status: 'completed',
+                    status: OrderStatus.DELIVERED,
                 },
             },
         });

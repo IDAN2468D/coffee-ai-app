@@ -14,6 +14,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { OrderStatus } from '../lib/enums';
 
 const prisma = new PrismaClient();
 
@@ -61,7 +62,7 @@ async function main() {
 
     const staleOrders = await prisma.order.findMany({
         where: {
-            status: 'pending',
+            status: OrderStatus.PENDING,
             createdAt: { lt: fourteenDaysAgo },
             id: { notIn: orphanOrderIds }, // exclude orphans (they'll be deleted)
         },
@@ -112,7 +113,7 @@ async function main() {
     if (staleOrderIds.length > 0) {
         const updated = await prisma.order.updateMany({
             where: { id: { in: staleOrderIds } },
-            data: { status: 'cancelled' },
+            data: { status: OrderStatus.CANCELLED },
         });
         console.log(`  ✓ Cancelled ${updated.count} stale orders`);
     }
@@ -131,13 +132,13 @@ async function main() {
 
     // Check stale pending
     const remainingStale = await prisma.order.count({
-        where: { status: 'pending', createdAt: { lt: fourteenDaysAgo } },
+        where: { status: OrderStatus.PENDING, createdAt: { lt: fourteenDaysAgo } },
     });
     console.log(`  Stale PENDING remaining:    ${remainingStale} ${remainingStale === 0 ? '✅' : '❌'}`);
 
     // Check cancelled count
     const cancelledCount = await prisma.order.count({
-        where: { status: 'cancelled' },
+        where: { status: OrderStatus.CANCELLED },
     });
     console.log(`  Total cancelled orders:     ${cancelledCount}`);
 
@@ -146,7 +147,7 @@ async function main() {
         where: { createdAt: { gte: fourteenDaysAgo } },
         select: { id: true, status: true, createdAt: true },
     });
-    const recentCancelled = recentOrders.filter(o => o.status === 'cancelled');
+    const recentCancelled = recentOrders.filter(o => o.status === OrderStatus.CANCELLED);
     console.log(`  Recent orders (<14d):       ${recentOrders.length} total, ${recentCancelled.length} cancelled`);
 
     if (recentCancelled.length === 0) {

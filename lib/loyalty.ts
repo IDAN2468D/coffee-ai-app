@@ -10,6 +10,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
+import { SafeUser } from '@/src/types';
 
 import { UserTier } from './tiers';
 
@@ -28,8 +29,10 @@ export const GOLD_ORDER_THRESHOLD = 5;
 export const PLATINUM_ORDER_THRESHOLD = 10;
 export const PLATINUM_SPEND_THRESHOLD = 2000; // Adding a spend threshold for Platinum as well
 
+import { OrderStatus } from '@/lib/enums';
+
 /** Excluded statuses — cancelled orders do NOT count toward VIP */
-const EXCLUDED_STATUSES = ['cancelled', 'refunded'];
+const EXCLUDED_STATUSES = [OrderStatus.CANCELLED];
 
 /**
  * Count only successful (non-cancelled, non-refunded) orders for a user.
@@ -66,11 +69,16 @@ async function sumSuccessfulSpend(userId: string): Promise<number> {
  * CRITICAL: Uses live DB queries (not cached counters) to exclude cancelled orders.
  */
 export async function checkLoyaltyUpgrade(userId: string): Promise<LoyaltyStatus> {
+
+
+    // ...
+
     const [user, successfulOrders, successfulSpend] = await Promise.all([
         prisma.user.findUnique({
             where: { id: userId },
             select: {
                 subscription: { select: { plan: true, id: true } },
+                tier: true, // Select tier explicitly
             },
         }),
         countSuccessfulOrders(userId),

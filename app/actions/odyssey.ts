@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { OdysseyResponse } from "@/src/types";
+import { OrderStatus } from "@/lib/enums";
 
 export async function getUnlockedOrigins(): Promise<OdysseyResponse> {
     try {
@@ -17,7 +18,7 @@ export async function getUnlockedOrigins(): Promise<OdysseyResponse> {
             select: {
                 id: true,
                 orders: {
-                    where: { status: "delivered" }, // Only delivered orders unlock origins
+                    where: { status: OrderStatus.DELIVERED }, // Only delivered orders unlock origins
                     include: {
                         items: {
                             include: {

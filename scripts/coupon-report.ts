@@ -10,6 +10,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { OrderStatus } from '../lib/enums';
 
 const prisma = new PrismaClient();
 
@@ -71,7 +72,7 @@ async function main() {
         const hadCancelledBefore = await prisma.order.count({
             where: {
                 userId: order.userId,
-                status: 'cancelled',
+                status: OrderStatus.CANCELLED,
                 createdAt: { lt: order.createdAt },
             },
         });
@@ -91,7 +92,7 @@ async function main() {
 
     const janCancelled = await prisma.order.count({
         where: {
-            status: 'cancelled',
+            status: OrderStatus.CANCELLED,
             createdAt: { gte: janStart, lt: janEnd },
         },
     });

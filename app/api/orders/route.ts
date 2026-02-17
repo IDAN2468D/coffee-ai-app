@@ -6,6 +6,7 @@ import { sendOrderConfirmationEmail } from '@/lib/mailer';
 import { getReengagementStatus } from '@/app/actions/user';
 import { checkLoyaltyUpgrade } from '@/lib/loyalty';
 import { TIER_BENEFITS, UserTier } from '@/lib/tiers';
+import { OrderStatus } from '@/lib/enums';
 
 const VALID_COUPONS: Record<string, { discount: number; validator: () => Promise<boolean> }> = {
     COFFEE10: {
@@ -138,7 +139,7 @@ export async function POST(req: Request) {
                 vipDiscount: vipDiscount,
                 shippingFee: shippingFee,
                 appliedCoupon: appliedCoupon,
-                status: 'pending',
+                status: OrderStatus.PENDING,
                 shippingAddress: shippingDetails || {},
                 items: {
                     create: finalItems.map((item: any) => ({

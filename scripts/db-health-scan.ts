@@ -12,6 +12,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { OrderStatus } from '../lib/enums';
 
 const prisma = new PrismaClient();
 
@@ -135,7 +136,7 @@ async function main() {
 
     const staleOrders = await prisma.order.findMany({
         where: {
-            status: 'pending',
+            status: OrderStatus.PENDING,
             createdAt: { lt: fourteenDaysAgo },
         },
         select: { id: true, userId: true, total: true, createdAt: true },

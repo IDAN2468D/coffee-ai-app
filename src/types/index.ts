@@ -7,16 +7,34 @@ export enum Plan {
     PRO = 'PRO'
 }
 
+import { UserRole } from "@/lib/enums";
+import { User as PrismaUser } from "@prisma/client";
+
+export interface SafeUser extends Omit<PrismaUser, 'role'> {
+    loyaltyPoints: number;
+    role: UserRole;
+}
+
 export interface User {
     id: string;
+    // ... keep existing User interface or replace it?
+    // The existing User interface in index.ts seems to be a custom one for NextAuth or frontend?
+    // It has isAdmin, points, etc.
+    // Let's just add SafeUser compatibility or update User.
+    // The existing User interface matches schema mostly.
+    // It has `points` but not `loyaltyPoints`.
+    // It has `tier`.
+    // Let's UPDATE the existing User interface to match schema + extensions.
     name?: string | null;
     email?: string | null;
     image?: string | null;
     isAdmin: boolean;
     points: number;
+    loyaltyPoints: number; // Added
     totalSpent: number;
     orderCount: number;
     tier: UserTier;
+    role: UserRole; // Added
     subscriptionId?: string | null;
     isSubscriptionActive?: boolean;
     currentPeriodEnd?: Date | null;

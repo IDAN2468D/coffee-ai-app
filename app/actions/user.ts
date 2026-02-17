@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { ServerActionResponse } from "@/src/types/index";
+import { OrderStatus } from "@/lib/enums";
 
 export interface ReengagementData {
     shouldShow: boolean;
@@ -38,11 +39,15 @@ export async function getReengagementStatus(): Promise<ReengagementData> {
             return { shouldShow: false, productName: null, productImage: null };
         }
 
+
+
+        // ...
+
         // Check for completed orders — if any exist, user doesn't need re-engagement
         const completedCount = await prisma.order.count({
             where: {
                 userId: user.id,
-                status: { in: ["completed", "delivered", "shipped"] },
+                status: { in: [OrderStatus.DELIVERED, OrderStatus.OUT_FOR_DELIVERY] },
             },
         });
 
@@ -54,7 +59,7 @@ export async function getReengagementStatus(): Promise<ReengagementData> {
         const lastCancelled = await prisma.order.findFirst({
             where: {
                 userId: user.id,
-                status: "cancelled",
+                status: OrderStatus.CANCELLED,
             },
             orderBy: { createdAt: "desc" },
             include: {
