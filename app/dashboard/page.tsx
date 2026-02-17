@@ -15,30 +15,46 @@ export default async function DashboardPage() {
     let loyaltyStatus = null;
 
     if (session?.user?.email) {
-        userData = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            select: {
-                id: true,
-                points: true,
-                subscription: true
-            }
-        });
-        if (userData) {
-            points = userData.points;
-            loyaltyStatus = await getLoyaltyStatus(userData.id);
-        }
-
-        orders = await prisma.order.findMany({
-            where: { user: { email: session.user.email } },
-            include: {
-                items: {
-                    include: {
-                        product: true
-                    }
+        try {
+            userData = await prisma.user.findUnique({
+                where: { email: session.user.email },
+                select: {
+                    id: true,
+                    points: true,
+                    subscription: true
                 }
-            },
-            orderBy: { createdAt: 'desc' }
-        });
+            });
+            if (userData) {
+                points = userData.points;
+                // Safe handling for loyalty status
+                try {
+                    loyaltyStatus = await getLoyaltyStatus(userData.id);
+                } catch (e) {
+                    console.error("Loyalty status fetch error:", e);
+                }
+            }
+
+            // Safe handling for orders
+            try {
+                orders = await prisma.order.findMany({
+                    where: { user: { email: session.user.email } },
+                    include: {
+                        items: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                });
+            } catch (e: any) {
+                console.error("Order fetch error (likely Enum mismatch):", e);
+                // Return empty orders if fetch fails to prevent page crash
+                orders = [];
+            }
+        } catch (error) {
+            console.error("Dashboard critical error:", error);
+        }
     }
 
     // Fetch Daily Fact
