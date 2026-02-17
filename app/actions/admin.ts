@@ -8,21 +8,26 @@ import { revalidatePath } from "next/cache";
 
 export async function getAdminStats() {
     try {
+        console.log('Starting getAdminStats...');
         const session = await getServerSession(authOptions);
 
         if (!session?.user?.email) {
+            console.warn('getAdminStats: Unauthorized access attempt (no session/email)');
             return { success: false, error: "Unauthorized" };
         }
 
-        // Verify Admin Role
+        // Verify Admin Role with safe access
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
-            select: { role: true, isAdmin: true } // Check both for legacy support
+            select: { role: true, isAdmin: true } as any // Check both for legacy support
         });
 
-        if (!user || (user.role !== 'ADMIN' && !user.isAdmin)) {
+        if (!user || ((user as any).role !== 'ADMIN' && !user.isAdmin)) {
+            console.warn(`getAdminStats: Access denied for user ${session.user.email}`);
             return { success: false, error: "Access Denied: Admin Only" };
         }
+
+        console.log('getAdminStats: Authorized. Fetching stats...');
 
         // 1. Total Revenue
         const totalRevenue = await prisma.order.aggregate({
@@ -31,18 +36,8 @@ export async function getAdminStats() {
             },
             where: {
                 status: {
-                    in: ['DELIVERED', 'OUT_FOR_DELIVERY', 'BREWING', 'PENDING']
-                    // Exclude CANCELLED? Usually yes. "Sum of all completed orders" requested?
-                    // Request says: "Sum of all completed orders".
-                    // But typically revenue counts processed orders unless refunder.
-                    // Let's count DELIVERED only? Or all non-cancelled?
-                    // Prompt text: "Total Revenue (Sum of all completed orders)".
-                    // "Completed" likely means status=DELIVERED.
+                    in: ['DELIVERED', 'OUT_FOR_DELIVERY', 'BREWING', 'PENDING'] as any
                 }
-                // Wait, status is enum now. 
-                // I need to use the Enum values. 
-                // If client generation failed, this file will error on build.
-                // Assuming client generation worked or will work.
             }
         });
 
@@ -57,11 +52,6 @@ export async function getAdminStats() {
         });
 
         // 3. Top Selling Products
-        // Complex query. Group by productId in OrderItem?
-        // Prisma doesn't support deep relation grouping easily in one go.
-        // Option: Fetch all order items? Too heavy.
-        // Option: Native raw query?
-        // Option: Aggregate on OrderItem? groupBy productId, sum quantity.
         const topSelling = await prisma.orderItem.groupBy({
             by: ['productId'],
             _sum: {
@@ -89,13 +79,6 @@ export async function getAdminStats() {
         );
 
         // 4. Daily Sales Chart Data (Last 7 days)
-        // Group by createdAt day?
-        // Prisma groupBy createdAt is tricky with dates.
-        // Often easier to fetch last 7 days orders and aggregate in JS or use Raw SQL.
-        // Let's use JS aggregation for simplicity heavily filtered orders if scale allows, 
-        // or just plain total for now?
-        // Prompt says "bar chart of daily sales".
-
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -104,7 +87,7 @@ export async function getAdminStats() {
                 createdAt: {
                     gte: sevenDaysAgo
                 },
-                status: { not: 'CANCELLED' } // Assuming Enum string literal works
+                status: { not: 'CANCELLED' as any }
             },
             select: {
                 createdAt: true,
@@ -124,6 +107,7 @@ export async function getAdminStats() {
             sales: total
         })).sort((a, b) => a.name.localeCompare(b.name));
 
+        console.log('getAdminStats: Success');
         return {
             success: true,
             data: {
@@ -134,8 +118,14 @@ export async function getAdminStats() {
             }
         };
 
-    } catch (error) {
-        console.error("Admin Stats Error:", error);
-        return { success: false, error: "Failed to fetch admin statistics" };
+    } catch (error: any) {
+        console.error("Admin Stats Critical Error:", error);
+        // Log environment status safely
+        console.error("DB URL Present:", !!process.env.DATABASE_URL);
+
+        return {
+            success: false,
+            error: `Server Error: ${error.message || 'Unknown error'}`
+        };
     }
 }
