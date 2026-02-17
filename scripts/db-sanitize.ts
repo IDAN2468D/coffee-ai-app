@@ -14,7 +14,16 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { OrderStatus } from '../lib/enums';
+// Inline Enum for script robustness (fixes module resolution issue)
+const OrderStatus = {
+    PENDING: 'PENDING',
+    BREWING: 'BREWING',
+    OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+    DELIVERED: 'DELIVERED',
+    CANCELLED: 'CANCELLED',
+} as const;
+
+type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 const prisma = new PrismaClient();
 
